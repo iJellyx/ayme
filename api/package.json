@@ -1,0 +1,9 @@
+{
+  "name": "ayme-api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "stripe": "^17.5.0",
+    "@clerk/backend": "^2.0.0"
+  }
+}

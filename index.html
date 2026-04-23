@@ -355,9 +355,73 @@ ul.tight li { margin-bottom: 4px; }
 @media (max-width: 600px) {
   .tip::after { max-width: 240px; font-size: 12px; }
 }
+
+/* Auth gate — landing + paywall */
+.app { display: none; }
+body[data-auth="ready"] .app { display: grid; }
+#gate { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 24px; }
+body[data-auth="gate"] #gate { display: flex; }
+.gate-card {
+  width: 100%; max-width: 520px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  text-align: center;
+}
+.gate-brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
+.gate-logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: grid; place-items: center; font-weight: 800; color: #0b1020; font-size: 16px;
+}
+.gate-name { font-weight: 800; font-size: 20px; letter-spacing: 0.3px; }
+.gate-sub { color: var(--muted); font-size: 13px; }
+.gate-card h1 { margin: 8px 0 8px; font-size: 26px; line-height: 1.25; }
+.gate-card p { color: var(--muted); line-height: 1.55; margin: 0 0 20px; }
+.gate-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.gate-btn {
+  padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--panel-2); color: var(--text); font-weight: 600; cursor: pointer;
+  font-size: 15px; transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.gate-btn:hover { background: var(--panel); border-color: var(--primary); }
+.gate-btn.primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #0b1020; border-color: transparent;
+}
+.gate-btn.primary:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.gate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.gate-features { text-align: left; margin: 18px 0 6px; color: var(--text); font-size: 14px; line-height: 1.8; }
+.gate-features li { list-style: none; padding-left: 26px; position: relative; }
+.gate-features li::before {
+  content: "✓"; position: absolute; left: 0; top: 0;
+  color: var(--accent); font-weight: 800;
+}
+.gate-price { font-size: 32px; font-weight: 800; margin: 10px 0 4px; }
+.gate-price small { font-size: 14px; font-weight: 500; color: var(--muted); }
+.gate-foot { margin-top: 18px; color: var(--muted); font-size: 12px; }
+.gate-foot a { color: var(--primary-2); text-decoration: none; }
+.gate-err { margin-top: 12px; color: var(--warn); font-size: 13px; }
+.gate-loading { padding: 48px 24px; color: var(--muted); }
+.gate-user { color: var(--muted); font-size: 13px; margin-top: 14px; }
+.gate-user b { color: var(--text); }
+.signout-link { background: none; border: none; color: var(--primary-2); cursor: pointer; padding: 0; font-size: 13px; text-decoration: underline; }
 </style>
+<script
+  async crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_dG91Y2hpbmctamF3ZmlzaC04Ni5jbGVyay5hY2NvdW50cy5kZXYk"
+  src="https://touching-jawfish-86.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+  type="text/javascript">
+</script>
 </head>
-<body data-theme="dark">
+<body data-theme="dark" data-auth="loading">
+<div id="gate">
+  <div class="gate-card" id="gateCard">
+    <div class="gate-loading">Loading…</div>
+  </div>
+</div>
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
@@ -370,6 +434,10 @@ ul.tight li { margin-bottom: 4px; }
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-footer">
       <button class="theme-toggle" id="themeBtn">🌓 Theme</button>
+      <div id="accountBox" style="margin-top:12px; display:flex; align-items:center; gap:10px;">
+        <div id="userButton"></div>
+        <button id="billingBtn" class="theme-toggle" style="font-size:11px; padding:6px 10px;">Billing</button>
+      </div>
       <div style="margin-top:10px">Built for PM Group KAMs</div>
     </div>
   </aside>
@@ -393,6 +461,179 @@ ul.tight li { margin-bottom: 4px; }
 </div>
 <div id="toast" style="display:none"></div>
 <script>
+/* ============================================================
+   AYME — auth gate (Clerk + Stripe)
+   ============================================================ */
+
+const GATE = {
+  clerk: null,
+  ready: false,
+  state: 'loading', // loading | landing | paywall | ready | error
+  async init() {
+    this.el = document.getElementById('gateCard');
+    try {
+      await this.waitForClerk();
+      this.clerk = window.Clerk;
+      await this.clerk.load({ afterSignOutUrl: '/' });
+      this.clerk.addListener(({ user }) => this.render(user));
+      this.render(this.clerk.user);
+      this.handleCheckoutReturn();
+    } catch (err) {
+      console.error('Gate init failed', err);
+      this.renderError(err);
+    }
+  },
+  waitForClerk() {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const tick = () => {
+        if (window.Clerk) return resolve();
+        if (Date.now() - start > 15000) return reject(new Error('Clerk failed to load'));
+        setTimeout(tick, 100);
+      };
+      tick();
+    });
+  },
+  render(user) {
+    if (!user) {
+      document.body.setAttribute('data-auth', 'gate');
+      this.state = 'landing';
+      this.renderLanding();
+      return;
+    }
+    const status = user.publicMetadata?.subscriptionStatus;
+    if (status === 'active') {
+      document.body.setAttribute('data-auth', 'ready');
+      this.state = 'ready';
+      if (window.onAymeAuthReady && !this.booted) {
+        this.booted = true;
+        try { window.onAymeAuthReady(user); } catch(e) { console.warn(e); }
+      }
+    } else {
+      document.body.setAttribute('data-auth', 'gate');
+      this.state = 'paywall';
+      this.renderPaywall(user);
+    }
+  },
+  renderLanding() {
+    this.el.innerHTML = `
+      <div class="gate-brand">
+        <div class="gate-logo">AY</div>
+        <div style="text-align:left">
+          <div class="gate-name">AYME</div>
+          <div class="gate-sub">Automation & You Mastery Engine</div>
+        </div>
+      </div>
+      <h1>Master connected automation in pharma &amp; biotech</h1>
+      <p>The learning platform built for PM Group key account managers. DeltaV, MES, CSV, IT/OT, Syncade, PAS-X — made simple.</p>
+      <ul class="gate-features">
+        <li>12 core modules with flashcards, quizzes &amp; mini-games</li>
+        <li>140+ jargon tooltips in plain English</li>
+        <li>Streaks, XP, badges to keep you sharp</li>
+        <li>Client toolkit &amp; call-prep builder</li>
+      </ul>
+      <div class="gate-actions">
+        <button class="gate-btn primary" id="gateSignUp">Get started</button>
+        <button class="gate-btn" id="gateSignIn">I already have an account</button>
+      </div>
+      <div class="gate-foot">Secure sign-in by Clerk · Cancel anytime</div>
+    `;
+    document.getElementById('gateSignUp').onclick = () => this.clerk.openSignUp({ redirectUrl: '/' });
+    document.getElementById('gateSignIn').onclick = () => this.clerk.openSignIn({ redirectUrl: '/' });
+  },
+  renderPaywall(user) {
+    const name = user.firstName || user.emailAddresses[0]?.emailAddress || 'there';
+    this.el.innerHTML = `
+      <div class="gate-brand">
+        <div class="gate-logo">AY</div>
+        <div style="text-align:left">
+          <div class="gate-name">AYME</div>
+          <div class="gate-sub">Unlock full access</div>
+        </div>
+      </div>
+      <h1>Welcome, ${this.escape(name)} 👋</h1>
+      <p>Subscribe to unlock all 12 modules, mini-games, and toolkit features.</p>
+      <div class="gate-price">$49<small> / month</small></div>
+      <ul class="gate-features">
+        <li>Full access to every module &amp; mini-game</li>
+        <li>Client toolkit &amp; call-prep builder</li>
+        <li>Progress tracking, streaks &amp; badges</li>
+        <li>Cancel anytime from your billing portal</li>
+      </ul>
+      <div class="gate-actions">
+        <button class="gate-btn primary" id="gateCheckout">Continue to secure checkout</button>
+      </div>
+      <div class="gate-user">Signed in as <b>${this.escape(user.emailAddresses[0]?.emailAddress || '')}</b> · <button class="signout-link" id="gateSignOut">Sign out</button></div>
+      <div class="gate-err" id="gateErr" style="display:none"></div>
+      <div class="gate-foot">Payments handled by Stripe · You'll be redirected to a secure checkout page</div>
+    `;
+    document.getElementById('gateCheckout').onclick = () => this.startCheckout();
+    document.getElementById('gateSignOut').onclick = () => this.clerk.signOut();
+  },
+  async startCheckout() {
+    const btn = document.getElementById('gateCheckout');
+    const err = document.getElementById('gateErr');
+    btn.disabled = true;
+    btn.textContent = 'Redirecting…';
+    err.style.display = 'none';
+    try {
+      const token = await this.clerk.session.getToken();
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Checkout failed');
+      const { url } = await res.json();
+      window.location.href = url;
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = 'Continue to secure checkout';
+      err.textContent = e.message;
+      err.style.display = 'block';
+    }
+  },
+  async handleCheckoutReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') === 'success' && this.clerk.user) {
+      // Webhook may take a moment — poll briefly for subscription activation
+      for (let i = 0; i < 10; i++) {
+        await this.clerk.user.reload();
+        if (this.clerk.user.publicMetadata?.subscriptionStatus === 'active') break;
+        await new Promise(r => setTimeout(r, 1500));
+      }
+      history.replaceState({}, '', window.location.pathname);
+      this.render(this.clerk.user);
+    } else if (params.get('checkout') === 'cancel') {
+      history.replaceState({}, '', window.location.pathname);
+    }
+  },
+  async openBillingPortal() {
+    try {
+      const token = await this.clerk.session.getToken();
+      const res = await fetch('/api/customer-portal', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Portal failed');
+      const { url } = await res.json();
+      window.location.href = url;
+    } catch (e) { console.error(e); }
+  },
+  renderError(err) {
+    document.body.setAttribute('data-auth', 'gate');
+    this.el.innerHTML = `
+      <div class="gate-brand"><div class="gate-logo">AY</div><div style="text-align:left"><div class="gate-name">AYME</div></div></div>
+      <h1>Something went wrong</h1>
+      <p>We couldn't load the sign-in system. Please refresh the page.</p>
+      <div class="gate-err" style="display:block">${this.escape(err.message || String(err))}</div>
+    `;
+  },
+  escape(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
+};
+window.AYME_GATE = GATE;
+document.addEventListener('DOMContentLoaded', () => GATE.init());
+
 /* ============================================================
    AYME — core data
    ============================================================ */
@@ -2685,10 +2926,18 @@ VIEWS.settings = (root) => {
 };
 
 /* ============================================================
-   Bootstrap
+   Bootstrap — only runs after Clerk auth + active subscription
    ============================================================ */
-updateTopbar();
-navigate("dashboard");
+window.onAymeAuthReady = function(user) {
+  updateTopbar();
+  navigate("dashboard");
+  try {
+    const mount = document.getElementById('userButton');
+    if (mount && window.Clerk) window.Clerk.mountUserButton(mount, { afterSignOutUrl: '/' });
+    const billing = document.getElementById('billingBtn');
+    if (billing) billing.onclick = () => window.AYME_GATE.openBillingPortal();
+  } catch(e) { console.warn('account mount failed', e); }
+};
 
 
 
