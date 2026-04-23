@@ -5,17 +5,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export const config = { api: { bodyParser: false } };
-
-function readRawBody(readable) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    readable.on('data', (c) => chunks.push(typeof c === 'string' ? Buffer.from(c) : c));
-    readable.on('end', () => resolve(Buffer.concat(chunks)));
-    readable.on('error', reject);
-  });
-}
-
 async function setSubscriptionStatus(clerkUserId, patch) {
   const user = await clerk.users.getUser(clerkUserId);
   await clerk.users.updateUserMetadata(clerkUserId, {
@@ -35,21 +24,20 @@ async function findUserByStripeCustomer(customerId) {
   }
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).end();
+export default async function handler(request) {
+  if (request.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 });
   }
 
-  const sig = req.headers['stripe-signature'];
-  const buf = await readRawBody(req);
+  const sig = request.headers.get('stripe-signature');
+  const rawBody = await request.text();
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
+    event = await stripe.webhooks.constructEventAsync(rawBody, sig, webhookSecret);
   } catch (err) {
     console.error('Webhook signature verification failed', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   try {
@@ -84,9 +72,12 @@ export default async function handler(req, res) {
       }
     }
 
-    return res.status(200).json({ received: true });
+    return Response.json({ received: true });
   } catch (err) {
     console.error('Webhook handler error', err);
-    return res.status(500).json({ error: err.message });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
