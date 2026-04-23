@@ -1,7 +1,11 @@
 import Stripe from 'stripe';
 import { createClerkClient } from '@clerk/backend';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+export const config = { runtime: 'edge' };
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  httpClient: Stripe.createFetchHttpClient(),
+});
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -17,9 +21,10 @@ async function findUserByStripeCustomer(customerId) {
   const limit = 100;
   while (true) {
     const page = await clerk.users.getUserList({ limit, offset });
-    const match = page.data.find((u) => u.publicMetadata?.stripeCustomerId === customerId);
+    const users = page.data || page;
+    const match = users.find((u) => u.publicMetadata?.stripeCustomerId === customerId);
     if (match) return match;
-    if (page.data.length < limit) return null;
+    if (users.length < limit) return null;
     offset += limit;
   }
 }
@@ -36,7 +41,7 @@ export default async function handler(request) {
   try {
     event = await stripe.webhooks.constructEventAsync(rawBody, sig, webhookSecret);
   } catch (err) {
-    console.error('Webhook signature verification failed', err.message);
+    console.error('[webhook] signature verification failed', err.message);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
@@ -78,15 +83,11 @@ export default async function handler(request) {
 
     return Response.json({ received: true });
   } catch (err) {
-    console.error('[webhook] handler error', err?.message, err?.stack, err?.errors);
+    console.error('[webhook] handler error', err?.message, err?.stack);
     return new Response(JSON.stringify({
       error: err?.message || 'Unknown error',
       name: err?.name,
-      stack: err?.stack,
       clerkErrors: err?.errors,
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
