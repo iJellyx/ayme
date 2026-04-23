@@ -408,6 +408,41 @@ body[data-auth="gate"] #gate { display: flex; }
 .gate-user { color: var(--muted); font-size: 13px; margin-top: 14px; }
 .gate-user b { color: var(--text); }
 .signout-link { background: none; border: none; color: var(--primary-2); cursor: pointer; padding: 0; font-size: 13px; text-decoration: underline; }
+
+/* Legal doc pages */
+.legal-banner {
+  background: rgba(245, 176, 65, 0.12);
+  border: 1px solid var(--warn);
+  color: var(--warn);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.legal-body { line-height: 1.65; }
+.legal-body h3 { margin-top: 24px; margin-bottom: 8px; color: var(--text); font-size: 16px; }
+.legal-body p, .legal-body ul { margin: 8px 0; color: var(--text); }
+.legal-body ul { padding-left: 22px; }
+.legal-body li { margin: 4px 0; }
+.legal-body code { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+.legal-body a { color: var(--primary-2); }
+.legal-body em { color: var(--muted); }
+.legal-footlinks { text-align: center; margin: 28px 0 10px; font-size: 13px; color: var(--muted); }
+.legal-footlinks a { color: var(--primary-2); text-decoration: none; margin: 0 6px; }
+.legal-footlinks a:hover { text-decoration: underline; }
+
+.sidebar-legal { margin-top: 14px; font-size: 11px; line-height: 1.8; color: var(--muted); }
+.sidebar-legal a { color: var(--muted); text-decoration: none; display: block; }
+.sidebar-legal a:hover { color: var(--primary-2); }
+
+/* Gate legal overlay — pre-auth readers */
+.gate-legal-wrap { max-width: 760px; max-height: 85vh; overflow-y: auto; padding: 32px 28px; text-align: left; }
+.gate-legal-wrap h1 { text-align: left; margin-top: 8px; }
+.gate-legal-wrap .subtitle { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+.gate-legal-back { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: var(--primary-2); cursor: pointer; padding: 0; font-size: 13px; margin-bottom: 10px; }
+.gate-foot-legal { margin-top: 16px; text-align: center; font-size: 12px; color: var(--muted); }
+.gate-foot-legal a { color: var(--muted); text-decoration: none; margin: 0 6px; cursor: pointer; }
+.gate-foot-legal a:hover { color: var(--primary-2); text-decoration: underline; }
 </style>
 <script
   async crossorigin="anonymous"
@@ -437,6 +472,11 @@ body[data-auth="gate"] #gate { display: flex; }
       <div id="accountBox" style="margin-top:12px; display:flex; align-items:center; gap:10px;">
         <div id="userButton"></div>
         <button id="billingBtn" class="theme-toggle" style="font-size:11px; padding:6px 10px;">Billing</button>
+      </div>
+      <div class="sidebar-legal">
+        <a href="#" data-legal-sidebar="privacy">Privacy</a>
+        <a href="#" data-legal-sidebar="terms">Terms</a>
+        <a href="#" data-legal-sidebar="disclaimer">Disclaimer</a>
       </div>
       <div style="margin-top:10px">For pharma &amp; biotech automation teams</div>
     </div>
@@ -537,9 +577,15 @@ const GATE = {
         <button class="gate-btn" id="gateSignIn">I already have an account</button>
       </div>
       <div class="gate-foot">Secure sign-in by Clerk · Cancel anytime</div>
+      <div class="gate-foot-legal">
+        <a data-gate-legal="privacy">Privacy</a>·
+        <a data-gate-legal="terms">Terms</a>·
+        <a data-gate-legal="disclaimer">Disclaimer</a>
+      </div>
     `;
     document.getElementById('gateSignUp').onclick = () => this.clerk.openSignUp({ redirectUrl: '/' });
     document.getElementById('gateSignIn').onclick = () => this.clerk.openSignIn({ redirectUrl: '/' });
+    this.bindLegalLinks();
   },
   renderPaywall(user) {
     const name = user.firstName || user.emailAddresses[0]?.emailAddress || 'there';
@@ -566,9 +612,15 @@ const GATE = {
       <div class="gate-user">Signed in as <b>${this.escape(user.emailAddresses[0]?.emailAddress || '')}</b> · <button class="signout-link" id="gateSignOut">Sign out</button></div>
       <div class="gate-err" id="gateErr" style="display:none"></div>
       <div class="gate-foot">Payments handled by Stripe · You'll be redirected to a secure checkout page</div>
+      <div class="gate-foot-legal">
+        <a data-gate-legal="privacy">Privacy</a>·
+        <a data-gate-legal="terms">Terms</a>·
+        <a data-gate-legal="disclaimer">Disclaimer</a>
+      </div>
     `;
     document.getElementById('gateCheckout').onclick = () => this.startCheckout();
     document.getElementById('gateSignOut').onclick = () => this.clerk.signOut();
+    this.bindLegalLinks();
   },
   async startCheckout() {
     const btn = document.getElementById('gateCheckout');
@@ -619,6 +671,40 @@ const GATE = {
       const { url } = await res.json();
       window.location.href = url;
     } catch (e) { console.error(e); }
+  },
+  bindLegalLinks() {
+    this.el.querySelectorAll('[data-gate-legal]').forEach(a => {
+      a.style.cursor = 'pointer';
+      a.onclick = (e) => { e.preventDefault(); this.showLegal(a.dataset.gateLegal); };
+    });
+  },
+  showLegal(slug) {
+    const doc = LEGAL_DOCS[slug];
+    if (!doc) return;
+    this.prevState = this.state;
+    this.state = 'legal';
+    this.el.className = 'gate-card gate-legal-wrap';
+    this.el.innerHTML = `
+      <button class="gate-legal-back" id="gateLegalBack">← Back</button>
+      <div class="legal-banner">⚠ Starter template — have your own legal counsel review and customise before public launch.</div>
+      <h1>${doc.title}</h1>
+      <p class="subtitle">Last updated: ${LEGAL_META.lastUpdated}</p>
+      <div class="legal-body">${doc.body}</div>
+      <div class="legal-footlinks">
+        <a data-gate-legal="privacy">Privacy</a>·
+        <a data-gate-legal="terms">Terms</a>·
+        <a data-gate-legal="disclaimer">Disclaimer</a>
+      </div>
+    `;
+    document.getElementById('gateLegalBack').onclick = () => {
+      this.el.className = 'gate-card';
+      this.render(this.clerk ? this.clerk.user : null);
+    };
+    this.bindLegalLinks();
+    this.el.querySelectorAll('[data-legal]').forEach(a => {
+      a.onclick = (e) => { e.preventDefault(); this.showLegal(a.dataset.legal); };
+    });
+    this.el.scrollTop = 0;
   },
   renderError(err) {
     document.body.setAttribute('data-auth', 'gate');
@@ -1834,6 +1920,213 @@ document.getElementById("themeBtn").addEventListener("click", () => {
 });
 
 /* ============================================================
+   Legal documents — STARTER TEMPLATES. Review with counsel
+   before production launch. Placeholders in [brackets].
+   ============================================================ */
+const LEGAL_META = {
+  companyName: "AYME",
+  contactEmail: "[contact@your-domain.com]",
+  legalEntity: "[Your Legal Entity Name Ltd.]",
+  legalAddress: "[Street, City, Country]",
+  governingLaw: "Ireland",
+  lastUpdated: "23 April 2026",
+};
+
+const LEGAL_DOCS = {
+  privacy: {
+    title: "Privacy Policy",
+    body: `
+<p><em>We take your privacy seriously. This policy explains what data we collect, why, how we protect it, and what rights you have under the EU General Data Protection Regulation (GDPR) and equivalent laws.</em></p>
+
+<h3>1. Who we are</h3>
+<p>${LEGAL_META.legalEntity} ("${LEGAL_META.companyName}", "we", "us") operates this learning platform. You can contact us about privacy matters at ${LEGAL_META.contactEmail}.</p>
+
+<h3>2. What we collect</h3>
+<ul>
+  <li><b>Account data</b> — your name and email address, provided at sign-up via our authentication provider (Clerk).</li>
+  <li><b>Billing data</b> — payment details are collected and stored by Stripe; we never see your card number. We retain only the Stripe customer ID, subscription ID, and invoice history.</li>
+  <li><b>Usage data</b> — your progress through modules, quizzes, and mini-games is stored in your browser's localStorage by default. No usage data is transmitted to our servers unless you explicitly enable cloud sync (not currently offered).</li>
+  <li><b>Server logs</b> — our hosting provider (Vercel) automatically logs IP address, user agent, and request paths for security and debugging. These logs are retained for up to 30 days.</li>
+</ul>
+
+<h3>3. Legal basis for processing</h3>
+<p>We process your data on the following GDPR Article 6 bases:</p>
+<ul>
+  <li><b>Contract performance</b> — to provide the service you've subscribed to (account, authentication, access control).</li>
+  <li><b>Legitimate interest</b> — to secure our systems and debug errors (server logs).</li>
+  <li><b>Legal obligation</b> — to retain invoices and tax records as required by law.</li>
+</ul>
+
+<h3>4. Who we share data with (subprocessors)</h3>
+<ul>
+  <li><b>Clerk</b> — authentication (email, name, session). Privacy policy: clerk.com/legal/privacy</li>
+  <li><b>Stripe</b> — payment processing. Privacy policy: stripe.com/privacy</li>
+  <li><b>Vercel</b> — hosting and server logs. Privacy policy: vercel.com/legal/privacy-policy</li>
+</ul>
+<p>We do not sell your data, and we do not share it with third parties for advertising.</p>
+
+<h3>5. International transfers</h3>
+<p>Our subprocessors may process data in the United States. Where transfers occur, they are governed by the EU Standard Contractual Clauses and equivalent safeguards.</p>
+
+<h3>6. Retention</h3>
+<p>Account data is retained while your subscription is active and for up to 12 months after cancellation. Billing records are retained for 7 years to comply with accounting and tax law. Server logs are retained for up to 30 days.</p>
+
+<h3>7. Your rights</h3>
+<p>Under GDPR you have the right to:</p>
+<ul>
+  <li>Access the personal data we hold about you</li>
+  <li>Request correction of inaccurate data</li>
+  <li>Request deletion ("right to be forgotten") — subject to legal retention requirements</li>
+  <li>Request a portable copy of your data</li>
+  <li>Object to processing based on legitimate interest</li>
+  <li>Request restriction of processing</li>
+  <li>Lodge a complaint with your national data protection authority</li>
+</ul>
+<p>To exercise any of these rights, email ${LEGAL_META.contactEmail}. We will respond within 30 days.</p>
+
+<h3>8. Cookies & browser storage</h3>
+<p>We use <b>strictly necessary</b> storage only:</p>
+<ul>
+  <li>A Clerk authentication cookie (keeps you signed in)</li>
+  <li>localStorage entry <code>ayme.state.v1</code> (stores your progress locally)</li>
+</ul>
+<p>We do not use tracking cookies, advertising pixels, or third-party analytics that identify you. No cookie consent banner is required because only strictly necessary cookies are used.</p>
+
+<h3>9. Security</h3>
+<p>All connections are encrypted with TLS 1.3. Authentication uses industry-standard token-based sessions via Clerk. Payment data never touches our servers — it is transmitted directly from your browser to Stripe.</p>
+
+<h3>10. Children</h3>
+<p>This service is not directed at children under 16 and we do not knowingly collect their data.</p>
+
+<h3>11. Changes to this policy</h3>
+<p>We'll email you about material changes at least 14 days before they take effect. This policy was last updated on ${LEGAL_META.lastUpdated}.</p>
+
+<h3>12. Contact</h3>
+<p>${LEGAL_META.legalEntity}<br>${LEGAL_META.legalAddress}<br>Email: ${LEGAL_META.contactEmail}</p>
+`
+  },
+  terms: {
+    title: "Terms of Service",
+    body: `
+<p><em>These terms govern your use of the ${LEGAL_META.companyName} platform. By signing up or using the service, you agree to them.</em></p>
+
+<h3>1. The service</h3>
+<p>${LEGAL_META.companyName} is an online learning platform covering connected automation topics in the pharmaceutical and biotechnology industries. It is provided on a subscription basis.</p>
+
+<h3>2. Eligibility</h3>
+<p>You must be at least 18 years old and legally able to enter into a binding contract. If you sign up on behalf of a company, you confirm you have authority to bind that company.</p>
+
+<h3>3. Accounts</h3>
+<p>You must provide accurate information and keep your login credentials confidential. You are responsible for all activity under your account. Notify us immediately at ${LEGAL_META.contactEmail} if you suspect unauthorized access.</p>
+
+<h3>4. Subscriptions, billing, and renewal</h3>
+<ul>
+  <li>Subscriptions are billed monthly in advance via Stripe in the currency shown at checkout.</li>
+  <li>Your subscription renews automatically at the end of each billing cycle unless cancelled.</li>
+  <li>You can cancel at any time from the billing portal linked in the app sidebar. Cancellation takes effect at the end of the current billing period; no partial refunds are issued.</li>
+  <li>We may change prices with at least 30 days' notice. Price changes apply at your next renewal.</li>
+</ul>
+
+<h3>5. Refunds</h3>
+<p>Subscription fees are non-refundable except where required by applicable consumer protection law. EU consumers have a 14-day right of withdrawal from the date of first purchase; this right is waived if you use the service during the withdrawal period.</p>
+
+<h3>6. Acceptable use</h3>
+<p>You agree not to:</p>
+<ul>
+  <li>Share your account or let others sign in with your credentials</li>
+  <li>Copy, resell, sublicense, or redistribute any content</li>
+  <li>Scrape, reverse-engineer, or attempt to extract the source data</li>
+  <li>Use the service to harass, defame, or break the law</li>
+  <li>Attempt to circumvent authentication, billing, or rate limits</li>
+  <li>Upload malware or use the service to attack other systems</li>
+</ul>
+
+<h3>7. Intellectual property</h3>
+<p>All course content, tooltips, quizzes, badges, code, and brand assets are owned by ${LEGAL_META.legalEntity} or our licensors. We grant you a limited, non-exclusive, non-transferable, revocable license to access and use the content for your personal professional development while your subscription is active.</p>
+
+<h3>8. User content</h3>
+<p>If you submit content (e.g., typed notes in the call-prep builder), you retain ownership but grant us a worldwide, royalty-free license to store and display it back to you as part of providing the service.</p>
+
+<h3>9. Educational disclaimer</h3>
+<p>The platform is for educational and professional development purposes only. It does not constitute regulatory, legal, compliance, medical, or engineering advice. See our <a href="#" data-legal="disclaimer">Educational Disclaimer</a> for the full statement.</p>
+
+<h3>10. Availability & service changes</h3>
+<p>We aim to keep the service available but do not guarantee uninterrupted access. We may update, add, or remove features without notice. We'll give reasonable notice before removing paid features you actively use.</p>
+
+<h3>11. Warranty disclaimer</h3>
+<p>The service is provided "as is" and "as available." We disclaim all warranties, express or implied, including merchantability, fitness for a particular purpose, and non-infringement, to the maximum extent permitted by law.</p>
+
+<h3>12. Limitation of liability</h3>
+<p>To the maximum extent permitted by law, our total liability arising out of or relating to your use of the service is limited to the fees you paid in the 12 months before the event giving rise to the claim. We are not liable for indirect, incidental, special, consequential, or punitive damages. Nothing in these terms excludes liability that cannot be excluded by law (e.g., for gross negligence or death/personal injury caused by negligence).</p>
+
+<h3>13. Indemnification</h3>
+<p>You agree to indemnify and hold harmless ${LEGAL_META.legalEntity} from claims arising out of your breach of these terms, your misuse of the service, or your violation of another party's rights.</p>
+
+<h3>14. Termination</h3>
+<p>We may suspend or terminate your account for material breach of these terms with reasonable notice. You may cancel at any time. On termination, your license to use the service ends and we may delete account data subject to retention obligations described in our Privacy Policy.</p>
+
+<h3>15. Governing law & jurisdiction</h3>
+<p>These terms are governed by the laws of ${LEGAL_META.governingLaw}. Disputes will be resolved exclusively by the courts of ${LEGAL_META.governingLaw}, subject to any mandatory consumer rights in your country of residence.</p>
+
+<h3>16. Changes to these terms</h3>
+<p>We'll notify you of material changes at least 14 days in advance by email. Continuing to use the service after the effective date constitutes acceptance of the changes.</p>
+
+<h3>17. Contact</h3>
+<p>${LEGAL_META.legalEntity}<br>${LEGAL_META.legalAddress}<br>Email: ${LEGAL_META.contactEmail}</p>
+`
+  },
+  disclaimer: {
+    title: "Educational Disclaimer",
+    body: `
+<p><em>Please read this disclaimer carefully before relying on any information you learn through ${LEGAL_META.companyName}.</em></p>
+
+<h3>For education only</h3>
+<p>${LEGAL_META.companyName} is a professional development and learning platform. The content — including modules, flashcards, quizzes, glossary entries, jargon tooltips, role cards, and call-prep prompts — is intended to help sales engineers, key account managers, consultants, and other professionals build general familiarity with connected automation concepts in the pharmaceutical and biotechnology industries.</p>
+
+<h3>Not professional advice</h3>
+<p>Nothing on this platform constitutes, or should be relied upon as:</p>
+<ul>
+  <li>Regulatory advice (including but not limited to FDA, EMA, HPRA, MHRA, PMDA, NMPA, Annex 11, 21 CFR Part 11, GAMP 5, ISPE guidance, or any national or international standard)</li>
+  <li>Compliance or quality assurance advice</li>
+  <li>Engineering, design, or safety advice for any physical installation or process</li>
+  <li>Cybersecurity or data integrity advice for production systems</li>
+  <li>Legal, financial, tax, or commercial advice</li>
+  <li>A substitute for formal training certifications or professional qualifications</li>
+</ul>
+
+<h3>Accuracy is not guaranteed</h3>
+<p>We work hard to keep the content accurate and up to date, but:</p>
+<ul>
+  <li>Pharmaceutical and automation regulations change frequently</li>
+  <li>Vendor products (DeltaV, Syncade, PAS-X, etc.) evolve and our descriptions may lag behind the current release</li>
+  <li>Practices that are common in one jurisdiction or organisation may be inappropriate in another</li>
+  <li>Simplified explanations in tooltips are intentional trade-offs for learning, not rigorous definitions</li>
+</ul>
+<p>You must always verify any critical information against the current, authoritative source — the regulation itself, the vendor's official documentation, or a qualified professional — before relying on it for a real decision.</p>
+
+<h3>Consult qualified professionals</h3>
+<p>For any decision affecting:</p>
+<ul>
+  <li>A regulated process, validated system, or GxP environment</li>
+  <li>Product safety, patient safety, or data integrity</li>
+  <li>Contracts, proposals, or pricing</li>
+  <li>Cybersecurity posture of industrial control systems</li>
+</ul>
+<p>you should engage qualified subject matter experts (validation engineers, regulatory affairs professionals, legal counsel, cybersecurity specialists, etc.) as appropriate.</p>
+
+<h3>No warranty</h3>
+<p>All information is provided "as is" without warranty of any kind. ${LEGAL_META.legalEntity} and its officers, employees, and contributors disclaim liability for any loss, damage, injury, or cost arising from reliance on platform content, to the maximum extent permitted by law.</p>
+
+<h3>Trademarks</h3>
+<p>DeltaV, Syncade, PAS-X, Allen-Bradley, Siemens, Rockwell, Emerson, and other product and company names referenced in the platform are trademarks of their respective owners. Use of these names is for descriptive purposes only and does not imply endorsement.</p>
+
+<h3>Questions</h3>
+<p>If you believe any content is inaccurate or misleading, please let us know at ${LEGAL_META.contactEmail} and we'll review it promptly.</p>
+`
+  },
+};
+
+/* ============================================================
    Views
    ============================================================ */
 const VIEWS = {};
@@ -2925,6 +3218,32 @@ VIEWS.settings = (root) => {
   });
 };
 
+/* ---------- Legal pages ---------- */
+function renderLegalView(root, slug) {
+  const doc = LEGAL_DOCS[slug];
+  if (!doc) { navigate("dashboard"); return; }
+  root.innerHTML = `
+    <div class="legal-banner">⚠ Starter template — have your own legal counsel review and customise before public launch.</div>
+    <h1>${doc.title}</h1>
+    <p class="subtitle">Last updated: ${LEGAL_META.lastUpdated}</p>
+    <div class="card legal-body">${doc.body}</div>
+    <div class="legal-footlinks">
+      <a href="#" data-legal-nav="privacy">Privacy Policy</a> ·
+      <a href="#" data-legal-nav="terms">Terms of Service</a> ·
+      <a href="#" data-legal-nav="disclaimer">Educational Disclaimer</a>
+    </div>
+  `;
+  root.querySelectorAll('[data-legal-nav]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); navigate(a.dataset.legalNav); });
+  });
+  root.querySelectorAll('[data-legal]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); navigate(a.dataset.legal); });
+  });
+}
+VIEWS.privacy = (root) => renderLegalView(root, 'privacy');
+VIEWS.terms = (root) => renderLegalView(root, 'terms');
+VIEWS.disclaimer = (root) => renderLegalView(root, 'disclaimer');
+
 /* ============================================================
    Bootstrap — only runs after Clerk auth + active subscription
    ============================================================ */
@@ -2936,6 +3255,9 @@ window.onAymeAuthReady = function(user) {
     if (mount && window.Clerk) window.Clerk.mountUserButton(mount, { afterSignOutUrl: '/' });
     const billing = document.getElementById('billingBtn');
     if (billing) billing.onclick = () => window.AYME_GATE.openBillingPortal();
+    document.querySelectorAll('[data-legal-sidebar]').forEach(a => {
+      a.onclick = (e) => { e.preventDefault(); navigate(a.dataset.legalSidebar); };
+    });
   } catch(e) { console.warn('account mount failed', e); }
 };
 
