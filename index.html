@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AYME — Automation & You Mastery Engine</title>
+<style>
+:root {
+  --bg: #0b1020;
+  --bg-2: #121935;
+  --panel: #161f3d;
+  --panel-2: #1c2850;
+  --border: #263064;
+  --text: #e8ecff;
+  --muted: #9aa3c7;
+  --primary: #6c8cff;
+  --primary-2: #8aa4ff;
+  --accent: #22d3c8;
+  --accent-2: #7cf0e5;
+  --warn: #f5b041;
+  --danger: #ff6b8a;
+  --success: #34d399;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --radius: 14px;
+}
+[data-theme="light"] {
+  --bg: #f4f6ff;
+  --bg-2: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f0f3ff;
+  --border: #d9deff;
+  --text: #0c1430;
+  --muted: #596085;
+  --primary: #3558ff;
+  --primary-2: #6c8cff;
+  --accent: #0ea5a0;
+  --accent-2: #22d3c8;
+  --shadow: 0 10px 24px rgba(30, 50, 130, 0.08);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 10% -10%, rgba(108,140,255,0.25), transparent 50%),
+              radial-gradient(1000px 500px at 110% 110%, rgba(34,211,200,0.18), transparent 50%),
+              var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary-2); text-decoration: none; }
+button { font-family: inherit; }
+.app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  background: linear-gradient(180deg, var(--bg-2), var(--panel));
+  border-right: 1px solid var(--border);
+  padding: 20px 14px;
+  position: sticky; top: 0; height: 100vh;
+}
+.brand { display:flex; align-items:center; gap:10px; margin-bottom: 24px; }
+.brand-logo {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: conic-gradient(from 210deg, var(--primary), var(--accent), var(--primary));
+  display:grid; place-items:center; color: #0b1020; font-weight: 900;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+}
+.brand-name { font-weight: 800; letter-spacing: 0.5px; }
+.brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  color: var(--text); font-size: 14px; opacity: 0.85;
+  border: 1px solid transparent;
+  user-select: none;
+}
+.nav-item:hover { background: var(--panel-2); opacity: 1; }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(108,140,255,0.18), rgba(34,211,200,0.10));
+  border-color: var(--border);
+  opacity: 1;
+}
+.nav-item .dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
+}
+.sidebar-footer { position: absolute; bottom: 16px; left: 14px; right: 14px; font-size: 12px; color: var(--muted);}
+.theme-toggle {
+  display: inline-flex; align-items:center; gap: 6px; padding: 6px 10px;
+  background: var(--panel-2); border:1px solid var(--border); border-radius: 8px;
+  cursor: pointer; color: var(--text); font-size: 12px;
+}
+
+/* Main */
+.main { padding: 26px 30px 60px; max-width: 1200px; width: 100%; }
+.topbar { display:flex; align-items:center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;}
+.stats { display:flex; gap: 10px; flex-wrap: wrap; }
+.stat {
+  background: var(--panel); border: 1px solid var(--border); padding: 10px 14px;
+  border-radius: 12px; font-size: 12px; color: var(--muted); display:flex; align-items:center; gap: 8px;
+}
+.stat b { color: var(--text); font-size: 14px; }
+.xp-wrap { flex: 1; min-width: 260px; }
+.xp-bar { height: 10px; background: var(--panel-2); border-radius: 999px; overflow: hidden; border:1px solid var(--border); }
+.xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.6s ease; }
+.xp-meta { display:flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* Typography */
+h1 { font-size: 28px; margin: 0 0 4px; }
+h2 { font-size: 20px; margin: 0 0 12px; }
+h3 { font-size: 16px; margin: 0 0 8px; }
+.subtitle { color: var(--muted); margin-bottom: 18px; }
+.pill {
+  display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px;
+  background: var(--panel-2); border: 1px solid var(--border); color: var(--muted);
+  margin-right: 6px;
+}
+.pill.good { color: var(--success); border-color: rgba(52,211,153,0.35); background: rgba(52,211,153,0.08); }
+.pill.warn { color: var(--warn); border-color: rgba(245,176,65,0.35); background: rgba(245,176,65,0.08); }
+.pill.hot  { color: var(--danger); border-color: rgba(255,107,138,0.35); background: rgba(255,107,138,0.08); }
+
+/* Cards */
+.grid { display: grid; gap: 16px; }
+.grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.card {
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow);
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.card:hover { transform: translateY(-2px); border-color: rgba(108,140,255,0.45); }
+.card .icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, rgba(108,140,255,0.25), rgba(34,211,200,0.18));
+  display:grid; place-items:center; font-size: 20px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.muted { color: var(--muted); }
+.tiny { font-size: 12px; }
+.row { display:flex; align-items:center; gap: 10px; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.progress {
+  height: 8px; background: var(--panel-2); border-radius: 999px; overflow:hidden;
+  border:1px solid var(--border); margin-top: 10px;
+}
+.progress > span { display:block; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));}
+.btn {
+  display:inline-flex; align-items:center; gap: 6px;
+  padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
+  background: var(--panel-2); border:1px solid var(--border); color: var(--text); font-size: 13px;
+}
+.btn:hover { border-color: var(--primary); }
+.btn.primary {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border: none; color: #0b1020;
+}
+.btn.ghost { background: transparent; }
+.btn.small { padding: 6px 10px; font-size: 12px; }
+.btn.danger { border-color: rgba(255,107,138,0.35); color: var(--danger); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Tabs */
+.tabs { display:flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.tab {
+  padding: 8px 14px; border-radius: 999px; background: var(--panel); border:1px solid var(--border);
+  cursor: pointer; font-size: 13px; color: var(--muted);
+}
+.tab.active { background: linear-gradient(90deg, rgba(108,140,255,0.22), rgba(34,211,200,0.14)); color: var(--text); border-color: var(--primary);}
+
+/* Module list */
+.module-card h3 { display: flex; align-items:center; gap: 8px; }
+.module-card .meta { display:flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;}
+.kv { display:grid; grid-template-columns: 140px 1fr; gap: 6px 12px; font-size: 13px; }
+.kv div:nth-child(odd) { color: var(--muted); }
+
+/* Flashcards */
+.flashcard {
+  perspective: 1200px; width: 100%; max-width: 520px; margin: 0 auto;
+}
+.flashcard .inner {
+  position: relative; width: 100%; min-height: 220px; transform-style: preserve-3d;
+  transition: transform 0.6s; cursor: pointer;
+}
+.flashcard.flipped .inner { transform: rotateY(180deg); }
+.flashcard .face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  background: var(--panel); border:1px solid var(--border); border-radius: var(--radius);
+  padding: 26px; display:grid; place-items:center; text-align: center;
+  box-shadow: var(--shadow);
+}
+.flashcard .back { transform: rotateY(180deg); background: linear-gradient(160deg, var(--panel), var(--panel-2)); }
+.flashcard .term { font-size: 22px; font-weight: 700; }
+.flashcard .hint { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.flashcard .def { font-size: 15px; line-height: 1.5; }
+
+/* Quiz */
+.quiz-option {
+  padding: 12px 14px; border-radius: 10px; background: var(--panel-2);
+  border: 1px solid var(--border); margin-bottom: 8px; cursor: pointer; display:flex; gap:10px; align-items:center;
+}
+.quiz-option:hover { border-color: var(--primary); }
+.quiz-option .badge {
+  width: 22px; height: 22px; border-radius: 50%; display:grid; place-items:center;
+  border: 1px solid var(--border); font-size: 11px;
+}
+.quiz-option.correct { border-color: var(--success); background: rgba(52,211,153,0.12); }
+.quiz-option.wrong { border-color: var(--danger); background: rgba(255,107,138,0.12); }
+.quiz-option.chosen { outline: 2px solid var(--primary); }
+
+/* Matching game */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.match-item {
+  padding: 12px; background: var(--panel-2); border:1px solid var(--border); border-radius: 10px;
+  cursor: pointer; min-height: 56px; display:flex; align-items:center; font-size: 13px;
+}
+.match-item.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(108,140,255,0.3); }
+.match-item.matched { opacity: 0.35; pointer-events: none; text-decoration: line-through; }
+.match-item.wrong { animation: shake 0.4s; border-color: var(--danger); }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* Pyramid game */
+.pyramid { display:flex; flex-direction:column; gap: 6px; align-items:center; margin-top: 12px;}
+.pyramid-slot {
+  border: 2px dashed var(--border); border-radius: 10px; padding: 12px 18px;
+  min-width: 260px; text-align: center; color: var(--muted);
+  background: rgba(255,255,255,0.02);
+}
+.pyramid-slot.filled { border-style: solid; color: var(--text); background: var(--panel-2); }
+.pyramid-slot[data-level="4"] { width: 30%; }
+.pyramid-slot[data-level="3"] { width: 45%; }
+.pyramid-slot[data-level="2"] { width: 60%; }
+.pyramid-slot[data-level="1"] { width: 75%; }
+.pyramid-slot[data-level="0"] { width: 90%; }
+.pieces { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 16px; justify-content: center;}
+.piece {
+  padding: 8px 14px; background: var(--panel); border: 1px solid var(--primary); border-radius: 999px;
+  cursor: grab; user-select:none; font-size: 13px;
+}
+.piece.used { opacity: 0.3; pointer-events: none; }
+
+/* Search input */
+.search {
+  padding: 10px 14px; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); width: 100%; font-size: 14px; outline: none;
+}
+.search:focus { border-color: var(--primary); }
+
+/* Badges */
+.badges { display:flex; gap: 8px; flex-wrap: wrap; }
+.badge-chip {
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--panel-2); display:flex; align-items:center; gap: 6px; font-size: 12px;
+}
+.badge-chip.locked { opacity: 0.35; filter: grayscale(60%); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 20px; right: 20px; padding: 12px 16px;
+  background: var(--panel); border:1px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow); z-index: 9999; max-width: 320px;
+  animation: slideIn 0.25s ease; font-size: 13px;
+}
+@keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Mobile */
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .main { padding: 18px; }
+}
+details { background: var(--panel-2); border:1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px;}
+summary { cursor: pointer; font-weight: 600; }
+details[open] { background: var(--panel); }
+hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+code {
+  background: var(--panel-2); padding: 2px 6px; border-radius: 6px; font-size: 12px;
+  border: 1px solid var(--border);
+}
+ul.tight li { margin-bottom: 4px; }
+.ring {
+  --p: 0; width: 86px; height: 86px; border-radius: 50%;
+  background: conic-gradient(var(--primary) calc(var(--p)*1%), var(--panel-2) 0);
+  display:grid; place-items:center; position: relative;
+}
+.ring::after {
+  content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--panel);
+}
+.ring > span { position: relative; z-index: 1; font-weight: 700; }
+</style>
+</head>
+<body data-theme="dark">
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">AY</div>
+      <div>
+        <div class="brand-name">AYME</div>
+        <div class="brand-sub">Automation & You Mastery Engine</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeBtn">🌓 Theme</button>
+      <div style="margin-top:10px">Built for PM Group KAMs</div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="xp-wrap">
+        <div class="row" style="justify-content: space-between; margin-bottom: 6px;">
+          <div><b id="level">Level 1</b> · <span class="muted" id="rank">Rookie</span></div>
+          <div class="tiny muted"><span id="xp">0</span> / <span id="xpNeeded">100</span> XP</div>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+      </div>
+      <div class="stats">
+        <div class="stat">🔥 <b id="streak">0</b>&nbsp;day streak</div>
+        <div class="stat">🎯 <b id="mastered">0</b>&nbsp;mastered</div>
+        <div class="stat">🏅 <b id="badgeCount">0</b>&nbsp;badges</div>
+      </div>
+    </div>
+    <div id="view"></div>
+  </main>
+</div>
+<div id="toast" style="display:none"></div>
+<script>
+/* ============================================================
+   AYME — core data
+   ============================================================ */
+
+const MODULES = [
+  {
+    id: "deltav",
+    name: "DeltaV DCS",
+    icon: "🟣",
+    tagline: "Emerson's flagship Distributed Control System — the heartbeat of pharma/biotech plants.",
+    whatItIs: "DeltaV is a Distributed Control System (DCS) made by Emerson. It runs the continuous and batch processes in a manufacturing plant — reactors, bioreactors, CIP/SIP skids, utilities. Think of it as the software that makes pumps, valves, and motors behave correctly so you produce the right molecule at the right quality.",
+    whyItMatters: "In pharma and biotech, DeltaV is the dominant DCS platform. When a client says 'we're a DeltaV site' it usually tells you: they run Emerson hardware, they likely use S88 batch, and they may use Syncade MES and AMS Device Manager alongside it. Most capex automation projects at these sites will need DeltaV engineers.",
+    keyConcepts: [
+      {t: "DCS", d: "Distributed Control System — control logic runs in dedicated controllers, not PLCs; tightly integrated HMI/engineering/historian stack."},
+      {t: "Modules & Phases", d: "A 'module' is a reusable block of control (e.g. a valve, a PID loop). A 'phase' is a piece of batch logic (e.g. 'Charge', 'Heat', 'Hold') built to ISA-88."},
+      {t: "Recipes", d: "Orchestrate phases in a sequence to make a product. DeltaV Batch Executive runs them."},
+      {t: "ProfessionalPLUS", d: "The master engineering station — the 'source of truth' for the configuration database."},
+      {t: "Operator Stations", d: "Where production staff view graphics and drive the process. DeltaV Live is the modern HTML5 HMI."},
+      {t: "Continuous Historian", d: "Built-in time-series data capture — often supplemented by OSIsoft PI."},
+      {t: "AMS Device Manager", d: "Asset management for smart field devices over HART/WirelessHART/Foundation Fieldbus."},
+      {t: "Electronic Marshalling / CHARMs", d: "Software-configurable I/O — lets you wire first, assign later. Reduces rework in projects."}
+    ],
+    roles: [
+      {title: "DeltaV Configuration Engineer", seniority: "Mid", note: "Builds modules, phases, graphics. Typically 2–5 yrs on DeltaV."},
+      {title: "Senior DeltaV Batch Engineer", seniority: "Senior", note: "Designs S88 recipes; translates URS to class-based library."},
+      {title: "DeltaV Lead / Automation Lead", seniority: "Principal", note: "Owns architecture, network, virtualisation, handover to site."},
+      {title: "DeltaV Commissioning Engineer", seniority: "Mid–Senior", note: "Site-based — SAT, loop checks, I/O punch-list."}
+    ],
+    clientQuestions: [
+      "Which DeltaV version are you on? v14? v15? DeltaV Live?",
+      "Is this a brownfield migration from another DCS, or a greenfield build?",
+      "Do you have a class-based library, or is it still bespoke per module?",
+      "Is Syncade MES in scope, or is the MES being provided separately?",
+      "How are you handling CSV — GAMP 5 Cat 4 or Cat 5 approach?"
+    ],
+    redFlags: [
+      "'We just need a couple of DeltaV guys' — almost always underestimates scope; probe for phases, graphics, batch recipe counts.",
+      "No mention of CSV budget on a DeltaV project = schedule risk. Validation effort is 30–50% of automation spend in regulated sites.",
+      "Migration projects from PlantPAx or Siemens PCS 7 to DeltaV are rarely straight swaps — logic rebuilds are common."
+    ],
+    oneLiner: "DeltaV is Emerson's DCS — the dominant control platform in pharma batch manufacturing.",
+    hours: 35
+  },
+  {
+    id: "mes",
+    name: "MES (Manufacturing Execution System)",
+    icon: "🏭",
+    tagline: "The digital layer that tells the plant WHAT to make, WHEN, and records HOW it was made.",
+    whatItIs: "MES sits between the plant floor (PLCs/DCS) and the business systems (ERP/SAP). It manages production orders, electronic batch records, weigh & dispense, material genealogy, and quality exceptions. In pharma it's how you move from paper batch records to fully electronic, review-by-exception releases.",
+    whyItMatters: "MES projects are some of the biggest spend items in pharma. A client going from paper to MES will typically run a 2–4 year programme across multiple sites. Understanding MES is essential because every DeltaV/Syncade/PAS-X hire question links back to MES strategy.",
+    keyConcepts: [
+      {t: "ISA-95 Level 3", d: "MES is defined as Level 3 in the ISA-95 stack — between control (L2) and enterprise (L4)."},
+      {t: "EBR (Electronic Batch Record)", d: "Digital version of the paper record. Every step, timestamp, operator, and material lot is captured."},
+      {t: "MBR (Master Batch Record)", d: "The template — the approved 'how to make it'. EBRs are executions of MBRs."},
+      {t: "Review by Exception", d: "QA only reviews deviations, not the whole record. Massive time saving."},
+      {t: "Weigh & Dispense", d: "Material issue to the shopfloor with barcode verification, tolerance checks, and genealogy."},
+      {t: "Genealogy", d: "Full forward/backward traceability: 'which raw material lot ended up in which finished product serial?'"},
+      {t: "OEE", d: "Overall Equipment Effectiveness — Availability × Performance × Quality. Often reported via MES."},
+      {t: "Vendors", d: "PAS-X (Körber/Werum), Syncade (Emerson), Rockwell PharmaSuite / FactoryTalk ProductionCentre, Siemens Opcenter, AVEVA, Tulip."}
+    ],
+    roles: [
+      {title: "MES Engineer / Configuration Engineer", seniority: "Mid", note: "Builds recipes, workflows, and integrations within the chosen MES."},
+      {title: "MES Architect", seniority: "Principal", note: "Multi-site strategy, ISA-95 integration, platform selection."},
+      {title: "MES Business Analyst", seniority: "Mid–Senior", note: "Bridges production/QA and engineering; writes URS."},
+      {title: "Integration Engineer", seniority: "Mid–Senior", note: "SAP ↔ MES ↔ DCS; often OPC UA and REST/SOAP web services."}
+    ],
+    clientQuestions: [
+      "Which MES platform are you standardising on across sites?",
+      "Are you migrating from paper, or replacing an existing MES?",
+      "Is SAP integration in scope — which modules (PP, QM, WM)?",
+      "What's the target: full EBR, or just weigh & dispense first?",
+      "Who owns the master data strategy — you, or the corporate parent?"
+    ],
+    redFlags: [
+      "'Just a small MES rollout' — there's no such thing. Factor in URS, configuration, integration, CSV, training.",
+      "No mention of change control / super-user programme — adoption will tank.",
+      "MES selected before process flows are stable — rework follows."
+    ],
+    oneLiner: "MES is the Level-3 digital brain — recipes in, batch records out, SAP in sync.",
+    hours: 30
+  },
+  {
+    id: "csv",
+    name: "CSV & Validation",
+    icon: "📑",
+    tagline: "Proving to regulators that your automated systems do what you said they'd do, every time.",
+    whatItIs: "Computer System Validation (CSV) is the regulated-industry discipline that proves software and automated systems are fit for purpose. It's not optional — FDA 21 CFR Part 11 and EU Annex 11 require it for any system affecting GMP manufacturing. CSV engineers write and execute qualification protocols (IQ/OQ/PQ).",
+    whyItMatters: "CSV is usually 25–50% of the automation budget on a pharma project. Clients always need validation engineers — and the hottest skill right now is the move toward CSA (Computer Software Assurance), the FDA's lighter-touch successor to traditional CSV.",
+    keyConcepts: [
+      {t: "GAMP 5", d: "Good Automated Manufacturing Practice v5 — the ISPE framework everyone uses. Defines the V-model and risk-based approach."},
+      {t: "V-Model", d: "URS → FS → DS → Config/Build → IQ → OQ → PQ. Every requirement on the left has a test on the right."},
+      {t: "GAMP Categories", d: "1 (infrastructure), 3 (non-configured COTS), 4 (configured — e.g. DeltaV, PAS-X), 5 (custom code)."},
+      {t: "IQ / OQ / PQ", d: "Installation Qualification, Operational Qualification, Performance Qualification — the three levels of testing."},
+      {t: "21 CFR Part 11", d: "FDA regulation on electronic records and electronic signatures. Audit trails, access control, timestamps."},
+      {t: "EU Annex 11", d: "The European equivalent — broader, more principles-based than Part 11."},
+      {t: "CSA", d: "Computer Software Assurance — FDA's 2022+ draft guidance. Critical thinking over paper-heavy testing."},
+      {t: "Data Integrity / ALCOA+", d: "Attributable, Legible, Contemporaneous, Original, Accurate — plus Complete, Consistent, Enduring, Available."}
+    ],
+    roles: [
+      {title: "CSV Engineer", seniority: "Mid", note: "Writes and executes IQ/OQ/PQ. Needs domain (DCS/MES) familiarity."},
+      {title: "Validation Lead", seniority: "Senior", note: "Owns the validation plan and strategy for a project."},
+      {title: "QA Automation / Computerised Systems QA", seniority: "Senior", note: "Client-side reviewer/approver. Often a former CSV engineer."},
+      {title: "CSA Specialist", seniority: "Senior", note: "Emerging role — applies risk-based CSA instead of traditional CSV."}
+    ],
+    clientQuestions: [
+      "Are you running traditional CSV, or adopting CSA?",
+      "Who owns the Validation Master Plan — corporate QA or site?",
+      "Which GAMP category for this system — 4 or 5?",
+      "Do you use an eQMS (e.g. Veeva Vault, TrackWise) for protocol execution?",
+      "Any recent 483s or warning letters touching computerised systems?"
+    ],
+    redFlags: [
+      "No traceability matrix = the project will fail inspection.",
+      "Spec changes not going through change control — the audit trail breaks.",
+      "Over-testing: Cat 3 systems being tested like Cat 5 custom code."
+    ],
+    oneLiner: "CSV is how regulated sites prove their software is trustworthy — GAMP 5 is the bible.",
+    hours: 28
+  },
+  {
+    id: "itot",
+    name: "IT / OT Convergence",
+    icon: "🌐",
+    tagline: "Where the office network meets the plant floor — and where cyber threats now live.",
+    whatItIs: "IT (Information Technology) runs the business — email, ERP, laptops, Active Directory. OT (Operational Technology) runs the plant — PLCs, DCS, SCADA, sensors. Historically air-gapped, they now increasingly connect so data can flow from floor to cloud. That convergence is a massive topic: architecture, data, and cybersecurity all at once.",
+    whyItMatters: "Every digital transformation project at a client involves IT/OT. PM Group's connected automation practice lives in this space. Key drivers: Industry 4.0, AI/ML on manufacturing data, and regulatory pressure on OT cybersecurity (NIS2 in the EU, IEC 62443 globally).",
+    keyConcepts: [
+      {t: "Purdue Model", d: "The reference architecture — Levels 0 (physical) up to 5 (enterprise). DMZ between Level 3 and Level 4."},
+      {t: "DMZ", d: "Demilitarised Zone between IT and OT networks. Hosts jump servers, historians, and reverse proxies."},
+      {t: "IEC 62443", d: "The global cybersecurity standard for Industrial Automation and Control Systems (IACS). Zones & Conduits model."},
+      {t: "NIS2", d: "EU Directive (in force 2024) raising cybersecurity obligations for critical sectors — incl. pharma manufacturing."},
+      {t: "OPC UA", d: "Open Platform Communications — Unified Architecture. The modern, secure, cross-vendor way to move OT data."},
+      {t: "Jump Server / PAM", d: "Privileged Access Management — no-one logs directly into OT; everything via an audited bastion host."},
+      {t: "Active Directory / IdP", d: "IT identity meets OT systems — hard to get right without breaking validated states."},
+      {t: "Unidirectional Gateways", d: "Hardware data diodes — OT → IT only, physically preventing attack paths back."}
+    ],
+    roles: [
+      {title: "IT/OT Engineer", seniority: "Mid–Senior", note: "Network design, AD integration, data flows, domain of the Purdue model."},
+      {title: "OT Cybersecurity Specialist", seniority: "Senior", note: "IEC 62443 assessment, patching strategy, incident response for OT."},
+      {title: "Data Architect", seniority: "Senior", note: "Moves historian data to cloud / data lakes. Often works with PI AF."},
+      {title: "Digital Transformation Lead", seniority: "Principal", note: "Client-facing strategy role bridging IT and OT roadmaps."}
+    ],
+    clientQuestions: [
+      "Is your Purdue-model architecture documented and current?",
+      "Who owns OT cybersecurity — IT, engineering, or a shared function?",
+      "Any NIS2 readiness or IEC 62443 programme in flight?",
+      "How do external vendors (like PM Group) get remote access for support?",
+      "Are you exporting historian data to the cloud? Which platform — PI, AWS, Azure?"
+    ],
+    redFlags: [
+      "'Our OT is air-gapped' — almost never true in 2026. Probe for USB policy, remote support, temporary jumpers.",
+      "Single Windows Admin account shared across the plant — classic finding.",
+      "No patching plan for OT — either frozen in time, or uncontrolled."
+    ],
+    oneLiner: "IT/OT is where plant data meets the enterprise — architecture, identity, and cyber all in one.",
+    hours: 25
+  },
+  {
+    id: "syncade",
+    name: "Syncade MES",
+    icon: "🔗",
+    tagline: "Emerson's MES — tight integration with DeltaV, common on Emerson-standard sites.",
+    whatItIs: "Syncade is Emerson's MES suite. It's the natural MES partner to DeltaV — same vendor, deep integration, shared engineering toolchain. Syncade covers EBR, weigh & dispense, recipe management, workflow, and some warehousing.",
+    whyItMatters: "If a client runs DeltaV and is standardising on Emerson, they'll often choose Syncade so they have a single-vendor stack. Syncade skills are less common than PAS-X, so contractors with Syncade experience are in strong demand.",
+    keyConcepts: [
+      {t: "Workflow", d: "The Syncade term for a recipe-like sequence of steps operators execute, often tied to DeltaV phases."},
+      {t: "Recipe Authoring", d: "ISA-88 master recipe creation inside Syncade Recipe Authoring."},
+      {t: "Weigh & Dispense", d: "Syncade's material handling module — barcode scans, tolerance checks, sign-offs."},
+      {t: "Genealogy", d: "Forward/backward traceability integrated with DeltaV Batch data."},
+      {t: "Syncade EBR", d: "Review-by-exception electronic batch record."},
+      {t: "DeltaV ↔ Syncade", d: "The integration is OOTB — phase execution in DeltaV, orchestration in Syncade."}
+    ],
+    roles: [
+      {title: "Syncade Configuration Engineer", seniority: "Mid", note: "Builds workflows, EBR templates, W&D routines."},
+      {title: "Senior Syncade Engineer / Lead", seniority: "Senior", note: "Architecture, integration to SAP, handover to validation."},
+      {title: "Syncade + DeltaV Hybrid", seniority: "Senior", note: "The most sought-after profile — knows both sides of the integration."}
+    ],
+    clientQuestions: [
+      "Which Syncade version — 5.x? Are you on the current release?",
+      "Is Syncade handling W&D only, or full EBR?",
+      "Who supports Syncade — you, Emerson, or a partner like PM Group?",
+      "Is Syncade talking to SAP, or a separate warehousing system?"
+    ],
+    redFlags: [
+      "Syncade without DeltaV is rare — probe carefully if you hear this.",
+      "Fresh Syncade deployments on top of old DeltaV versions cause painful integration issues.",
+      "Low availability of Syncade talent in the market — factor rates and lead time."
+    ],
+    oneLiner: "Syncade is Emerson's MES — best-in-class when paired with DeltaV on an all-Emerson site.",
+    hours: 20
+  },
+  {
+    id: "pasx",
+    name: "PAS-X MES",
+    icon: "💊",
+    tagline: "Körber's pharma MES — the dominant choice for biologics and high-mix pharma sites.",
+    whatItIs: "PAS-X (from Körber, formerly Werum IT Solutions) is the most widely deployed MES in pharmaceutical manufacturing. It's vendor-agnostic at the control layer — works with DeltaV, PCS 7, Rockwell — and brings deep pharma-specific functionality: EBR, review by exception, weigh & dispense, equipment booking, deviation management.",
+    whyItMatters: "Most top-20 pharma companies have PAS-X deployed at multiple sites. If the client is on biologics, odds are PAS-X is in the stack. PAS-X configuration engineers are scarce and well-paid.",
+    keyConcepts: [
+      {t: "MBR / EBR", d: "PAS-X is built around the Master Batch Record and its Electronic executions."},
+      {t: "Review by Exception", d: "PAS-X's flagship capability — auto-release batches with no deviations."},
+      {t: "PAS-X Savvy", d: "Data analytics & process mining layer on top of PAS-X."},
+      {t: "PAS-X LIMS", d: "Lab information management system in the same suite."},
+      {t: "Equipment Booking", d: "Reservation and status management for shared plant assets."},
+      {t: "S88 Recipes", d: "PAS-X is ISA-88 aligned, with robust recipe lifecycle management."},
+      {t: "SAP Integration", d: "Standard connectors for SAP PP/QM/MM for order download and confirmation upload."}
+    ],
+    roles: [
+      {title: "PAS-X Configuration Engineer", seniority: "Mid", note: "MBR authoring, parameter config, EBR screens."},
+      {title: "PAS-X Architect", seniority: "Principal", note: "Multi-site strategy, integration architecture, upgrade roadmap."},
+      {title: "PAS-X Subject Matter Expert", seniority: "Senior", note: "Deep process knowledge — often ex-pharma operations."},
+      {title: "PAS-X Developer", seniority: "Senior", note: "Customisations, extensions, custom scripts."}
+    ],
+    clientQuestions: [
+      "Which PAS-X version are you on — 3.2.x or MSI?",
+      "Is MSI (Manufacturing Suite Integration) on the roadmap?",
+      "Full EBR, or phased weigh-and-dispense first?",
+      "Is PAS-X Savvy in use for analytics?",
+      "How tightly integrated is SAP — auto-download of orders, or manual?"
+    ],
+    redFlags: [
+      "PAS-X upgrades can be 12-18 month programmes — not quick wins.",
+      "Customisations in PAS-X cause upgrade pain; probe for custom code volume.",
+      "PAS-X + Syncade on the same site = very unusual; ask why."
+    ],
+    oneLiner: "PAS-X is Körber's pharma MES — the default choice for top-tier biologics plants.",
+    hours: 28
+  },
+  {
+    id: "plc",
+    name: "PLCs & Controls",
+    icon: "⚙️",
+    tagline: "Programmable Logic Controllers — the rugged workhorses of machine and skid control.",
+    whatItIs: "PLCs are industrial computers that control machines and skids — from filler lines to CIP skids to packaging equipment. Programmed in IEC 61131-3 languages (ladder logic, function block, structured text). Different from a DCS: PLCs are best for fast, discrete, machine-level control.",
+    whyItMatters: "Every site has PLCs. PM Group often needs controls engineers for skid integrators, OEM equipment, and packaging lines — plus retrofit projects. Allen-Bradley and Siemens dominate.",
+    keyConcepts: [
+      {t: "Allen-Bradley / Rockwell", d: "ControlLogix, CompactLogix, Studio 5000 programming environment."},
+      {t: "Siemens", d: "S7-1500, S7-1200, TIA Portal. PCS 7 is Siemens' DCS built on S7 PLCs."},
+      {t: "IEC 61131-3", d: "The PLC programming standard: LD (Ladder), FBD (Function Block), ST (Structured Text), SFC, IL."},
+      {t: "Safety PLCs", d: "SIL-rated PLCs for safety-instrumented systems — GuardLogix, Siemens F-PLCs."},
+      {t: "EtherNet/IP vs Profinet", d: "Rockwell's EtherNet/IP vs Siemens' Profinet — both Ethernet-based but not interoperable by default."},
+      {t: "SCADA/HMI", d: "FactoryTalk View, WinCC, Ignition — the operator view for PLC-based systems."}
+    ],
+    roles: [
+      {title: "Controls Engineer", seniority: "Mid", note: "PLC programming, HMI graphics, loop commissioning."},
+      {title: "Senior Controls Engineer", seniority: "Senior", note: "Skid design, functional specs, SAT leadership."},
+      {title: "Functional Safety Engineer", seniority: "Senior", note: "SIL assessments, safety PLC programming, TÜV certified preferred."}
+    ],
+    clientQuestions: [
+      "Allen-Bradley shop, Siemens shop, or mixed?",
+      "Do you have a PLC standard / library, or is each skid bespoke?",
+      "Any SIL2/SIL3 safety systems in scope?",
+      "How is HMI delivered — local panel, thin client, or web HMI?"
+    ],
+    redFlags: [
+      "Multiple PLC brands on one skid = integration pain.",
+      "No version control on PLC code — very common and very dangerous.",
+      "Safety PLC code reused from unrelated projects without re-assessment."
+    ],
+    oneLiner: "PLCs run the fast, discrete stuff — Rockwell and Siemens dominate.",
+    hours: 18
+  },
+  {
+    id: "historian",
+    name: "Historians & PI",
+    icon: "📈",
+    tagline: "Where every sensor value gets remembered — and where analytics start.",
+    whatItIs: "A data historian captures time-series data from control systems — every tag, every second, for years. OSIsoft PI (now AVEVA PI System) is the de-facto standard in pharma, oil & gas, and utilities. Historians enable golden-batch analysis, OEE, deviation investigation, and AI/ML initiatives.",
+    whyItMatters: "Every digital transformation story starts with 'we need clean data' — and clean data starts with the historian. PI engineers and data architects are in high demand for cloud-pipeline projects.",
+    keyConcepts: [
+      {t: "PI Data Archive", d: "The server that stores time-series tags. Compressed, high-throughput."},
+      {t: "PI Asset Framework (AF)", d: "The context layer — organises raw tags into a hierarchical model matching the plant."},
+      {t: "PI Vision / Coresight", d: "Web-based dashboards for operators and process engineers."},
+      {t: "PI Integrator", d: "Pushes PI data to relational DBs, cloud, data lakes."},
+      {t: "Golden Batch", d: "Statistical template of the best-performing batches — used for comparison."},
+      {t: "Canary / Ignition / other historians", d: "Modern alternatives — often cheaper, less feature-rich."},
+      {t: "Tag", d: "A single time-series variable — e.g. Reactor101.TIC01.PV (temperature in reactor 101)."}
+    ],
+    roles: [
+      {title: "PI Engineer", seniority: "Mid", note: "Tag builds, AF models, interface configuration (OPC, custom)."},
+      {title: "Data Engineer / Historian Architect", seniority: "Senior", note: "Cloud pipelines, AF design, governance."},
+      {title: "Analytics Engineer", seniority: "Senior", note: "Uses PI as source for Seeq, TrendMiner, Power BI."}
+    ],
+    clientQuestions: [
+      "Are you on PI (on-prem), PI Cloud, or AVEVA Data Hub?",
+      "Is AF fully modelled, or just raw tags?",
+      "Which downstream consumers — Seeq, TrendMiner, Power BI, Databricks?",
+      "Any plans to move to AVEVA Data Services / CONNECT?"
+    ],
+    redFlags: [
+      "Raw tags with no AF = nobody can find anything in 2 years.",
+      "Historian used as a system of record for GMP = regulatory issue unless validated.",
+      "Duplicate historians per site — consolidation opportunity (and headache)."
+    ],
+    oneLiner: "PI is the data backbone — every analytics project is PI-adjacent.",
+    hours: 16
+  },
+  {
+    id: "isa88",
+    name: "ISA-88 Batch",
+    icon: "🧪",
+    tagline: "The standard that tamed batch control — master it and you'll sound fluent in every pharma meeting.",
+    whatItIs: "ISA-88 (also called S88) is the standard for batch process control. It separates equipment from procedure: the same Master Recipe can run on any compliant equipment, because the control modules expose standard phases. It's the reason you can reuse a 'Charge' phase across ten reactors.",
+    whyItMatters: "S88 fluency is a sign you're serious. When clients explain recipes, they use S88 vocabulary — and if you can respond in the same language, credibility goes up instantly. All DeltaV batch, Syncade, and PAS-X engineers live inside S88 daily.",
+    keyConcepts: [
+      {t: "Physical Model", d: "Enterprise → Site → Area → Process Cell → Unit → Equipment Module → Control Module."},
+      {t: "Procedural Model", d: "Procedure → Unit Procedure → Operation → Phase."},
+      {t: "Recipe Types", d: "General → Site → Master → Control. Each more specific than the last."},
+      {t: "Phase", d: "The basic building block of batch — e.g. Charge, Heat, Hold, Discharge, CIP."},
+      {t: "State Model", d: "Running, Held, Complete, Aborted, etc. All phases expose the same states."},
+      {t: "Control vs Master Recipe", d: "Master = approved template; Control = the one running right now on specific equipment."}
+    ],
+    roles: [
+      {title: "Batch Engineer", seniority: "Senior", note: "Authors S88 recipes in DeltaV Batch, Syncade, PAS-X."},
+      {title: "Process Automation Lead", seniority: "Principal", note: "Defines the S88 library strategy across a facility."}
+    ],
+    clientQuestions: [
+      "Do you have a class-based S88 library, or is each equipment bespoke?",
+      "Is your recipe governance owned by automation or by process development?",
+      "How are phases version-controlled and validated?"
+    ],
+    redFlags: [
+      "Recipes copied instead of inherited — maintenance nightmare.",
+      "S88 terminology used loosely — always double-check what the client means by 'recipe'."
+    ],
+    oneLiner: "S88 separates equipment from procedure — it's the grammar of batch.",
+    hours: 14
+  },
+  {
+    id: "isa95",
+    name: "ISA-95 & Purdue",
+    icon: "🏛️",
+    tagline: "The architecture map of the entire plant — from sensor to boardroom.",
+    whatItIs: "ISA-95 defines how enterprise systems (ERP) integrate with control systems, and the information that flows between them. It's commonly visualised as the Purdue Model with 5 levels (0–4, sometimes 5). Every integration conversation uses this vocabulary.",
+    whyItMatters: "When a client says 'we need to connect L3 to L4' you know instantly they're talking MES ↔ ERP. Using L0–L4 correctly = you're fluent. Getting it wrong = you're a tourist.",
+    keyConcepts: [
+      {t: "L0 — Physical Process", d: "The actual equipment: reactor, valve, pump."},
+      {t: "L1 — Sensing & Actuation", d: "Transmitters, valves, motors, instruments."},
+      {t: "L2 — Control", d: "PLCs, DCS (DeltaV, PCS 7), SCADA. Real-time control."},
+      {t: "L3 — MES / Manufacturing Operations", d: "PAS-X, Syncade, EBR, scheduling, quality."},
+      {t: "L4 — Enterprise / ERP", d: "SAP, Oracle, planning, finance. Days–weeks horizon."},
+      {t: "L3.5 — DMZ", d: "The no-man's-land between IT and OT where historians and jump servers live."}
+    ],
+    roles: [
+      {title: "Integration Architect", seniority: "Senior", note: "Designs the data flows across all ISA-95 levels."},
+      {title: "SAP-MES Integration Engineer", seniority: "Senior", note: "Builds the actual plumbing — iDocs, BAPIs, REST."}
+    ],
+    clientQuestions: [
+      "Which levels are you strongest / weakest on architecturally?",
+      "Is there a single-source-of-truth for master data across L3/L4?",
+      "Are L2↔L3 integrations OPC UA, or legacy DCOM?"
+    ],
+    redFlags: [
+      "Levels blurred — MES doing L2 control, or DCS doing L3 scheduling = trouble.",
+      "Direct L4↔L2 connections bypass validation controls."
+    ],
+    oneLiner: "ISA-95 is the Purdue Model — five levels from the valve to the boardroom.",
+    hours: 12
+  },
+  {
+    id: "dataintegrity",
+    name: "Data Integrity & ALCOA+",
+    icon: "🔐",
+    tagline: "If the data's not trustworthy, the batch isn't releasable — and the plant isn't open.",
+    whatItIs: "Data Integrity is the GMP principle that records must be reliable, complete, and tamper-evident throughout their lifecycle. ALCOA+ is the memorable acronym regulators use: Attributable, Legible, Contemporaneous, Original, Accurate — plus Complete, Consistent, Enduring, Available.",
+    whyItMatters: "Data integrity citations are the #1 cause of FDA 483 observations in computerised systems. Every CSV and automation role has a data-integrity component. Clients will judge your seriousness by whether you lead with ALCOA+.",
+    keyConcepts: [
+      {t: "Attributable", d: "You know who did what, and when."},
+      {t: "Legible", d: "Records are readable and permanent."},
+      {t: "Contemporaneous", d: "Recorded at the time of the event, not retrospectively."},
+      {t: "Original", d: "The first record or a certified true copy."},
+      {t: "Accurate", d: "Correct, truthful, and validated."},
+      {t: "Complete / Consistent / Enduring / Available", d: "The '+' — full dataset, in order, long-lasting, retrievable."},
+      {t: "Audit Trail", d: "Automatic, tamper-evident log of every change."},
+      {t: "21 CFR Part 11 / Annex 11", d: "The regulations that mandate all of the above."}
+    ],
+    roles: [
+      {title: "Data Integrity Lead", seniority: "Senior", note: "Cross-functional; often a former CSV lead."},
+      {title: "QA Computerised Systems", seniority: "Senior", note: "Reviews audit trails, approves changes, owns governance."}
+    ],
+    clientQuestions: [
+      "Have you had a data-integrity gap assessment in the last 3 years?",
+      "Are audit trails actually reviewed — and documented?",
+      "How are Excel spreadsheets governed in GMP use?",
+      "Do you have a data-integrity policy separate from CSV?"
+    ],
+    redFlags: [
+      "Shared logins — the DI death sentence.",
+      "Audit trails disabled 'for performance' — major finding.",
+      "Excel used for GMP calculations without validation."
+    ],
+    oneLiner: "ALCOA+ is the nine-word summary of every data-integrity conversation.",
+    hours: 12
+  },
+  {
+    id: "serialization",
+    name: "Serialization & Track-and-Trace",
+    icon: "🏷️",
+    tagline: "Proving a pill is real, from factory to pharmacy shelf.",
+    whatItIs: "Serialization puts a unique identifier on every saleable unit of pharmaceutical product, and tracks it through the supply chain. Driven by DSCSA (US) and FMD (EU). Needs tight integration between packaging lines, MES, ERP and central serialization platforms.",
+    whyItMatters: "Every pharma packaging site has a serialization system. Projects often involve L3 serialization platforms, L2 line-level systems, and parent/child aggregation. It's a specialist niche — good engineers are scarce.",
+    keyConcepts: [
+      {t: "DSCSA (US) / FMD (EU)", d: "The two main regulatory drivers."},
+      {t: "Aggregation", d: "Parent-child relationships — unit in a carton in a case in a pallet."},
+      {t: "L2 Line System", d: "Optel, Antares, Systech, Rockwell — runs cameras and printers."},
+      {t: "L3 Platform", d: "TraceLink, Systech, SAP ATTP, rfxcel — the central repository."},
+      {t: "GS1 / SGTIN / GTIN", d: "The standards for the identifiers themselves."}
+    ],
+    roles: [
+      {title: "Serialization Engineer", seniority: "Mid–Senior", note: "Line commissioning, L2-L3 integration, reject verification."},
+      {title: "Serialization Architect", seniority: "Principal", note: "Multi-site rollouts, vendor selection."}
+    ],
+    clientQuestions: [
+      "Which L3 platform — TraceLink, Systech, SAP ATTP?",
+      "Aggregation to which level — carton, case, pallet?",
+      "Are you in-scope for new markets (Russia, Saudi, Brazil)?"
+    ],
+    redFlags: [
+      "Line and central vendor-mismatch = long integration timelines.",
+      "'We serialize manually' — legacy sites still exist; massive project if they modernise."
+    ],
+    oneLiner: "Serialization gives every unit a unique ID — DSCSA and FMD make it compulsory.",
+    hours: 12
+  }
+];
+
+/* Flashcards: quick term↔definition for spaced recall */
+const FLASHCARDS = {
+  deltav: [
+    {t:"DCS", d:"Distributed Control System — like a PLC's big brother; integrated controller + HMI + historian stack, optimised for plant-wide process control."},
+    {t:"Module", d:"A reusable chunk of DeltaV control logic (valve, pump, PID). Instantiated many times across a plant."},
+    {t:"Phase", d:"An S88 batch building block — e.g. 'Charge', 'Heat'. Contains the logic to run one step of a recipe."},
+    {t:"ProfessionalPLUS", d:"The master engineering workstation — holds the single source of truth for DeltaV config."},
+    {t:"DeltaV Live", d:"The modern HTML5 HMI replacing DeltaV Operate."},
+    {t:"AMS Device Manager", d:"Emerson's asset management for intelligent field devices — HART, WirelessHART, FF."},
+    {t:"CHARMs", d:"Characterisation Modules — DeltaV's soft-I/O system. Wire first, assign later."},
+    {t:"Batch Executive", d:"The DeltaV component that runs recipes — orchestrates phases across units."}
+  ],
+  mes: [
+    {t:"MES", d:"Manufacturing Execution System — ISA-95 Level 3; runs production orders, records EBRs, integrates SAP and DCS."},
+    {t:"EBR", d:"Electronic Batch Record — the living, digital version of the paper batch log."},
+    {t:"MBR", d:"Master Batch Record — the approved template the EBR is born from."},
+    {t:"Review by Exception", d:"QA only reviews deviations, not the whole EBR. Big adoption driver for MES."},
+    {t:"Weigh & Dispense", d:"Materials issue module — barcoded, tolerance-checked weighing before charging."},
+    {t:"Genealogy", d:"Trace a raw material lot forward to a finished unit, or a complaint backward to source."},
+    {t:"OEE", d:"Availability × Performance × Quality. The plant-floor KPI nearly every MES reports."},
+    {t:"ISA-95", d:"The standard defining L0–L4, the reference architecture for enterprise/control integration."}
+  ],
+  csv: [
+    {t:"GAMP 5", d:"ISPE's framework for validating automated GMP systems. Risk-based; V-model; Category-based effort."},
+    {t:"IQ", d:"Installation Qualification — hardware and software are installed per spec."},
+    {t:"OQ", d:"Operational Qualification — the system works as designed across the operating range."},
+    {t:"PQ", d:"Performance Qualification — the system performs reliably in the intended workflow."},
+    {t:"21 CFR Part 11", d:"FDA regulation on electronic records and signatures — audit trails, access control."},
+    {t:"Annex 11", d:"EU equivalent of Part 11 — broader principles."},
+    {t:"CSA", d:"Computer Software Assurance — FDA draft guidance emphasising critical thinking over paper."},
+    {t:"Traceability Matrix", d:"Document linking every requirement to its test — the spine of validation."}
+  ],
+  itot: [
+    {t:"Purdue Model", d:"5-level reference architecture (L0–L4) for manufacturing IT/OT."},
+    {t:"DMZ", d:"Demilitarised Zone — the middle ground between IT and OT networks."},
+    {t:"IEC 62443", d:"Global standard for OT cybersecurity — zones, conduits, security levels."},
+    {t:"NIS2", d:"2024 EU directive raising cyber obligations on critical sectors, incl. pharma."},
+    {t:"OPC UA", d:"Secure, cross-vendor protocol for moving OT data — the modern default."},
+    {t:"Jump Server", d:"A bastion host for controlled access into OT. All admin activity audited."},
+    {t:"Unidirectional Gateway", d:"Hardware data diode — one-way OT→IT data flow, physically."},
+    {t:"PAM", d:"Privileged Access Management — credential vaulting and session recording."}
+  ],
+  syncade: [
+    {t:"Syncade", d:"Emerson's MES — tightly coupled with DeltaV."},
+    {t:"Workflow", d:"Syncade's term for operator-driven procedure — often wraps DeltaV phase execution."},
+    {t:"Recipe Authoring", d:"The Syncade tool for building ISA-88 master recipes."},
+    {t:"W&D", d:"Weigh & Dispense — Syncade's materials module."}
+  ],
+  pasx: [
+    {t:"PAS-X", d:"Körber's pharma MES — the most deployed MES in top-20 pharma."},
+    {t:"Werum", d:"Original name of PAS-X's vendor before Körber acquisition."},
+    {t:"MSI", d:"Manufacturing Suite Integration — Körber's next-gen PAS-X platform."},
+    {t:"PAS-X Savvy", d:"Analytics and process mining on PAS-X data."},
+    {t:"Equipment Booking", d:"PAS-X function for plant asset reservation."}
+  ],
+  plc: [
+    {t:"PLC", d:"Programmable Logic Controller — rugged industrial computer for discrete control."},
+    {t:"ControlLogix", d:"Rockwell's mid-high tier PLC family."},
+    {t:"TIA Portal", d:"Siemens' engineering environment."},
+    {t:"IEC 61131-3", d:"The PLC programming languages standard."},
+    {t:"Safety PLC", d:"SIL-rated PLC for safety-instrumented functions — GuardLogix, F-PLC."}
+  ],
+  historian: [
+    {t:"PI", d:"OSIsoft PI (now AVEVA PI System) — the de-facto pharma historian."},
+    {t:"Asset Framework", d:"PI AF — hierarchical context overlay on raw tags."},
+    {t:"Tag", d:"A single time-series variable, stored compressed in the data archive."},
+    {t:"Golden Batch", d:"Statistical profile of best-performing batches — used as a template."}
+  ],
+  isa88: [
+    {t:"ISA-88", d:"The batch control standard — physical model, procedural model, recipe types."},
+    {t:"Physical Model", d:"Enterprise → Site → Area → Process Cell → Unit → Equipment Module → Control Module."},
+    {t:"Procedural Model", d:"Procedure → Unit Procedure → Operation → Phase."},
+    {t:"Master Recipe", d:"The approved template. Control Recipe is its running instance on specific equipment."}
+  ],
+  isa95: [
+    {t:"Level 0", d:"Physical process — the reactor itself."},
+    {t:"Level 1", d:"Field instrumentation — sensors, valves, motors."},
+    {t:"Level 2", d:"Control — PLCs, DCS, SCADA."},
+    {t:"Level 3", d:"MES and manufacturing operations."},
+    {t:"Level 4", d:"Enterprise — ERP, planning, finance."}
+  ],
+  dataintegrity: [
+    {t:"ALCOA", d:"Attributable, Legible, Contemporaneous, Original, Accurate."},
+    {t:"+", d:"Complete, Consistent, Enduring, Available."},
+    {t:"Audit Trail", d:"Automatic, tamper-evident log of every change."},
+    {t:"Static vs Dynamic data", d:"Static = value at a point (e.g. pH read). Dynamic = time-series (e.g. chromatogram). Dynamic requires richer DI controls."}
+  ],
+  serialization: [
+    {t:"DSCSA", d:"Drug Supply Chain Security Act — US serialization law."},
+    {t:"FMD", d:"Falsified Medicines Directive — EU serialization law."},
+    {t:"Aggregation", d:"Parent-child grouping — unit→carton→case→pallet."},
+    {t:"TraceLink", d:"Leading L3 serialization platform."}
+  ]
+};
+
+/* Quizzes: multiple-choice per module */
+const QUIZZES = {
+  deltav: [
+    {q:"What does 'DCS' stand for?", a:["Distributed Control System","Digital Control Source","Direct Communication Signal","Data Collection Server"], c:0, e:"DCS = Distributed Control System. The word 'Distributed' matters — logic runs in many controllers, not one."},
+    {q:"Which of these is NOT a native DeltaV component?", a:["ProfessionalPLUS","Batch Executive","TIA Portal","AMS Device Manager"], c:2, e:"TIA Portal is Siemens. The others are all Emerson DeltaV."},
+    {q:"What are CHARMs in DeltaV?", a:["Certified field devices","A soft-marshalling I/O system","A safety PLC family","An operator training module"], c:1, e:"CHARMs = CHARacterisation Modules. They let you wire cables first and assign signals later in software."},
+    {q:"Your client says 'we're on DeltaV Live'. What does that tell you?", a:["They use Siemens HMIs","They've adopted the modern HTML5 DeltaV operator stations","They are about to decommission DeltaV","They're on a v8 or earlier version"], c:1, e:"DeltaV Live is the modern HTML5 HMI — a strong indicator they're on a current DeltaV version."},
+    {q:"Which standard governs DeltaV batch recipes?", a:["ISA-95","ISA-88","GAMP 5","OPC UA"], c:1, e:"ISA-88 (S88) is the batch control standard."},
+    {q:"A client asks PM Group for 'a few DeltaV engineers'. Best response:", a:["Quote the ask as-is","Ask about phases, graphics count, and recipe scope first","Offer only senior engineers","Refer them to Emerson"], c:1, e:"Always probe scope. 'A few DeltaV engineers' hides enormous variation in effort."}
+  ],
+  mes: [
+    {q:"Where does MES sit in the ISA-95 stack?", a:["Level 1","Level 2","Level 3","Level 4"], c:2, e:"MES is Level 3, between Control (L2) and Enterprise (L4)."},
+    {q:"What is Review by Exception?", a:["QA reviews every step of an EBR","QA reviews only deviations","Operators approve their own work","Automated release without review"], c:1, e:"Review by Exception is the efficiency win — QA only reviews deviations, not every batch step."},
+    {q:"Which of these is NOT a leading pharma MES?", a:["PAS-X","Syncade","Opcenter","FactoryTalk Linx"], c:3, e:"FactoryTalk Linx is a Rockwell data-connectivity product, not an MES."},
+    {q:"What is genealogy in an MES context?", a:["Operator training history","Full traceability of materials from raw to finished","The MES version history","Recipe approval path"], c:1, e:"Genealogy = forward/backward traceability of materials and products."},
+    {q:"A client runs paper batch records. What's the typical first MES phase?", a:["Full EBR across the site","Serialization","Weigh & Dispense or a pilot line","OEE only"], c:2, e:"Most MES programmes start with Weigh & Dispense or a pilot line — high ROI, lower risk."},
+    {q:"OEE is calculated as...", a:["Availability + Performance + Quality","Availability × Performance × Quality","Uptime × Yield","Quality × Throughput"], c:1, e:"OEE = Availability × Performance × Quality (multiplicative, all in %)."}
+  ],
+  csv: [
+    {q:"What does the V-model describe in CSV?", a:["Virtual systems","The relationship between specifications and tests","Version control","Validation velocity"], c:1, e:"The V-model pairs every spec (left side) with a test (right side)."},
+    {q:"A configured COTS product like DeltaV or PAS-X is typically GAMP Category:", a:["1","3","4","5"], c:2, e:"Configured commercial-off-the-shelf = Category 4. Custom code = Cat 5."},
+    {q:"Which is the European equivalent of 21 CFR Part 11?", a:["GDPR","Annex 11","IEC 62443","GMP"], c:1, e:"EU GMP Annex 11 governs computerised systems."},
+    {q:"What is CSA?", a:["Computer System Administrator","Computer Software Assurance","Controlled System Access","Computerised System Audit"], c:1, e:"CSA = Computer Software Assurance, the FDA's lighter-touch successor framework to traditional CSV."},
+    {q:"The traceability matrix links...", a:["Users to passwords","Requirements to tests","Changes to releases","Vendors to parts"], c:1, e:"The traceability matrix is the URS ↔ test evidence backbone."}
+  ],
+  itot: [
+    {q:"In the Purdue Model, the DMZ sits between...", a:["L0 and L1","L1 and L2","L2 and L3","L3 and L4"], c:3, e:"The DMZ sits between OT (L0-L3) and IT (L4) — often labelled L3.5."},
+    {q:"IEC 62443 is primarily about...", a:["Safety systems","OT cybersecurity","Environmental compliance","Wireless protocols"], c:1, e:"IEC 62443 is the global OT cybersecurity standard."},
+    {q:"What does OPC UA stand for?", a:["Operational Protocol Control — User Access","Open Platform Communications — Unified Architecture","Organised Process Control — Universal Adapter","Object Protocol Communication — Update Agent"], c:1, e:"OPC UA = Open Platform Communications, Unified Architecture."},
+    {q:"A unidirectional gateway is...", a:["A firewall with ACLs","A hardware device allowing physical one-way data flow","A software proxy","A VPN"], c:1, e:"It's a physical device — data can only flow one direction regardless of software compromise."},
+    {q:"NIS2 primarily applies to...", a:["All US companies","EU critical sectors incl. pharma","FDA-regulated devices","Only financial services"], c:1, e:"NIS2 is an EU directive, and pharma manufacturing is in-scope."}
+  ],
+  syncade: [
+    {q:"Syncade is most tightly integrated with...", a:["PCS 7","DeltaV","Rockwell PlantPAx","Siemens WinCC"], c:1, e:"Syncade and DeltaV are both Emerson products — deeply integrated out of the box."},
+    {q:"In Syncade, a 'Workflow' maps most closely to...", a:["An S88 recipe / procedure","A CSV test","An ERP purchase order","A SCADA screen"], c:0, e:"Workflows orchestrate the procedural steps operators execute — recipe-like."},
+    {q:"Syncade commonly handles which of the following?", a:["SAP finance","EBR and W&D","Active Directory","PLC programming"], c:1, e:"EBR and Weigh & Dispense are core Syncade modules."}
+  ],
+  pasx: [
+    {q:"PAS-X was originally developed by...", a:["Emerson","Siemens","Werum","Rockwell"], c:2, e:"Werum IT Solutions, now part of Körber."},
+    {q:"Which is PAS-X's flagship capability?", a:["PID tuning","Review by exception EBR","PLC programming","HMI graphics"], c:1, e:"Review by exception EBR is PAS-X's hallmark value proposition."},
+    {q:"PAS-X Savvy is...", a:["A next-gen HMI","Process analytics / data mining","A safety system","A new marketing name"], c:1, e:"PAS-X Savvy is the data analytics / process mining layer."},
+    {q:"MSI in the PAS-X world is...", a:["Manufacturing Suite Integration","Multi-Site Instance","Material Specification Index","Manual System Intervention"], c:0, e:"MSI = Manufacturing Suite Integration — Körber's next-gen PAS-X."}
+  ],
+  plc: [
+    {q:"Which is NOT an IEC 61131-3 language?", a:["Ladder (LD)","Structured Text (ST)","Function Block (FBD)","Python (PY)"], c:3, e:"Python isn't part of IEC 61131-3. LD, FBD, ST, SFC, IL are the five."},
+    {q:"Rockwell's high-tier PLC family is...", a:["ControlLogix","S7-1500","Modicon M580","Mitsubishi iQ-R"], c:0, e:"ControlLogix is Rockwell's flagship."},
+    {q:"Which protocol is native to Siemens PLCs?", a:["EtherNet/IP","Profinet","Modbus RTU","CANopen"], c:1, e:"Profinet is Siemens' Ethernet-based native protocol."}
+  ],
+  historian: [
+    {q:"PI AF stands for...", a:["Application Framework","Asset Framework","Audit File","Access Filter"], c:1, e:"Asset Framework — the context overlay on raw PI tags."},
+    {q:"A 'tag' in PI is...", a:["A comment on a batch","A single time-series variable","A user label","A calibration certificate"], c:1, e:"A tag is a single time-series variable (e.g. temp sensor)."},
+    {q:"A 'Golden Batch' is...", a:["The most profitable batch","A statistical template of best-performing batches","The first batch after commissioning","A regulatory-approved batch"], c:1, e:"Golden batch = statistical template used for comparison/deviation detection."}
+  ],
+  isa88: [
+    {q:"Which is the correct procedural model order?", a:["Operation → Phase → Procedure","Procedure → Unit Procedure → Operation → Phase","Phase → Procedure → Operation","Recipe → Phase → Operation"], c:1, e:"Procedure → Unit Procedure → Operation → Phase."},
+    {q:"A Master Recipe is...", a:["The running instance","The approved template","A raw material list","A historical record"], c:1, e:"Master = approved template. Control Recipe is the executing instance."},
+    {q:"In the physical model, Unit sits between...", a:["Area and Control Module","Process Cell and Equipment Module","Site and Area","Enterprise and Site"], c:1, e:"Process Cell → Unit → Equipment Module → Control Module."}
+  ],
+  isa95: [
+    {q:"Which ISA-95 level is MES?", a:["L1","L2","L3","L4"], c:2, e:"MES is Level 3."},
+    {q:"Which ISA-95 level is ERP?", a:["L2","L3","L4","L5"], c:2, e:"ERP is Level 4."},
+    {q:"DCS and PLCs operate at...", a:["L0","L1","L2","L3"], c:2, e:"Control (DCS/PLC/SCADA) is Level 2."}
+  ],
+  dataintegrity: [
+    {q:"What does the 'A' in ALCOA stand for?", a:["Available","Attributable","Audited","Approved"], c:1, e:"Attributable — you know who did what, when."},
+    {q:"What does the 'C' in ALCOA stand for?", a:["Complete","Contemporaneous","Consistent","Correct"], c:1, e:"Contemporaneous — recorded at the time of the event."},
+    {q:"Shared login accounts violate which principle first?", a:["Legibility","Attributability","Accuracy","Availability"], c:1, e:"Attributability — you can't tie an action to an individual."}
+  ],
+  serialization: [
+    {q:"DSCSA applies in...", a:["US","EU","Brazil","Global"], c:0, e:"DSCSA is the US Drug Supply Chain Security Act."},
+    {q:"FMD applies in...", a:["US","EU","Japan","Canada"], c:1, e:"FMD = Falsified Medicines Directive, EU."},
+    {q:"Aggregation refers to...", a:["Batch sizing","Parent-child unit relationships","Material consolidation","Line clustering"], c:1, e:"Aggregation = parent-child grouping through the packaging hierarchy."}
+  ]
+};
+
+/* Glossary: cross-module searchable */
+const GLOSSARY = [
+  {term:"DCS", def:"Distributed Control System. Process control platform where logic runs in multiple controllers with integrated HMI, engineering and historian layers."},
+  {term:"DeltaV", def:"Emerson's DCS — the most common DCS in pharma/biotech."},
+  {term:"PCS 7", def:"Siemens' DCS — common in oil & gas, chemicals, and some European pharma."},
+  {term:"PlantPAx", def:"Rockwell's DCS architecture built on ControlLogix PLCs."},
+  {term:"HMI", def:"Human Machine Interface — operator screens for controlling a process."},
+  {term:"SCADA", def:"Supervisory Control and Data Acquisition — supervisory layer over PLCs across a wide area."},
+  {term:"PLC", def:"Programmable Logic Controller — industrial computer for discrete or high-speed control."},
+  {term:"MES", def:"Manufacturing Execution System — ISA-95 L3 software; orders in, batch records out."},
+  {term:"EBR", def:"Electronic Batch Record — digital record of a single manufacturing batch."},
+  {term:"MBR", def:"Master Batch Record — approved template for a product."},
+  {term:"GAMP 5", def:"Good Automated Manufacturing Practice v5 — ISPE validation framework."},
+  {term:"CSV", def:"Computer System Validation — proving a system does what it should, under GMP."},
+  {term:"CSA", def:"Computer Software Assurance — FDA guidance encouraging risk-based, critical-thinking validation."},
+  {term:"IQ", def:"Installation Qualification — installed and configured as designed."},
+  {term:"OQ", def:"Operational Qualification — works across the operating range."},
+  {term:"PQ", def:"Performance Qualification — works in real use."},
+  {term:"21 CFR Part 11", def:"FDA regulation on electronic records & signatures."},
+  {term:"Annex 11", def:"EU GMP annex on computerised systems."},
+  {term:"ALCOA+", def:"Attributable, Legible, Contemporaneous, Original, Accurate + Complete, Consistent, Enduring, Available."},
+  {term:"ISA-88 / S88", def:"Batch control standard — physical model, procedural model, recipe types."},
+  {term:"ISA-95 / S95", def:"Enterprise-control integration standard — Levels 0–4 (Purdue Model)."},
+  {term:"Purdue Model", def:"Hierarchical reference architecture popularised by ISA-95."},
+  {term:"OPC UA", def:"Open Platform Communications — Unified Architecture. Secure, cross-vendor OT data protocol."},
+  {term:"OPC DA", def:"Legacy DCOM-based OPC. Being phased out for UA."},
+  {term:"DMZ", def:"Demilitarised Zone — network segment between IT and OT."},
+  {term:"IEC 62443", def:"Global OT cybersecurity standard."},
+  {term:"NIS2", def:"EU cybersecurity directive in force 2024, broader scope than NIS1."},
+  {term:"PAS-X", def:"Körber's (Werum's) pharma MES, market leader in biologics."},
+  {term:"Syncade", def:"Emerson's MES; tight DeltaV integration."},
+  {term:"AVEVA PI / OSIsoft PI", def:"De-facto pharma process historian."},
+  {term:"Asset Framework (AF)", def:"PI's hierarchical context overlay."},
+  {term:"Seeq / TrendMiner", def:"Self-service process analytics tools often sitting on PI."},
+  {term:"ControlLogix", def:"Rockwell's flagship PLC family."},
+  {term:"Studio 5000", def:"Rockwell's PLC engineering IDE."},
+  {term:"TIA Portal", def:"Siemens' PLC engineering IDE."},
+  {term:"Profinet / EtherNet IP / Modbus TCP", def:"Industrial Ethernet protocols used by Siemens, Rockwell, and many open systems respectively."},
+  {term:"Fieldbus / HART / Foundation Fieldbus", def:"Field-device communication protocols."},
+  {term:"SIL", def:"Safety Integrity Level — 1–4, higher = more rigour, for safety functions (IEC 61508/61511)."},
+  {term:"SIS", def:"Safety Instrumented System — separate safety PLC + sensors + final elements."},
+  {term:"CIP / SIP", def:"Clean-in-Place / Steam-in-Place — automated cleaning and sterilisation routines."},
+  {term:"Weigh & Dispense", def:"Materials handling module — barcoded weighing with tolerance checks."},
+  {term:"Genealogy", def:"Traceability of material lots forward and backward through a process."},
+  {term:"OEE", def:"Overall Equipment Effectiveness — Availability × Performance × Quality."},
+  {term:"GMP", def:"Good Manufacturing Practice — the umbrella quality framework for regulated manufacturing."},
+  {term:"URS", def:"User Requirements Specification."},
+  {term:"FS / FDS", def:"Functional Specification / Functional Design Specification."},
+  {term:"DS", def:"Design Specification (detailed)."},
+  {term:"SAT / FAT", def:"Site / Factory Acceptance Test."},
+  {term:"DSCSA", def:"US Drug Supply Chain Security Act — serialization."},
+  {term:"FMD", def:"EU Falsified Medicines Directive — serialization."},
+  {term:"TraceLink", def:"Leading cloud L3 serialization platform."},
+  {term:"ERP / SAP", def:"Enterprise Resource Planning — SAP dominates pharma L4."},
+  {term:"IDoc / BAPI / REST", def:"SAP integration interfaces — iDocs & BAPIs legacy, REST/OData modern."},
+  {term:"Active Directory", def:"Microsoft's IT identity store — increasingly integrated into OT."},
+  {term:"IdP", def:"Identity Provider — AD, Okta, Azure AD."},
+  {term:"PAM", def:"Privileged Access Management — vaulted credentials, audited sessions."},
+  {term:"Jump Server", def:"Bastion host — only way into OT; all activity audited."},
+  {term:"Data Diode", def:"Hardware unidirectional gateway."},
+  {term:"FAT / SAT", def:"Factory / Site Acceptance Testing — pre- and post-installation testing."},
+  {term:"Brownfield", def:"Project inside an existing, running plant."},
+  {term:"Greenfield", def:"Project on a new site / empty shell."}
+];
+
+/* Roles catalogue used across modules */
+const ROLES = [
+  {role:"DeltaV Engineer", module:"deltav", tagline:"Configures and supports Emerson DeltaV DCS.", bucket:"Core DCS"},
+  {role:"Senior DeltaV Batch Engineer", module:"deltav", tagline:"S88 recipe design and batch architecture on DeltaV.", bucket:"Core DCS"},
+  {role:"DeltaV Commissioning Engineer", module:"deltav", tagline:"On-site loop checks, SAT and punch list resolution.", bucket:"Core DCS"},
+  {role:"DeltaV Lead / Automation Lead", module:"deltav", tagline:"Principal role — architecture, delivery accountability.", bucket:"Core DCS"},
+  {role:"MES Configuration Engineer", module:"mes", tagline:"Recipes, workflows and integrations in the chosen MES.", bucket:"MES"},
+  {role:"MES Architect", module:"mes", tagline:"Multi-site MES strategy and integration.", bucket:"MES"},
+  {role:"MES Business Analyst", module:"mes", tagline:"Bridges production and engineering; writes URS.", bucket:"MES"},
+  {role:"Syncade Configuration Engineer", module:"syncade", tagline:"Workflow and EBR configuration in Emerson Syncade.", bucket:"MES"},
+  {role:"Syncade + DeltaV Hybrid", module:"syncade", tagline:"Cross-platform specialist — top of the market.", bucket:"MES"},
+  {role:"PAS-X Configuration Engineer", module:"pasx", tagline:"MBR/EBR configuration in Körber PAS-X.", bucket:"MES"},
+  {role:"PAS-X Architect", module:"pasx", tagline:"Multi-site PAS-X strategy and upgrades.", bucket:"MES"},
+  {role:"PAS-X Developer", module:"pasx", tagline:"Customisations and extensions in PAS-X.", bucket:"MES"},
+  {role:"CSV Engineer", module:"csv", tagline:"Writes and executes IQ/OQ/PQ protocols.", bucket:"Validation"},
+  {role:"Validation Lead", module:"csv", tagline:"Owns the Validation Master Plan for a project.", bucket:"Validation"},
+  {role:"QA Computerised Systems", module:"csv", tagline:"Client-side approver for validated systems.", bucket:"Validation"},
+  {role:"CSA Specialist", module:"csv", tagline:"Applies FDA Computer Software Assurance principles.", bucket:"Validation"},
+  {role:"IT/OT Engineer", module:"itot", tagline:"Network, AD, Purdue-model integration.", bucket:"IT/OT"},
+  {role:"OT Cybersecurity Specialist", module:"itot", tagline:"IEC 62443, patching, OT incident response.", bucket:"IT/OT"},
+  {role:"Data Engineer / Historian Architect", module:"historian", tagline:"PI AF, cloud pipelines, governance.", bucket:"Data & Analytics"},
+  {role:"Analytics Engineer", module:"historian", tagline:"Seeq/TrendMiner/Power BI on top of PI.", bucket:"Data & Analytics"},
+  {role:"Controls Engineer", module:"plc", tagline:"PLC/HMI on skids, machines and packaging.", bucket:"Controls"},
+  {role:"Functional Safety Engineer", module:"plc", tagline:"SIL assessments and safety PLC programming.", bucket:"Controls"},
+  {role:"Serialization Engineer", module:"serialization", tagline:"L2 line & L3 platform commissioning.", bucket:"Serialization"},
+  {role:"Serialization Architect", module:"serialization", tagline:"Multi-site serialization rollouts.", bucket:"Serialization"},
+  {role:"Batch Engineer (S88)", module:"isa88", tagline:"Author ISA-88 recipes across platforms.", bucket:"Standards"},
+  {role:"Integration Architect", module:"isa95", tagline:"Cross-level ISA-95 data flows.", bucket:"Standards"},
+  {role:"Data Integrity Lead", module:"dataintegrity", tagline:"Cross-functional DI governance owner.", bucket:"Validation"}
+];
+
+/* Client Toolkit */
+const TOOLKIT = {
+  openers: [
+    "Where are you on your IT/OT roadmap — more in the architecture-design phase, or active rollout?",
+    "When you look at your automation headcount for this year, where's the biggest gap — DCS, MES, or validation?",
+    "Which MES platform are you standardising on across sites?",
+    "Are you running traditional CSV across projects, or piloting CSA on some systems?",
+    "How is your site split across DeltaV, PCS 7, and Rockwell — single vendor or heterogeneous?",
+    "Has your site been in scope for any recent regulatory observations on computerised systems?",
+    "Is there a digital transformation programme running above site level — Industry 4.0, data lake, AI pilots?"
+  ],
+  discovery: [
+    "What does the org chart look like for automation, MES, and validation — who owns what?",
+    "Do you use external partners like PM Group on a dedicated basis, or project-by-project?",
+    "Which roles are hardest to hire right now, and which are you replacing fastest?",
+    "What's the rate structure — day rates, fixed price, outcome-based?",
+    "Are there any technology standards or preferred-vendor lists I should know about?",
+    "How do you typically onboard a new contractor — badge/access, systems, CSV training?"
+  ],
+  pitfalls: [
+    "Promising 'DeltaV engineers' without probing phase counts / recipe scope.",
+    "Offering a validation lead without GAMP 5 depth — clients notice fast.",
+    "Calling SCADA a DCS — different technology, different engineers.",
+    "Treating PAS-X and Syncade as interchangeable — they're not, and costs differ.",
+    "Ignoring CSV when pricing automation work — usually 25–50% of budget.",
+    "Assuming the client's IT team handles OT cyber — usually it's contested."
+  ],
+  cheatSheet: [
+    {title:"DCS vs PLC", text:"DCS = plant-wide, process-centric, integrated (DeltaV, PCS 7). PLC = machine-level, discrete-fast, point-solution (Rockwell, Siemens S7)."},
+    {title:"MES = L3", text:"MES sits at ISA-95 Level 3 — between control (L2) and ERP (L4)."},
+    {title:"GAMP Categories", text:"Cat 1 = infra; Cat 3 = non-configured COTS; Cat 4 = configured (DeltaV/PAS-X); Cat 5 = custom."},
+    {title:"V-Model", text:"URS → FS → DS → Build → IQ → OQ → PQ. Every left-side doc has a right-side test."},
+    {title:"ALCOA+", text:"Attributable, Legible, Contemporaneous, Original, Accurate + Complete, Consistent, Enduring, Available."},
+    {title:"OPC UA = modern", text:"If they're still on OPC DA, a migration project is likely in the next few years."},
+    {title:"Review by Exception", text:"The #1 ROI driver for MES adoption — know this phrase cold."},
+    {title:"Purdue Model", text:"L0 physical → L1 sensors → L2 control → L3 MES → L4 ERP, with DMZ at L3.5."}
+  ]
+};
+
+/* Pyramid game data */
+const PYRAMID_LEVELS = [
+  {lvl:0, name:"Level 0 — Physical Process", examples:"Reactor, bioreactor, filler"},
+  {lvl:1, name:"Level 1 — Sensors & Actuators", examples:"Transmitters, valves, motors"},
+  {lvl:2, name:"Level 2 — Control", examples:"DeltaV, PCS 7, ControlLogix, SCADA"},
+  {lvl:3, name:"Level 3 — MES", examples:"PAS-X, Syncade, Opcenter"},
+  {lvl:4, name:"Level 4 — Enterprise", examples:"SAP, Oracle ERP"}
+];
+
+/* Acronym challenge data */
+const ACRONYMS = [
+  {a:"DCS", x:"Distributed Control System"},
+  {a:"MES", x:"Manufacturing Execution System"},
+  {a:"CSV", x:"Computer System Validation"},
+  {a:"CSA", x:"Computer Software Assurance"},
+  {a:"PLC", x:"Programmable Logic Controller"},
+  {a:"HMI", x:"Human Machine Interface"},
+  {a:"SCADA", x:"Supervisory Control And Data Acquisition"},
+  {a:"EBR", x:"Electronic Batch Record"},
+  {a:"MBR", x:"Master Batch Record"},
+  {a:"OEE", x:"Overall Equipment Effectiveness"},
+  {a:"URS", x:"User Requirements Specification"},
+  {a:"IQ", x:"Installation Qualification"},
+  {a:"OQ", x:"Operational Qualification"},
+  {a:"PQ", x:"Performance Qualification"},
+  {a:"ALCOA", x:"Attributable, Legible, Contemporaneous, Original, Accurate"},
+  {a:"GAMP", x:"Good Automated Manufacturing Practice"},
+  {a:"OPC UA", x:"Open Platform Communications — Unified Architecture"},
+  {a:"DMZ", x:"Demilitarised Zone"},
+  {a:"ERP", x:"Enterprise Resource Planning"},
+  {a:"SIL", x:"Safety Integrity Level"},
+  {a:"SIS", x:"Safety Instrumented System"},
+  {a:"CIP", x:"Clean-In-Place"},
+  {a:"SIP", x:"Steam-In-Place"},
+  {a:"DSCSA", x:"Drug Supply Chain Security Act"},
+  {a:"FMD", x:"Falsified Medicines Directive"},
+  {a:"PAM", x:"Privileged Access Management"},
+  {a:"AD", x:"Active Directory"},
+  {a:"KPI", x:"Key Performance Indicator"},
+  {a:"IEC", x:"International Electrotechnical Commission"},
+  {a:"ISA", x:"International Society of Automation"}
+];
+
+/* Badges */
+const BADGE_DEFS = [
+  {id:"firstModule", icon:"🥉", name:"First Steps", desc:"Complete any module."},
+  {id:"threeModules", icon:"🥈", name:"Getting Fluent", desc:"Complete 3 modules."},
+  {id:"allCoreMes", icon:"💊", name:"Pharma MES Literate", desc:"Complete MES, PAS-X and Syncade."},
+  {id:"dcsMaster", icon:"🟣", name:"DeltaV Dossier", desc:"Complete DeltaV + ISA-88."},
+  {id:"csvPro", icon:"📑", name:"Validation Ready", desc:"Complete CSV + Data Integrity."},
+  {id:"purdueGuru", icon:"🏛️", name:"Purdue Guru", desc:"Finish the ISA-95 Pyramid Builder without a miss."},
+  {id:"speed20", icon:"⚡", name:"Speed Runner", desc:"Score 16+ in a Speed Round (20 Qs)."},
+  {id:"streak3", icon:"🔥", name:"On a Roll", desc:"3-day learning streak."},
+  {id:"streak7", icon:"💎", name:"Committed", desc:"7-day learning streak."},
+  {id:"allModules", icon:"👑", name:"Connected Automation Expert", desc:"Complete ALL modules."}
+];
+
+/* ============================================================
+   AYME — state, persistence, XP
+   ============================================================ */
+
+const STORAGE_KEY = "ayme.state.v1";
+const RANKS = ["Rookie","Trainee","Apprentice","Graduate","Associate","Specialist","Lead","Principal","Expert","Master"];
+
+const defaultState = () => ({
+  xp: 0,
+  theme: "dark",
+  modules: {}, // id: {flashSeen, quizBest, completed}
+  badges: [],
+  lastActive: null, // YYYY-MM-DD
+  streak: 0,
+  quizzesTaken: 0,
+  gamesPlayed: 0,
+  notes: {}, // module id -> notes
+  bookmarks: [] // glossary terms
+});
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  } catch(e) { return defaultState(); }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+let state = loadState();
+if (state.theme) document.body.setAttribute("data-theme", state.theme);
+
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(a,b){
+  if(!a||!b) return Infinity;
+  const d1 = new Date(a), d2 = new Date(b);
+  return Math.round((d2-d1)/(1000*60*60*24));
+}
+function tickStreak() {
+  const today = todayStr();
+  const diff = daysBetween(state.lastActive, today);
+  if (diff === 0) return; // same day
+  if (diff === 1) state.streak += 1; else state.streak = 1;
+  state.lastActive = today;
+  saveState();
+  if (state.streak >= 3) earnBadge("streak3");
+  if (state.streak >= 7) earnBadge("streak7");
+}
+tickStreak();
+
+function xpForLevel(lvl) { return 100 + (lvl-1) * 50; }
+function currentLevel() {
+  let lvl = 1, acc = 0;
+  while (state.xp >= acc + xpForLevel(lvl)) { acc += xpForLevel(lvl); lvl++; }
+  return {lvl, into: state.xp - acc, need: xpForLevel(lvl)};
+}
+function awardXP(n, reason) {
+  state.xp += n;
+  saveState();
+  toast(`+${n} XP · ${reason}`);
+  updateTopbar();
+}
+
+function moduleState(id) {
+  if (!state.modules[id]) state.modules[id] = {flashSeen:0, quizBest:0, completed:false};
+  return state.modules[id];
+}
+function moduleProgress(id) {
+  const ms = moduleState(id);
+  const mod = MODULES.find(m => m.id===id);
+  const flashTotal = (FLASHCARDS[id] || []).length || 1;
+  const quizTotal = (QUIZZES[id] || []).length || 1;
+  const flashPct = Math.min(100, (ms.flashSeen / flashTotal) * 100);
+  const quizPct = (ms.quizBest / quizTotal) * 100;
+  const pct = Math.round((flashPct * 0.4) + (quizPct * 0.6));
+  return {pct, flashPct: Math.round(flashPct), quizPct: Math.round(quizPct)};
+}
+function moduleCompleted(id) {
+  const p = moduleProgress(id).pct;
+  const ms = moduleState(id);
+  const newly = p >= 85 && !ms.completed;
+  if (newly) {
+    ms.completed = true;
+    saveState();
+    awardXP(40, `${MODULES.find(m=>m.id===id).name} mastered`);
+    checkBadges();
+  }
+  return p >= 85;
+}
+function completedCount() {
+  return MODULES.filter(m => moduleState(m.id).completed || moduleProgress(m.id).pct >= 85).length;
+}
+
+function earnBadge(id) {
+  if (state.badges.includes(id)) return;
+  state.badges.push(id);
+  saveState();
+  const b = BADGE_DEFS.find(x => x.id===id);
+  if (b) toast(`🏅 Badge unlocked: ${b.name}`);
+  updateTopbar();
+}
+function checkBadges() {
+  const c = completedCount();
+  if (c >= 1) earnBadge("firstModule");
+  if (c >= 3) earnBadge("threeModules");
+  if (c === MODULES.length) earnBadge("allModules");
+  const mesDone = ["mes","pasx","syncade"].every(id => moduleState(id).completed);
+  if (mesDone) earnBadge("allCoreMes");
+  const dcsDone = ["deltav","isa88"].every(id => moduleState(id).completed);
+  if (dcsDone) earnBadge("dcsMaster");
+  const csvDone = ["csv","dataintegrity"].every(id => moduleState(id).completed);
+  if (csvDone) earnBadge("csvPro");
+}
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.innerText = msg;
+  el.style.display = "block";
+  el.className = "toast";
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>{ el.style.display="none"; }, 2600);
+}
+
+/* ============================================================
+   Topbar & Nav
+   ============================================================ */
+
+function updateTopbar() {
+  const {lvl, into, need} = currentLevel();
+  const rank = RANKS[Math.min(RANKS.length-1, lvl-1)];
+  document.getElementById("level").textContent = `Level ${lvl}`;
+  document.getElementById("rank").textContent = rank;
+  document.getElementById("xp").textContent = into;
+  document.getElementById("xpNeeded").textContent = need;
+  document.getElementById("xpFill").style.width = Math.min(100, (into/need)*100) + "%";
+  document.getElementById("streak").textContent = state.streak;
+  document.getElementById("mastered").textContent = completedCount();
+  document.getElementById("badgeCount").textContent = state.badges.length;
+}
+
+const NAV = [
+  {id:"dashboard", label:"Dashboard", icon:"🏠"},
+  {id:"modules", label:"Modules", icon:"📚"},
+  {id:"games", label:"Mini-Games", icon:"🎮"},
+  {id:"roles", label:"Role Cards", icon:"🧑‍💼"},
+  {id:"toolkit", label:"Client Toolkit", icon:"🎙️"},
+  {id:"glossary", label:"Glossary", icon:"📖"},
+  {id:"badges", label:"Progress", icon:"🏅"},
+  {id:"settings", label:"Settings", icon:"⚙️"}
+];
+
+function renderNav(active) {
+  const nav = document.getElementById("nav");
+  nav.innerHTML = NAV.map(n =>
+    `<div class="nav-item ${n.id===active?'active':''}" data-view="${n.id}">
+       <span>${n.icon}</span><span>${n.label}</span>
+     </div>`).join("");
+  nav.querySelectorAll(".nav-item").forEach(el=>{
+    el.addEventListener("click", ()=> navigate(el.dataset.view));
+  });
+}
+
+let currentView = "dashboard";
+function navigate(view, params) {
+  currentView = view;
+  renderNav(view);
+  const v = document.getElementById("view");
+  v.innerHTML = "";
+  const fn = VIEWS[view] || VIEWS.dashboard;
+  fn(v, params || {});
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const cur = document.body.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : "dark";
+  document.body.setAttribute("data-theme", next);
+  state.theme = next;
+  saveState();
+});
+
+/* ============================================================
+   Views
+   ============================================================ */
+const VIEWS = {};
+
+/* ---------- Dashboard ---------- */
+VIEWS.dashboard = (root) => {
+  const c = completedCount();
+  const overallPct = Math.round(MODULES.reduce((s,m) => s + moduleProgress(m.id).pct, 0) / MODULES.length);
+  const next = MODULES.filter(m => !moduleState(m.id).completed).slice(0,3);
+  root.innerHTML = `
+    <h1>Welcome back 👋</h1>
+    <p class="subtitle">Your personal ramp-up engine for PM Group's connected automation clients.</p>
+
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>Overall Mastery</h3>
+        <div class="row" style="align-items:center;gap:18px;margin-top:8px">
+          <div class="ring" style="--p:${overallPct}"><span>${overallPct}%</span></div>
+          <div>
+            <div class="tiny muted">Modules completed</div>
+            <div style="font-size:22px;font-weight:700">${c} / ${MODULES.length}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>What to learn next</h3>
+        <p class="tiny muted">Tailored to your progress</p>
+        ${next.map(m => `
+          <div class="row" style="justify-content:space-between;margin-top:8px">
+            <div>${m.icon} ${m.name}</div>
+            <button class="btn small" data-go="${m.id}">Open →</button>
+          </div>`).join("") || "<p class='muted'>Everything complete. Legend.</p>"}
+      </div>
+      <div class="card">
+        <h3>Today's warm-up</h3>
+        <p class="tiny muted">A 60-second routine to keep momentum</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+          <button class="btn primary" id="dashDaily">⚡ 5-question Speed Round</button>
+          <button class="btn" id="dashAcronym">🔤 Acronym Challenge</button>
+          <button class="btn" id="dashMatch">🧩 Matching Game</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:22px"></div>
+    <h2>Continue where you left off</h2>
+    <div class="grid cols-2" id="dashModules"></div>
+  `;
+  root.querySelectorAll("[data-go]").forEach(el=>{
+    el.addEventListener("click", ()=> navigate("module", {id:el.dataset.go}));
+  });
+  root.querySelector("#dashDaily").addEventListener("click", ()=> navigate("speedround"));
+  root.querySelector("#dashAcronym").addEventListener("click", ()=> navigate("acronym"));
+  root.querySelector("#dashMatch").addEventListener("click", ()=> navigate("matching"));
+
+  const wrap = root.querySelector("#dashModules");
+  MODULES.slice().sort((a,b) => moduleProgress(a.id).pct - moduleProgress(b.id).pct).slice(0,4)
+    .forEach(m => wrap.appendChild(moduleCardEl(m)));
+};
+
+function moduleCardEl(m) {
+  const p = moduleProgress(m.id);
+  const el = document.createElement("div");
+  el.className = "card module-card";
+  el.innerHTML = `
+    <div class="icon">${m.icon}</div>
+    <h3>${m.name}</h3>
+    <p class="tiny muted">${m.tagline}</p>
+    <div class="progress"><span style="width:${p.pct}%"></span></div>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <span class="tiny muted">${p.pct}% complete</span>
+      <button class="btn small primary">Open</button>
+    </div>
+  `;
+  el.addEventListener("click", () => navigate("module", {id: m.id}));
+  return el;
+}
+
+/* ---------- Modules index ---------- */
+VIEWS.modules = (root) => {
+  root.innerHTML = `
+    <h1>Modules</h1>
+    <p class="subtitle">${MODULES.length} topics · Each has a briefing, flashcards, a quiz, and a role card.</p>
+    <div class="grid cols-2" id="moduleGrid"></div>
+  `;
+  const g = root.querySelector("#moduleGrid");
+  MODULES.forEach(m => g.appendChild(moduleCardEl(m)));
+};
+
+/* ---------- Single module ---------- */
+VIEWS.module = (root, {id}) => {
+  const m = MODULES.find(x => x.id===id);
+  if (!m) { navigate("modules"); return; }
+  const p = moduleProgress(id);
+  const ms = moduleState(id);
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">${m.icon} ${m.name}</h1>
+    <p class="subtitle">${m.tagline}</p>
+
+    <div class="tabs" id="modTabs">
+      <div class="tab active" data-tab="brief">📋 Briefing</div>
+      <div class="tab" data-tab="flash">🃏 Flashcards</div>
+      <div class="tab" data-tab="quiz">📝 Quiz</div>
+      <div class="tab" data-tab="role">🧑‍💼 Role Card</div>
+      <div class="tab" data-tab="notes">🗒️ My Notes</div>
+    </div>
+
+    <div id="modBody"></div>
+
+    <div style="height:18px"></div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="tiny muted">Module progress</div>
+          <div style="font-size:20px;font-weight:700;margin-top:2px">${p.pct}%</div>
+        </div>
+        <div class="tiny muted">
+          Flashcards ${p.flashPct}% · Quiz best ${ms.quizBest}/${(QUIZZES[id]||[]).length}
+        </div>
+      </div>
+      <div class="progress"><span style="width:${p.pct}%"></span></div>
+    </div>
+  `;
+  root.querySelector("#back").addEventListener("click", ()=> navigate("modules"));
+  const tabs = root.querySelectorAll("#modTabs .tab");
+  const body = root.querySelector("#modBody");
+  const showTab = (t) => {
+    tabs.forEach(x => x.classList.toggle("active", x.dataset.tab===t));
+    if (t==="brief") renderBrief(body, m);
+    if (t==="flash") renderFlashcards(body, m);
+    if (t==="quiz")  renderQuiz(body, m);
+    if (t==="role")  renderRoleCard(body, m);
+    if (t==="notes") renderNotes(body, m);
+  };
+  tabs.forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
+  showTab("brief");
+};
+
+function renderFlashcards(body, m) {
+  const cards = FLASHCARDS[m.id] || [];
+  if (!cards.length) {
+    body.innerHTML = "<p class='muted'>No flashcards yet.</p>"; return;
+  }
+  let idx = 0, flipped = false, seen = new Set();
+  body.innerHTML = `
+    <div class="card" style="max-width:620px;margin:0 auto">
+      <div class="row" style="justify-content:space-between">
+        <span class="tiny muted">Card <b id="fcIdx"></b> / ${cards.length}</span>
+        <span class="tiny muted" id="fcSeen"></span>
+      </div>
+      <div class="flashcard" id="fc">
+        <div class="inner">
+          <div class="face front">
+            <div>
+              <div class="term" id="fcTerm"></div>
+              <div class="hint">Click to flip</div>
+            </div>
+          </div>
+          <div class="face back">
+            <div class="def" id="fcDef"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:14px">
+        <button class="btn" id="fcPrev">← Prev</button>
+        <button class="btn primary" id="fcGot">I got it</button>
+        <button class="btn" id="fcNext">Next →</button>
+      </div>
+    </div>
+  `;
+  const fc = body.querySelector("#fc");
+  const term = body.querySelector("#fcTerm");
+  const def = body.querySelector("#fcDef");
+  const idxEl = body.querySelector("#fcIdx");
+  const seenEl = body.querySelector("#fcSeen");
+  const render = () => {
+    flipped = false; fc.classList.remove("flipped");
+    term.textContent = cards[idx].t;
+    def.textContent = cards[idx].d;
+    idxEl.textContent = idx+1;
+    seenEl.textContent = `Seen: ${seen.size}`;
+  };
+  fc.addEventListener("click", () => fc.classList.toggle("flipped"));
+  body.querySelector("#fcPrev").addEventListener("click", () => { idx = (idx-1+cards.length)%cards.length; render(); });
+  body.querySelector("#fcNext").addEventListener("click", () => { idx = (idx+1)%cards.length; render(); });
+  body.querySelector("#fcGot").addEventListener("click", () => {
+    seen.add(idx);
+    const ms = moduleState(m.id);
+    if (seen.size > ms.flashSeen) { ms.flashSeen = seen.size; saveState(); }
+    awardXP(3, `Flashcard: ${cards[idx].t}`);
+    idx = (idx+1) % cards.length; render();
+    moduleCompleted(m.id);
+  });
+  render();
+}
+
+function renderQuiz(body, m) {
+  const qs = QUIZZES[m.id] || [];
+  if (!qs.length) { body.innerHTML = "<p class='muted'>No quiz yet.</p>"; return; }
+  let i = 0, score = 0, chosen = null, answered = false;
+  body.innerHTML = `
+    <div class="card" style="max-width:720px;margin:0 auto">
+      <div class="row" style="justify-content:space-between">
+        <span class="tiny muted">Question <b id="qIdx"></b> / ${qs.length}</span>
+        <span class="tiny muted">Score: <b id="qScore">0</b></span>
+      </div>
+      <h3 id="qText" style="margin-top:10px"></h3>
+      <div id="qOpts" style="margin-top:10px"></div>
+      <div id="qExp" class="tiny muted" style="margin-top:10px;min-height:24px"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:10px">
+        <button class="btn primary" id="qNext" disabled>Next →</button>
+      </div>
+    </div>
+  `;
+  const render = () => {
+    chosen = null; answered = false;
+    body.querySelector("#qIdx").textContent = i+1;
+    body.querySelector("#qText").textContent = qs[i].q;
+    body.querySelector("#qExp").textContent = "";
+    body.querySelector("#qNext").disabled = true;
+    const opts = body.querySelector("#qOpts");
+    opts.innerHTML = qs[i].a.map((opt, k) =>
+      `<div class="quiz-option" data-k="${k}">
+         <div class="badge">${String.fromCharCode(65+k)}</div>
+         <div>${opt}</div>
+       </div>`).join("");
+    opts.querySelectorAll(".quiz-option").forEach(el => {
+      el.addEventListener("click", () => {
+        if (answered) return;
+        answered = true;
+        chosen = parseInt(el.dataset.k, 10);
+        const correct = chosen === qs[i].c;
+        if (correct) { score++; awardXP(6, "Correct answer"); }
+        opts.querySelectorAll(".quiz-option").forEach((e2, k) => {
+          if (k === qs[i].c) e2.classList.add("correct");
+          if (k === chosen && !correct) e2.classList.add("wrong");
+        });
+        body.querySelector("#qScore").textContent = score;
+        body.querySelector("#qExp").textContent = "💡 " + qs[i].e;
+        body.querySelector("#qNext").disabled = false;
+      });
+    });
+  };
+  body.querySelector("#qNext").addEventListener("click", () => {
+    if (i < qs.length - 1) { i++; render(); }
+    else {
+      const ms = moduleState(m.id);
+      if (score > ms.quizBest) { ms.quizBest = score; saveState(); }
+      state.quizzesTaken += 1; saveState();
+      body.innerHTML = `
+        <div class="card" style="max-width:520px;margin:0 auto;text-align:center">
+          <div style="font-size:44px">${score===qs.length ? "🏆" : score/qs.length >= 0.7 ? "🎉" : "📘"}</div>
+          <h2>You scored ${score} / ${qs.length}</h2>
+          <p class="muted">${score===qs.length ? "Perfect — you know this cold." : score/qs.length>=0.7 ? "Strong — one more pass and you've got it." : "Good start — review the flashcards and try again."}</p>
+          <div class="row" style="justify-content:center;margin-top:14px">
+            <button class="btn" id="qAgain">🔁 Try again</button>
+            <button class="btn primary" id="qBackMod">Back to module</button>
+          </div>
+        </div>
+      `;
+      body.querySelector("#qAgain").addEventListener("click", () => renderQuiz(body, m));
+      body.querySelector("#qBackMod").addEventListener("click", () => navigate("module", {id:m.id}));
+      moduleCompleted(m.id);
+    }
+  });
+  render();
+}
+
+function renderRoleCard(body, m) {
+  body.innerHTML = `
+    <div class="card" style="max-width:720px;margin:0 auto">
+      <h3>🧑‍💼 Roles you'll hire / talk to for ${m.name}</h3>
+      <div class="kv">
+        ${m.roles.map(r => `
+          <div>${r.title}</div>
+          <div><span class="pill">${r.seniority}</span> ${r.note}</div>
+        `).join("")}
+      </div>
+      <hr>
+      <h3>🎯 Opening line for a client meeting</h3>
+      <p style="font-style:italic">"${m.oneLiner}"</p>
+      <hr>
+      <h3>🚩 Common pitfalls when scoping</h3>
+      <ul class="tight">${m.redFlags.map(r => `<li>${r}</li>`).join("")}</ul>
+    </div>
+  `;
+}
+
+function renderNotes(body, m) {
+  const cur = state.notes[m.id] || "";
+  body.innerHTML = `
+    <div class="card" style="max-width:720px;margin:0 auto">
+      <h3>🗒️ Your notes for ${m.name}</h3>
+      <p class="tiny muted">Jot down anything you've learned from a client call, a doc review, or a colleague. Saved locally.</p>
+      <textarea id="noteArea" style="width:100%;min-height:240px;padding:12px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:10px;font-family:inherit;font-size:14px">${escapeHtml(cur)}</textarea>
+      <div class="row" style="justify-content:space-between;margin-top:10px">
+        <span class="tiny muted" id="noteSaved"></span>
+        <div>
+          <button class="btn" id="noteCopy">📋 Copy</button>
+          <button class="btn primary" id="noteSave">💾 Save</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const ta = body.querySelector("#noteArea");
+  const info = body.querySelector("#noteSaved");
+  body.querySelector("#noteSave").addEventListener("click", () => {
+    state.notes[m.id] = ta.value;
+    saveState();
+    info.textContent = "Saved ✓";
+    setTimeout(() => info.textContent = "", 1800);
+  });
+  body.querySelector("#noteCopy").addEventListener("click", () => {
+    navigator.clipboard.writeText(ta.value).then(()=> toast("Notes copied"));
+  });
+}
+
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+function renderBrief(body, m) {
+  body.innerHTML = `
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>What it is</h3>
+        <p>${m.whatItIs}</p>
+        <h3 style="margin-top:14px">Why it matters to PM Group</h3>
+        <p>${m.whyItMatters}</p>
+        <div class="pill good">60-sec pitch:</div>
+        <p style="margin-top:6px;font-style:italic">"${m.oneLiner}"</p>
+      </div>
+      <div class="card">
+        <h3>Key concepts</h3>
+        <div>
+          ${m.keyConcepts.map(k =>
+            `<details><summary>${k.t}</summary><p style="margin:8px 0 0">${k.d}</p></details>`
+          ).join("")}
+        </div>
+      </div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>🎯 Questions to ask a client</h3>
+        <ul class="tight">${m.clientQuestions.map(q => `<li>${q}</li>`).join("")}</ul>
+      </div>
+      <div class="card">
+        <h3>🚩 Red flags & pitfalls</h3>
+        <ul class="tight">${m.redFlags.map(r => `<li>${r}</li>`).join("")}</ul>
+      </div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="card">
+      <h3>🧑‍💼 Typical roles at client sites</h3>
+      <div class="grid cols-2">
+        ${m.roles.map(r => `
+          <div class="card" style="padding:12px;background:var(--panel-2)">
+            <b>${r.title}</b>
+            <div class="tiny"><span class="pill">${r.seniority}</span></div>
+            <p class="tiny muted" style="margin-top:6px">${r.note}</p>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- Games hub ---------- */
+VIEWS.games = (root) => {
+  root.innerHTML = `
+    <h1>Mini-Games</h1>
+    <p class="subtitle">Fast, playful drills to keep the vocabulary fresh.</p>
+    <div class="grid cols-2">
+      <div class="card" id="gMatch">
+        <div class="icon">🧩</div>
+        <h3>Matching Game</h3>
+        <p class="tiny muted">Pair terms with definitions. 8 rounds of 6 pairs. +5 XP per match.</p>
+        <button class="btn primary small" style="margin-top:10px">Play</button>
+      </div>
+      <div class="card" id="gPyr">
+        <div class="icon">🏛️</div>
+        <h3>ISA-95 Pyramid Builder</h3>
+        <p class="tiny muted">Drop each level in the right place. Perfect run = Purdue Guru badge.</p>
+        <button class="btn primary small" style="margin-top:10px">Play</button>
+      </div>
+      <div class="card" id="gAcro">
+        <div class="icon">🔤</div>
+        <h3>Acronym Challenge</h3>
+        <p class="tiny muted">See the acronym, type the expansion. 10 rounds.</p>
+        <button class="btn primary small" style="margin-top:10px">Play</button>
+      </div>
+      <div class="card" id="gSpd">
+        <div class="icon">⚡</div>
+        <h3>Speed Round</h3>
+        <p class="tiny muted">20 random quiz questions, 30-second timer each. Score 16+ for the Speed Runner badge.</p>
+        <button class="btn primary small" style="margin-top:10px">Play</button>
+      </div>
+      <div class="card" id="gRoles">
+        <div class="icon">🃏</div>
+        <h3>Role Matcher</h3>
+        <p class="tiny muted">See a job title, pick the right technology area.</p>
+        <button class="btn primary small" style="margin-top:10px">Play</button>
+      </div>
+      <div class="card" id="gBuzz">
+        <div class="icon">🎯</div>
+        <h3>Client Buzzword Bingo</h3>
+        <p class="tiny muted">Translate client-speak into plain English.</p>
+        <button class="btn primary small" style="margin-top:10px">Play</button>
+      </div>
+    </div>
+  `;
+  root.querySelector("#gMatch").addEventListener("click", ()=> navigate("matching"));
+  root.querySelector("#gPyr").addEventListener("click", ()=> navigate("pyramid"));
+  root.querySelector("#gAcro").addEventListener("click", ()=> navigate("acronym"));
+  root.querySelector("#gSpd").addEventListener("click", ()=> navigate("speedround"));
+  root.querySelector("#gRoles").addEventListener("click", ()=> navigate("rolematch"));
+  root.querySelector("#gBuzz").addEventListener("click", ()=> navigate("buzzword"));
+};
+
+/* ---------- Matching Game ---------- */
+VIEWS.matching = (root) => {
+  // Grab 6 random flashcards across modules
+  const pool = [];
+  Object.keys(FLASHCARDS).forEach(k => FLASHCARDS[k].forEach(c => pool.push(c)));
+  const picks = shuffle(pool).slice(0,6);
+  const terms = shuffle(picks.map((c,i) => ({k:i, text:c.t})));
+  const defs = shuffle(picks.map((c,i) => ({k:i, text:c.d})));
+  let selectedTerm = null, selectedDef = null, matches = 0, misses = 0;
+  state.gamesPlayed += 1; saveState();
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">🧩 Matching Game</h1>
+    <p class="subtitle">Click a term, then click its definition. <span id="mScore" class="pill">0 / 6</span></p>
+    <div class="match-grid">
+      <div id="tCol"></div>
+      <div id="dCol"></div>
+    </div>
+    <div style="height:16px"></div>
+    <button class="btn" id="mRestart">🔁 New round</button>
+  `;
+  root.querySelector("#back").addEventListener("click", () => navigate("games"));
+  root.querySelector("#mRestart").addEventListener("click", () => VIEWS.matching(root));
+  const tCol = root.querySelector("#tCol");
+  const dCol = root.querySelector("#dCol");
+  terms.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "match-item"; el.textContent = t.text; el.dataset.k = t.k;
+    el.addEventListener("click", () => {
+      if (el.classList.contains("matched")) return;
+      tCol.querySelectorAll(".match-item").forEach(x=>x.classList.remove("selected"));
+      el.classList.add("selected"); selectedTerm = el; tryMatch();
+    });
+    tCol.appendChild(el);
+  });
+  defs.forEach(d => {
+    const el = document.createElement("div");
+    el.className = "match-item"; el.textContent = d.text; el.dataset.k = d.k;
+    el.addEventListener("click", () => {
+      if (el.classList.contains("matched")) return;
+      dCol.querySelectorAll(".match-item").forEach(x=>x.classList.remove("selected"));
+      el.classList.add("selected"); selectedDef = el; tryMatch();
+    });
+    dCol.appendChild(el);
+  });
+  function tryMatch() {
+    if (!selectedTerm || !selectedDef) return;
+    if (selectedTerm.dataset.k === selectedDef.dataset.k) {
+      selectedTerm.classList.add("matched"); selectedDef.classList.add("matched");
+      matches++; awardXP(5, "Match");
+      root.querySelector("#mScore").textContent = `${matches} / 6`;
+      if (matches === 6) {
+        setTimeout(()=> toast("Round complete! +20 bonus"), 200);
+        awardXP(20, "Matching round complete");
+      }
+    } else {
+      misses++;
+      selectedTerm.classList.add("wrong"); selectedDef.classList.add("wrong");
+      setTimeout(()=> {
+        selectedTerm.classList.remove("wrong","selected");
+        selectedDef.classList.remove("wrong","selected");
+      }, 450);
+    }
+    selectedTerm = null; selectedDef = null;
+  }
+};
+
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+/* ---------- Pyramid Builder ---------- */
+VIEWS.pyramid = (root) => {
+  state.gamesPlayed += 1; saveState();
+  const slots = shuffle([0,1,2,3,4]);
+  let filled = {}; let misses = 0;
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">🏛️ ISA-95 Pyramid Builder</h1>
+    <p class="subtitle">Drag or click to drop each level in its correct position.</p>
+    <div class="pyramid" id="pyr">
+      ${[4,3,2,1,0].map(l => `<div class="pyramid-slot" data-level="${l}">Level ${l} — ?</div>`).join("")}
+    </div>
+    <div class="pieces" id="pcs">
+      ${PYRAMID_LEVELS.map(p => `<div class="piece" data-level="${p.lvl}">${p.name}</div>`).join("")}
+    </div>
+    <div style="height:10px"></div>
+    <div class="tiny muted" id="pHint">Hint: ERP is at the top, physical process is at the bottom.</div>
+    <div style="height:14px"></div>
+    <button class="btn" id="pReset">🔁 Reset</button>
+  `;
+  root.querySelector("#back").addEventListener("click", () => navigate("games"));
+  root.querySelector("#pReset").addEventListener("click", () => VIEWS.pyramid(root));
+  let selectedPiece = null;
+  root.querySelectorAll(".piece").forEach(p => {
+    p.addEventListener("click", () => {
+      root.querySelectorAll(".piece").forEach(x=>x.style.outline="");
+      selectedPiece = p; p.style.outline = "2px solid var(--accent)";
+    });
+  });
+  root.querySelectorAll(".pyramid-slot").forEach(s => {
+    s.addEventListener("click", () => {
+      if (!selectedPiece) { toast("Pick a piece first"); return; }
+      const pieceLvl = parseInt(selectedPiece.dataset.level,10);
+      const slotLvl = parseInt(s.dataset.level,10);
+      if (pieceLvl === slotLvl) {
+        s.textContent = PYRAMID_LEVELS.find(p=>p.lvl===pieceLvl).name + " — " + PYRAMID_LEVELS.find(p=>p.lvl===pieceLvl).examples;
+        s.classList.add("filled");
+        selectedPiece.classList.add("used"); selectedPiece.style.outline = "";
+        selectedPiece = null; filled[slotLvl] = true;
+        awardXP(6, `Purdue L${slotLvl} placed`);
+        if (Object.keys(filled).length === 5) {
+          awardXP(20, "Pyramid complete");
+          if (misses === 0) earnBadge("purdueGuru");
+          toast(misses === 0 ? "Flawless! Purdue Guru unlocked 🏛️" : "Nice — finished!");
+        }
+      } else {
+        misses++;
+        s.classList.add("wrong"); setTimeout(()=> s.classList.remove("wrong"), 450);
+      }
+    });
+  });
+};
+
+/* ---------- Acronym Challenge ---------- */
+VIEWS.acronym = (root) => {
+  state.gamesPlayed += 1; saveState();
+  const rounds = shuffle(ACRONYMS).slice(0,10);
+  let i = 0, score = 0;
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">🔤 Acronym Challenge</h1>
+    <p class="subtitle"><span class="pill">Round <b id="aIdx">1</b> / 10</span> · Score: <b id="aScore">0</b></p>
+    <div class="card" style="max-width:540px;margin:0 auto;text-align:center">
+      <div style="font-size:54px;font-weight:800;letter-spacing:3px" id="aWord"></div>
+      <input id="aIn" class="search" placeholder="Type the full expansion..." style="margin-top:12px" autofocus>
+      <div class="row" style="justify-content:center;margin-top:10px">
+        <button class="btn" id="aSkip">Skip</button>
+        <button class="btn primary" id="aGo">Check</button>
+      </div>
+      <div class="tiny muted" id="aFeedback" style="margin-top:10px;min-height:20px"></div>
+    </div>
+  `;
+  root.querySelector("#back").addEventListener("click", ()=> navigate("games"));
+  const word = root.querySelector("#aWord");
+  const input = root.querySelector("#aIn");
+  const fb = root.querySelector("#aFeedback");
+  const idx = root.querySelector("#aIdx");
+  const sc = root.querySelector("#aScore");
+  const render = () => {
+    word.textContent = rounds[i].a;
+    input.value = ""; input.focus();
+    fb.textContent = "";
+    idx.textContent = i+1;
+  };
+  const check = () => {
+    const ans = input.value.trim().toLowerCase();
+    const expected = rounds[i].x.toLowerCase();
+    const correct = ans && (ans === expected || levenshtein(ans, expected) <= Math.max(2, Math.floor(expected.length * 0.15)));
+    if (correct) { score++; awardXP(5, "Acronym"); fb.textContent = "✅ " + rounds[i].x; }
+    else { fb.textContent = "❌ " + rounds[i].x; }
+    sc.textContent = score;
+    setTimeout(() => {
+      if (i < rounds.length - 1) { i++; render(); }
+      else {
+        root.innerHTML = `<div class="card" style="max-width:460px;margin:40px auto;text-align:center">
+          <div style="font-size:48px">${score>=9?"🏆":score>=6?"🎉":"📘"}</div>
+          <h2>${score} / 10</h2>
+          <button class="btn primary" onclick="navigate('acronym')">Play again</button>
+          <button class="btn" onclick="navigate('games')">Back</button>
+        </div>`;
+      }
+    }, 900);
+  };
+  root.querySelector("#aGo").addEventListener("click", check);
+  root.querySelector("#aSkip").addEventListener("click", () => { input.value = ""; check(); });
+  input.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+  render();
+};
+
+function levenshtein(a,b) {
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const d = Array.from({length:m+1}, () => new Array(n+1).fill(0));
+  for (let i=0;i<=m;i++) d[i][0] = i;
+  for (let j=0;j<=n;j++) d[0][j] = j;
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++) {
+    const c = a[i-1] === b[j-1] ? 0 : 1;
+    d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+c);
+  }
+  return d[m][n];
+}
+
+/* ---------- Speed Round ---------- */
+VIEWS.speedround = (root) => {
+  state.gamesPlayed += 1; saveState();
+  // Pool 20 random quiz questions across modules
+  const all = [];
+  Object.keys(QUIZZES).forEach(k => QUIZZES[k].forEach(q => all.push({...q, _m:k})));
+  const picks = shuffle(all).slice(0,20);
+  let i = 0, score = 0, timer = null, left = 30;
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">⚡ Speed Round</h1>
+    <div class="row" style="justify-content:space-between">
+      <span class="pill">Q <b id="sIdx">1</b>/20 · Score <b id="sScore">0</b></span>
+      <span class="pill warn">⏱ <b id="sTimer">30</b>s</span>
+    </div>
+    <div class="card" id="sCard" style="max-width:720px;margin:12px auto 0"></div>
+  `;
+  root.querySelector("#back").addEventListener("click", () => { if (timer) clearInterval(timer); navigate("games"); });
+  const sCard = root.querySelector("#sCard");
+  const idxEl = root.querySelector("#sIdx");
+  const scEl = root.querySelector("#sScore");
+  const tmEl = root.querySelector("#sTimer");
+  const render = () => {
+    const q = picks[i];
+    idxEl.textContent = i+1;
+    left = 30; tmEl.textContent = left;
+    sCard.innerHTML = `
+      <h3>${q.q}</h3>
+      <p class="tiny muted">From: ${(MODULES.find(m=>m.id===q._m)||{}).name||""}</p>
+      <div id="sOpts" style="margin-top:10px">
+        ${q.a.map((o,k)=> `<div class="quiz-option" data-k="${k}"><div class="badge">${String.fromCharCode(65+k)}</div><div>${o}</div></div>`).join("")}
+      </div>
+    `;
+    if (timer) clearInterval(timer);
+    timer = setInterval(()=> {
+      left--; tmEl.textContent = left;
+      if (left <= 0) { clearInterval(timer); next(false, -1); }
+    }, 1000);
+    sCard.querySelectorAll(".quiz-option").forEach(el => {
+      el.addEventListener("click", () => {
+        clearInterval(timer);
+        const chosen = parseInt(el.dataset.k,10);
+        const correct = chosen === q.c;
+        sCard.querySelectorAll(".quiz-option").forEach((e2,k)=> {
+          if (k===q.c) e2.classList.add("correct");
+          if (k===chosen && !correct) e2.classList.add("wrong");
+        });
+        if (correct) { score++; awardXP(4, "Speed round hit"); }
+        scEl.textContent = score;
+        setTimeout(() => next(correct, chosen), 600);
+      });
+    });
+  };
+  const next = (ok, chosen) => {
+    if (i < picks.length-1) { i++; render(); }
+    else finish();
+  };
+  const finish = () => {
+    if (score >= 16) earnBadge("speed20");
+    sCard.innerHTML = `
+      <div style="text-align:center">
+        <div style="font-size:44px">${score>=18?"🏆":score>=14?"🎉":"📘"}</div>
+        <h2>${score} / 20</h2>
+        <p class="muted">${score>=16?"Speed Runner badge secured.":"Practice the modules and try again."}</p>
+        <button class="btn primary" onclick="navigate('speedround')">🔁 Play again</button>
+        <button class="btn" onclick="navigate('games')">Back</button>
+      </div>
+    `;
+  };
+  render();
+};
+
+/* ---------- Role Matcher ---------- */
+VIEWS.rolematch = (root) => {
+  state.gamesPlayed += 1; saveState();
+  const rounds = shuffle(ROLES).slice(0,10);
+  let i = 0, score = 0;
+  const buckets = [...new Set(ROLES.map(r => r.bucket))];
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">🃏 Role Matcher</h1>
+    <p class="subtitle">See a job title, pick the right technology bucket.</p>
+    <div class="card" id="rmCard" style="max-width:640px;margin:0 auto"></div>
+  `;
+  root.querySelector("#back").addEventListener("click", () => navigate("games"));
+  const card = root.querySelector("#rmCard");
+  const render = () => {
+    const r = rounds[i];
+    card.innerHTML = `
+      <div class="tiny muted">Round ${i+1}/10 · Score ${score}</div>
+      <h2 style="margin-top:6px">${r.role}</h2>
+      <p class="tiny muted">${r.tagline}</p>
+      <div class="grid cols-2" style="margin-top:10px">
+        ${shuffle(buckets).map(b => `<button class="btn" data-b="${b}" style="padding:14px">${b}</button>`).join("")}
+      </div>
+    `;
+    card.querySelectorAll("[data-b]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const ok = btn.dataset.b === r.bucket;
+        if (ok) { score++; awardXP(5, "Role matched"); btn.style.borderColor = "var(--success)"; }
+        else { btn.style.borderColor = "var(--danger)"; }
+        setTimeout(()=> {
+          if (i < rounds.length - 1) { i++; render(); }
+          else {
+            card.innerHTML = `<div style="text-align:center">
+              <div style="font-size:44px">${score>=9?"🏆":score>=6?"🎉":"📘"}</div>
+              <h2>${score} / 10</h2>
+              <button class="btn primary" onclick="navigate('rolematch')">Play again</button>
+              <button class="btn" onclick="navigate('games')">Back</button>
+            </div>`;
+          }
+        }, 550);
+      });
+    });
+  };
+  render();
+};
+
+/* ---------- Buzzword Bingo ---------- */
+const BUZZWORDS = [
+  {c:"\"Our OT is fully air-gapped.\"", t:"Probably not — ask about USB policy, remote support, and temporary jumpers."},
+  {c:"\"We need a DeltaV uplift.\"", t:"Usually means a version upgrade (e.g. v13→v15). Big CSV effort."},
+  {c:"\"MES will give us paperless.\"", t:"True goal is Review by Exception EBRs — paperless is a byproduct."},
+  {c:"\"We're GAMP Cat 5 on this.\"", t:"They're describing custom code. Validation effort is highest in Cat 5."},
+  {c:"\"Our PI isn't tagged properly.\"", t:"They likely mean Asset Framework (AF) is under-modelled."},
+  {c:"\"Can you bring Syncade SMEs?\"", t:"Niche skill. Expect premium rates and scarce supply."},
+  {c:"\"We're standardising on OPC UA.\"", t:"Positive — modern, secure, cross-vendor. Often tied to a DMZ/historian refresh."},
+  {c:"\"We failed a data-integrity audit.\"", t:"Serious — likely shared logins, missing audit trail, or unvalidated Excel."},
+  {c:"\"Brownfield migration.\"", t:"Inside a running plant. Harder than greenfield — change control is the gating factor."},
+  {c:"\"We're going to cloud with PI.\"", t:"AVEVA CONNECT / Data Hub. Architecture + governance project."},
+  {c:"\"NIS2 readiness.\"", t:"EU cyber directive. 2024 onward; broader than NIS1. Expect an OT cyber gap-assessment."},
+  {c:"\"Review by exception is our goal.\"", t:"MES flagship capability — they want EBR automation with deviation workflows."},
+  {c:"\"We don't have a Purdue diagram.\"", t:"Missing architecture baseline = first deliverable on any IT/OT project."}
+];
+VIEWS.buzzword = (root) => {
+  state.gamesPlayed += 1; saveState();
+  const rounds = shuffle(BUZZWORDS).slice(0,8);
+  let i = 0, score = 0;
+  root.innerHTML = `
+    <button class="btn ghost" id="back">← Back</button>
+    <h1 style="margin-top:14px">🎯 Client Buzzword Bingo</h1>
+    <p class="subtitle">Translate client phrases into what's really being said.</p>
+    <div class="card" id="bCard" style="max-width:640px;margin:0 auto"></div>
+  `;
+  root.querySelector("#back").addEventListener("click", () => navigate("games"));
+  const card = root.querySelector("#bCard");
+  const render = () => {
+    const r = rounds[i];
+    const distractors = shuffle(BUZZWORDS.filter(x=>x!==r)).slice(0,3).map(x=>x.t);
+    const opts = shuffle([r.t, ...distractors]);
+    card.innerHTML = `
+      <div class="tiny muted">Round ${i+1}/8 · Score ${score}</div>
+      <h3 style="margin-top:6px">Client says: ${r.c}</h3>
+      <p class="tiny muted">What's really going on?</p>
+      <div id="bOpts" style="margin-top:10px">
+        ${opts.map((o,k) => `<div class="quiz-option" data-k="${k}"><div class="badge">${String.fromCharCode(65+k)}</div><div>${o}</div></div>`).join("")}
+      </div>
+    `;
+    card.querySelectorAll(".quiz-option").forEach(el => {
+      el.addEventListener("click", () => {
+        const txt = el.querySelector("div:last-child").textContent;
+        const ok = txt === r.t;
+        if (ok) { score++; awardXP(6, "Buzzword decoded"); el.classList.add("correct"); }
+        else { el.classList.add("wrong"); }
+        card.querySelectorAll(".quiz-option").forEach(e2 => {
+          if (e2.querySelector("div:last-child").textContent === r.t) e2.classList.add("correct");
+        });
+        setTimeout(()=> {
+          if (i < rounds.length-1) { i++; render(); }
+          else {
+            card.innerHTML = `<div style="text-align:center">
+              <div style="font-size:44px">${score>=7?"🏆":score>=5?"🎉":"📘"}</div>
+              <h2>${score} / 8</h2>
+              <button class="btn primary" onclick="navigate('buzzword')">Play again</button>
+              <button class="btn" onclick="navigate('games')">Back</button>
+            </div>`;
+          }
+        }, 700);
+      });
+    });
+  };
+  render();
+};
+
+/* ---------- Role Cards (browse) ---------- */
+VIEWS.roles = (root) => {
+  const buckets = [...new Set(ROLES.map(r => r.bucket))];
+  root.innerHTML = `
+    <h1>Role Cards</h1>
+    <p class="subtitle">A quick-reference atlas of the roles PM Group hires for, grouped by technology area.</p>
+    ${buckets.map(b => `
+      <h2 style="margin-top:20px">${b}</h2>
+      <div class="grid cols-2">
+        ${ROLES.filter(r=>r.bucket===b).map(r => `
+          <div class="card role-jump" data-mod="${r.module}">
+            <h3>${r.role}</h3>
+            <p class="tiny muted">${r.tagline}</p>
+            <div class="row" style="margin-top:8px">
+              <span class="pill">${(MODULES.find(m=>m.id===r.module)||{name:""}).name}</span>
+              <span class="spacer"></span>
+              <button class="btn small">Open module →</button>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `).join("")}
+  `;
+  root.querySelectorAll(".role-jump").forEach(el=>{
+    el.addEventListener("click", ()=> navigate("module", {id: el.dataset.mod}));
+  });
+};
+
+/* ---------- Client Toolkit ---------- */
+VIEWS.toolkit = (root) => {
+  root.innerHTML = `
+    <h1>Client Toolkit</h1>
+    <p class="subtitle">Openers, discovery questions, and landmines for your next PM Group client conversation.</p>
+    <div class="tabs" id="tkTabs">
+      <div class="tab active" data-tab="open">💬 Openers</div>
+      <div class="tab" data-tab="disc">🔍 Discovery</div>
+      <div class="tab" data-tab="pit">⚠️ Pitfalls</div>
+      <div class="tab" data-tab="cheat">📇 Cheat Sheet</div>
+      <div class="tab" data-tab="prep">🗓️ Call Prep</div>
+    </div>
+    <div id="tkBody"></div>
+  `;
+  const tabs = root.querySelectorAll("#tkTabs .tab");
+  const body = root.querySelector("#tkBody");
+  const show = (t) => {
+    tabs.forEach(x => x.classList.toggle("active", x.dataset.tab===t));
+    if (t==="open") body.innerHTML = `<div class="card"><ul class="tight">${TOOLKIT.openers.map(o=>`<li>${o}</li>`).join("")}</ul></div>`;
+    if (t==="disc") body.innerHTML = `<div class="card"><ul class="tight">${TOOLKIT.discovery.map(o=>`<li>${o}</li>`).join("")}</ul></div>`;
+    if (t==="pit")  body.innerHTML = `<div class="card"><ul class="tight">${TOOLKIT.pitfalls.map(o=>`<li>${o}</li>`).join("")}</ul></div>`;
+    if (t==="cheat") body.innerHTML = `<div class="grid cols-2">${TOOLKIT.cheatSheet.map(c => `<div class="card"><h3>${c.title}</h3><p>${c.text}</p></div>`).join("")}</div>`;
+    if (t==="prep") body.innerHTML = renderCallPrep();
+    if (t==="prep") wireCallPrep(body);
+  };
+  tabs.forEach(t => t.addEventListener("click", () => show(t.dataset.tab)));
+  show("open");
+};
+
+function renderCallPrep() {
+  const saved = state.callPrep || {};
+  return `
+    <div class="card" style="max-width:720px;margin:0 auto">
+      <h3>🗓️ Call Prep Builder</h3>
+      <p class="tiny muted">Fill this in before a client call — it will generate a clean one-page brief you can copy.</p>
+      <div class="kv" style="margin-top:8px">
+        <div>Client</div><div><input class="search" id="cpClient" value="${escapeHtml(saved.client||"")}" placeholder="e.g. BioPharma Co, Cork"></div>
+        <div>Attendees</div><div><input class="search" id="cpAtt" value="${escapeHtml(saved.att||"")}" placeholder="e.g. Head of Automation, CSV Lead"></div>
+        <div>Topics</div><div><input class="search" id="cpTop" value="${escapeHtml(saved.top||"")}" placeholder="e.g. DeltaV uplift, MES rollout"></div>
+        <div>Known stack</div><div><input class="search" id="cpStk" value="${escapeHtml(saved.stk||"")}" placeholder="e.g. DeltaV v14, PAS-X 3.2, PI, SAP"></div>
+        <div>Outcomes</div><div><input class="search" id="cpOut" value="${escapeHtml(saved.out||"")}" placeholder="e.g. Scope 6-month contract, identify CSV gaps"></div>
+      </div>
+      <div class="row" style="justify-content:flex-end;margin-top:12px">
+        <button class="btn" id="cpClear">Clear</button>
+        <button class="btn primary" id="cpBuild">📝 Build brief</button>
+      </div>
+      <div id="cpOutBox"></div>
+    </div>
+  `;
+}
+function wireCallPrep(body) {
+  body.querySelector("#cpClear").addEventListener("click", () => { state.callPrep = {}; saveState(); VIEWS.toolkit(document.getElementById("view")); });
+  body.querySelector("#cpBuild").addEventListener("click", () => {
+    const data = {
+      client: body.querySelector("#cpClient").value.trim(),
+      att: body.querySelector("#cpAtt").value.trim(),
+      top: body.querySelector("#cpTop").value.trim(),
+      stk: body.querySelector("#cpStk").value.trim(),
+      out: body.querySelector("#cpOut").value.trim()
+    };
+    state.callPrep = data; saveState();
+    const topics = (data.top||"").split(",").map(s=>s.trim()).filter(Boolean);
+    const topicModules = topics.map(t => {
+      const hit = MODULES.find(m => (m.name+" "+m.tagline+" "+m.whatItIs).toLowerCase().includes(t.toLowerCase()));
+      return hit ? `• ${hit.name}: "${hit.oneLiner}"` : `• ${t}`;
+    });
+    const openers = shuffle(TOOLKIT.openers).slice(0,3);
+    const disc = shuffle(TOOLKIT.discovery).slice(0,3);
+    const brief = `
+CALL BRIEF — ${data.client || "(client)"}
+Attendees: ${data.att || "(tbc)"}
+Known stack: ${data.stk || "(unknown)"}
+
+DESIRED OUTCOMES
+${(data.out||"(none listed)").split(",").map(s=>`• ${s.trim()}`).join("\n")}
+
+ONE-LINERS FOR THE TOPICS
+${topicModules.join("\n") || "• (no topics listed)"}
+
+OPENERS (pick one)
+${openers.map(o=>`• ${o}`).join("\n")}
+
+DISCOVERY (ask 2–3)
+${disc.map(o=>`• ${o}`).join("\n")}
+
+WATCH-OUTS
+${TOOLKIT.pitfalls.slice(0,3).map(p=>`• ${p}`).join("\n")}
+`.trim();
+    const box = body.querySelector("#cpOutBox");
+    box.innerHTML = `
+      <hr>
+      <h3>📄 Your brief</h3>
+      <textarea style="width:100%;min-height:280px;padding:12px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:10px;font-family:ui-monospace,Consolas,monospace;font-size:12px">${escapeHtml(brief)}</textarea>
+      <div class="row" style="justify-content:flex-end;margin-top:8px">
+        <button class="btn" id="cpCopy">📋 Copy</button>
+      </div>
+    `;
+    box.querySelector("#cpCopy").addEventListener("click", () => { navigator.clipboard.writeText(brief); toast("Brief copied"); });
+    awardXP(10, "Call prep built");
+  });
+}
+
+/* ---------- Glossary ---------- */
+VIEWS.glossary = (root) => {
+  root.innerHTML = `
+    <h1>Glossary</h1>
+    <p class="subtitle">${GLOSSARY.length} terms · Searchable · ⭐ to bookmark</p>
+    <input class="search" id="gSearch" placeholder="Search terms — try 'batch', 'historian', 'validation'..." autofocus>
+    <div style="height:14px"></div>
+    <div id="gList"></div>
+  `;
+  const list = root.querySelector("#gList");
+  const render = (q="") => {
+    q = q.trim().toLowerCase();
+    const items = GLOSSARY
+      .filter(g => !q || g.term.toLowerCase().includes(q) || g.def.toLowerCase().includes(q))
+      .sort((a,b) => a.term.localeCompare(b.term));
+    if (!items.length) { list.innerHTML = "<p class='muted'>No matches.</p>"; return; }
+    list.innerHTML = items.map(g => {
+      const starred = state.bookmarks.includes(g.term);
+      return `<div class="card" style="padding:14px">
+        <div class="row" style="justify-content:space-between">
+          <b>${g.term}</b>
+          <button class="btn small" data-star="${g.term}">${starred?"★":"☆"}</button>
+        </div>
+        <p class="tiny" style="margin-top:6px">${g.def}</p>
+      </div>`;
+    }).join("");
+    list.querySelectorAll("[data-star]").forEach(b => {
+      b.addEventListener("click", () => {
+        const t = b.dataset.star;
+        if (state.bookmarks.includes(t)) state.bookmarks = state.bookmarks.filter(x=>x!==t);
+        else state.bookmarks.push(t);
+        saveState(); render(q);
+      });
+    });
+  };
+  root.querySelector("#gSearch").addEventListener("input", e => render(e.target.value));
+  render();
+};
+
+/* ---------- Badges / Progress ---------- */
+VIEWS.badges = (root) => {
+  const total = MODULES.length;
+  const overallPct = Math.round(MODULES.reduce((s,m) => s + moduleProgress(m.id).pct, 0) / total);
+  root.innerHTML = `
+    <h1>Progress</h1>
+    <p class="subtitle">Everything you've learned, and what's still to go.</p>
+
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>Overall</h3>
+        <div class="row" style="gap:16px;align-items:center;margin-top:6px">
+          <div class="ring" style="--p:${overallPct}"><span>${overallPct}%</span></div>
+          <div>
+            <div class="tiny muted">Completed</div>
+            <div style="font-size:22px;font-weight:700">${completedCount()} / ${total}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Activity</h3>
+        <div class="kv" style="margin-top:8px">
+          <div>XP</div><div>${state.xp}</div>
+          <div>Streak</div><div>${state.streak} days</div>
+          <div>Quizzes taken</div><div>${state.quizzesTaken}</div>
+          <div>Games played</div><div>${state.gamesPlayed}</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Badges</h3>
+        <div class="badges" style="margin-top:8px">
+          ${BADGE_DEFS.map(b => `<span class="badge-chip ${state.badges.includes(b.id)?'':'locked'}" title="${b.desc}">${b.icon} ${b.name}</span>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div style="height:20px"></div>
+    <h2>Module breakdown</h2>
+    <div class="grid cols-2">
+      ${MODULES.map(m => {
+        const p = moduleProgress(m.id);
+        return `<div class="card">
+          <div class="row" style="justify-content:space-between">
+            <h3 style="margin:0">${m.icon} ${m.name}</h3>
+            <span class="pill ${p.pct>=85?'good':p.pct>=40?'warn':'hot'}">${p.pct}%</span>
+          </div>
+          <div class="progress"><span style="width:${p.pct}%"></span></div>
+          <div class="tiny muted" style="margin-top:6px">Flashcards ${p.flashPct}% · Quiz ${p.quizPct}%</div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <div style="height:20px"></div>
+    <div class="card">
+      <h3>🗓️ Suggested learning plan</h3>
+      <p class="tiny muted">A 2-week plan to get you client-ready.</p>
+      <ol class="tight">
+        <li>Week 1, Days 1–2: DeltaV + ISA-88 (the batch foundation).</li>
+        <li>Week 1, Days 3–4: MES overview + PAS-X + Syncade.</li>
+        <li>Week 1, Day 5: ISA-95 Pyramid Builder + Historians.</li>
+        <li>Week 2, Days 1–2: CSV + Data Integrity (ALCOA+).</li>
+        <li>Week 2, Day 3: IT/OT + Cybersecurity.</li>
+        <li>Week 2, Day 4: PLCs + Serialization.</li>
+        <li>Week 2, Day 5: Speed Round to 16+; build your first Call Prep brief.</li>
+      </ol>
+    </div>
+  `;
+};
+
+/* ---------- Settings ---------- */
+VIEWS.settings = (root) => {
+  root.innerHTML = `
+    <h1>Settings</h1>
+    <p class="subtitle">Your data lives in your browser's localStorage. Nothing is sent anywhere.</p>
+    <div class="card">
+      <h3>Export / Import</h3>
+      <p class="tiny muted">Back up your progress, or move it to another device.</p>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="exp">⬇️ Export JSON</button>
+        <button class="btn" id="imp">⬆️ Import JSON</button>
+        <input type="file" id="impFile" accept="application/json" style="display:none">
+      </div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="card">
+      <h3>Reset progress</h3>
+      <p class="tiny muted">This will wipe all XP, badges, module progress, and notes.</p>
+      <button class="btn danger" id="reset" style="margin-top:10px">🗑️ Reset everything</button>
+    </div>
+    <div style="height:14px"></div>
+    <div class="card">
+      <h3>About AYME</h3>
+      <p>AYME — <b>A</b>utomation & <b>Y</b>ou <b>M</b>astery <b>E</b>ngine. Built to help PM Group Key Account Managers get fluent in Connected Automation fast. Single-file, offline, private.</p>
+      <p class="tiny muted">Content based on common industry usage as of 2026. Always validate specific client stacks during discovery.</p>
+    </div>
+  `;
+  root.querySelector("#exp").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "ayme-progress.json"; a.click();
+    URL.revokeObjectURL(url);
+  });
+  root.querySelector("#imp").addEventListener("click", () => root.querySelector("#impFile").click());
+  root.querySelector("#impFile").addEventListener("change", e => {
+    const f = e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const parsed = JSON.parse(rd.result);
+        state = Object.assign(defaultState(), parsed);
+        saveState();
+        toast("Import complete");
+        updateTopbar(); navigate("dashboard");
+      } catch(err){ toast("Invalid file"); }
+    };
+    rd.readAsText(f);
+  });
+  root.querySelector("#reset").addEventListener("click", () => {
+    if (!confirm("Reset all progress? This cannot be undone.")) return;
+    state = defaultState(); saveState();
+    toast("Progress reset");
+    updateTopbar(); navigate("dashboard");
+  });
+};
+
+/* ============================================================
+   Bootstrap
+   ============================================================ */
+updateTopbar();
+navigate("dashboard");
+
+
+
+
+</script>
+</body>
+</html>

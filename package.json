@@ -1,0 +1,13 @@
+{
+  "name": "ayme",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AYME — Automation & You Mastery Engine. A learning platform for PM Group Key Account Managers covering connected automation (DeltaV, MES, CSV, IT/OT, Syncade, PAS-X).",
+  "scripts": {
+    "dev": "npx serve .",
+    "deploy": "npx vercel --prod"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
