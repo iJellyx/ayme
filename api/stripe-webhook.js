@@ -42,17 +42,20 @@ export default async function handler(request) {
 
   try {
     const obj = event.data.object;
+    console.log('[webhook] event', event.type, 'clerkUserId=', obj.metadata?.clerkUserId || obj.client_reference_id, 'customer=', obj.customer);
 
     switch (event.type) {
       case 'checkout.session.completed': {
         const clerkUserId = obj.metadata?.clerkUserId || obj.client_reference_id;
-        if (clerkUserId) {
-          await setSubscriptionStatus(clerkUserId, {
-            subscriptionStatus: 'active',
-            stripeCustomerId: obj.customer,
-            stripeSubscriptionId: obj.subscription,
-          });
+        if (!clerkUserId) {
+          console.warn('[webhook] checkout.session.completed had no clerkUserId');
+          break;
         }
+        await setSubscriptionStatus(clerkUserId, {
+          subscriptionStatus: 'active',
+          stripeCustomerId: obj.customer,
+          stripeSubscriptionId: obj.subscription,
+        });
         break;
       }
 
@@ -67,6 +70,7 @@ export default async function handler(request) {
         } else {
           const user = await findUserByStripeCustomer(obj.customer);
           if (user) await setSubscriptionStatus(user.id, { subscriptionStatus: status });
+          else console.warn('[webhook] no clerk user found for stripe customer', obj.customer);
         }
         break;
       }
@@ -74,8 +78,13 @@ export default async function handler(request) {
 
     return Response.json({ received: true });
   } catch (err) {
-    console.error('Webhook handler error', err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error('[webhook] handler error', err?.message, err?.stack, err?.errors);
+    return new Response(JSON.stringify({
+      error: err?.message || 'Unknown error',
+      name: err?.name,
+      stack: err?.stack,
+      clerkErrors: err?.errors,
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
