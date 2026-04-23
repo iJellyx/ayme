@@ -291,6 +291,70 @@ ul.tight li { margin-bottom: 4px; }
   content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--panel);
 }
 .ring > span { position: relative; z-index: 1; font-weight: 700; }
+
+/* Hover explanations — simple jargon busters */
+.tip {
+  border-bottom: 1px dotted var(--primary-2);
+  cursor: help;
+  position: relative;
+  transition: background 0.15s ease;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.tip:hover, .tip:focus { background: rgba(108,140,255,0.12); outline: none; }
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 300px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--primary);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-weight: 400;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 10000;
+  text-align: left;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.tip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--primary);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+  z-index: 10000;
+}
+.tip:hover::after, .tip:hover::before,
+.tip:focus::after, .tip:focus::before,
+.tip.tip-show::after, .tip.tip-show::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.tip.tip-flip::after { bottom: auto; top: calc(100% + 10px); }
+.tip.tip-flip::before {
+  bottom: auto; top: calc(100% + 4px);
+  border-top-color: transparent; border-bottom-color: var(--primary);
+}
+@media (max-width: 600px) {
+  .tip::after { max-width: 240px; font-size: 12px; }
+}
 </style>
 </head>
 <body data-theme="dark">
@@ -1118,6 +1182,228 @@ const BADGE_DEFS = [
 ];
 
 /* ============================================================
+   AYME — simple explanations (tooltip dictionary)
+   Written in plain language a 12-year-old could follow.
+   ============================================================ */
+const SIMPLE_EXPLANATIONS = {
+  "DCS": "A clever computer system that runs a whole factory at once — telling pumps, valves, heaters and tanks what to do so the right product is made the right way.",
+  "DeltaV": "A brand of factory control system made by a company called Emerson. Very popular in medicine factories.",
+  "PLC": "A small, tough computer that bosses one machine — like the brain inside a washing machine, but for factory kit.",
+  "PLCs": "Small, tough computers that each boss one factory machine — like tiny brains for conveyor belts, mixers and fillers.",
+  "HMI": "Human Machine Interface — the screen a worker taps to see and control a machine.",
+  "SCADA": "A system that lets a control room watch and drive lots of equipment at once, even when it's spread across a big site.",
+  "MES": "Factory software that tells the plant what to make today, keeps a digital diary of every batch, and passes info up to the head-office systems.",
+  "EBR": "Electronic Batch Record — the digital logbook that records everything that happened while one batch was being made.",
+  "EBRs": "Electronic Batch Records — digital logbooks for every batch made.",
+  "MBR": "Master Batch Record — the approved recipe/template that every real batch is made from.",
+  "CSV": "Computer System Validation — proving to health regulators that a factory's software does exactly what it's supposed to, safely.",
+  "CSA": "Computer Software Assurance — a newer, less paperwork-heavy way of checking factory software is safe to use.",
+  "GAMP 5": "A worldwide rulebook for how to test factory software properly.",
+  "GAMP": "Good Automated Manufacturing Practice — the rulebook people use to test factory software.",
+  "URS": "User Requirements Specification — a wish list of what the user wants the software to do, written in plain words.",
+  "FDS": "Functional Design Specification — a more technical description of what the software will do to meet the wish list.",
+  "FS": "Functional Specification — a description of what the software will do to meet the URS.",
+  "IQ": "Installation Qualification — checking the software and kit were installed the way they should be.",
+  "OQ": "Operational Qualification — checking the system works in all the ways it's supposed to.",
+  "PQ": "Performance Qualification — checking the system keeps working well during real production.",
+  "21 CFR Part 11": "A US government rule saying electronic records and e-signatures in medicine factories must be trustworthy and tamper-proof.",
+  "Annex 11": "The European version of the 21 CFR Part 11 rule — same idea, slightly different wording.",
+  "ALCOA": "A memory trick for making sure records are reliable: Attributable, Legible, Contemporaneous, Original, Accurate.",
+  "ALCOA+": "ALCOA plus four extras: Complete, Consistent, Enduring, Available. The gold standard for trustworthy data.",
+  "ISA-88": "A rulebook for describing factory recipes — it splits 'what the machine is' from 'what the recipe does'.",
+  "S88": "Short nickname for ISA-88, the recipe rulebook.",
+  "ISA-95": "A rulebook that maps a factory's computers into 5 levels, from sensors on the floor up to head-office systems.",
+  "S95": "Short nickname for ISA-95, the factory-computer map.",
+  "Purdue Model": "A 5-level picture of a factory's computers: sensors at the bottom, company systems at the top, with safe zones in between.",
+  "Purdue": "A 5-level picture of a factory's computers, from sensors at the bottom to company systems at the top.",
+  "DMZ": "A safety zone between the factory network and the office network — like an airlock between two rooms so nothing bad sneaks across.",
+  "OPC UA": "A modern, secure way for different brands of factory computers to talk to each other in the same language.",
+  "OPC DA": "An older way for factory computers to talk. Being replaced by the newer OPC UA.",
+  "IEC 62443": "The worldwide rulebook for keeping factory computers safe from hackers.",
+  "NIS2": "A European law from 2024 that makes important industries beef up their cyber-security.",
+  "PAS-X": "A popular medicine-factory software made by Körber. It handles digital recipes and batch records.",
+  "Syncade": "Emerson's medicine-factory software — designed to work hand-in-glove with their DeltaV system.",
+  "Werum": "The company that originally made PAS-X, before Körber bought them.",
+  "Körber": "The German company that now owns PAS-X.",
+  "OSIsoft PI": "A system that remembers every sensor reading in a factory — like a giant tape recorder for temperatures, pressures and flows.",
+  "AVEVA PI": "The same sensor-remembering system (used to be called OSIsoft PI, now owned by AVEVA).",
+  "Asset Framework": "The part of PI that organises sensor data into a neat tree matching the real factory layout.",
+  "Golden Batch": "A statistical picture of what a perfect batch looks like — used to spot when a real batch is drifting off target.",
+  "CIP": "Clean-In-Place — automatic cleaning of factory pipes and tanks without having to take them apart.",
+  "SIP": "Steam-In-Place — blasting equipment with hot steam to kill germs, without dismantling it.",
+  "SIL": "Safety Integrity Level — a score from 1 to 4 that says how trustworthy a safety system must be.",
+  "SIS": "Safety Instrumented System — a separate, safety-only computer whose whole job is to shut things down if danger is detected.",
+  "OEE": "Overall Equipment Effectiveness — one simple score out of 100 for how well a production line is running.",
+  "ERP": "Enterprise Resource Planning — big office software that runs a whole company's orders, stock and money. SAP is the most famous one.",
+  "SAP": "The most widely-used ERP (business-wide) software in big companies.",
+  "Rockwell": "An American brand that makes PLCs and factory software — also known as Allen-Bradley.",
+  "Allen-Bradley": "A very common PLC brand, part of Rockwell Automation.",
+  "Siemens": "A German brand that makes PLCs, factory software (PCS 7) and lots of industrial kit.",
+  "ControlLogix": "Rockwell's top-tier PLC family — big, reliable, used on serious factory lines.",
+  "CompactLogix": "Rockwell's smaller PLC family — used on smaller machines.",
+  "TIA Portal": "The programming app for writing Siemens PLC code.",
+  "Studio 5000": "The programming app for writing Rockwell PLC code.",
+  "PCS 7": "Siemens' factory control system — their version of a DCS.",
+  "PlantPAx": "Rockwell's factory control system — their version of a DCS.",
+  "Profinet": "Siemens' fast factory network cable system.",
+  "EtherNet/IP": "Rockwell's fast factory network cable system.",
+  "Modbus": "A very old but widely understood factory language — almost every device knows it.",
+  "HART": "A language used to talk to older-style sensors over simple wires.",
+  "Fieldbus": "Umbrella term for the various languages factory sensors and valves use to talk to each other.",
+  "Foundation Fieldbus": "One specific type of fieldbus used in process industries.",
+  "WirelessHART": "A wireless version of the HART sensor language.",
+  "Brownfield": "A project inside a factory that's already running — harder, because you can't just turn things off.",
+  "Greenfield": "A project on an empty site — easy to plan because you're starting from scratch.",
+  "recipe": "The step-by-step instructions for making one product.",
+  "recipes": "The step-by-step instructions for making products.",
+  "phase": "One single step in a recipe, like 'heat to 80 degrees' or 'add ingredient A'.",
+  "phases": "The single steps inside a recipe — like 'heat', 'mix', 'cool'.",
+  "module": "A reusable chunk of software — e.g. one that controls a single valve — that gets used over and over.",
+  "modules": "Reusable software chunks — like Lego bricks for building factory control.",
+  "batch": "One production run — one lot of product made together.",
+  "Weigh & Dispense": "The step where raw materials are measured out for a batch, with barcodes to stop mixing up ingredients.",
+  "W&D": "Weigh & Dispense — measuring out ingredients for a batch using barcodes.",
+  "Genealogy": "A family tree for a product — you can trace every ingredient from where it came from to where it ended up.",
+  "Review by Exception": "Instead of QA checking every line of a batch record, they only look at the things that went wrong.",
+  "GMP": "Good Manufacturing Practice — the rules medicine factories must follow to make safe products.",
+  "cGMP": "current Good Manufacturing Practice — the up-to-date version of GMP.",
+  "pharma": "Short for pharmaceutical — making medicines.",
+  "pharmaceutical": "Making medicines.",
+  "biotech": "Making medicines using living cells (like yeast or bacteria) instead of pure chemistry.",
+  "biotechnology": "Making medicines using living cells instead of chemistry.",
+  "biologics": "Medicines made from living cells — e.g. insulin, many cancer drugs and vaccines.",
+  "DSCSA": "A US law that says every medicine packet must have a unique code so fakes can be spotted.",
+  "FMD": "The European version of DSCSA — every medicine pack needs a unique code.",
+  "Aggregation": "Linking small packs to bigger packs to pallets — so you know exactly which units are inside which box.",
+  "TraceLink": "A popular cloud service that stores and shares medicine serialisation codes.",
+  "jump server": "A special gateway computer that's the only way into sensitive factory systems — everything you do is recorded.",
+  "data diode": "A hardware device that only lets data go one way — data leaves the factory but nothing can sneak back in.",
+  "unidirectional gateway": "A one-way data door — info can flow out of the factory network but nothing can enter.",
+  "PAM": "Privileged Access Management — a system that looks after the most powerful passwords and records who uses them.",
+  "IdP": "Identity Provider — the system that knows who you are and logs you in.",
+  "Active Directory": "Microsoft's main system for managing company users and passwords.",
+  "DCOM": "An old Microsoft way of letting computers talk. Being phased out.",
+  "validation": "Proving something (usually software or equipment) does what it's supposed to.",
+  "qualification": "Similar to validation, but for installing and testing physical equipment.",
+  "traceability matrix": "A big table showing that every requirement has a matching test.",
+  "traceability": "Being able to trace something — like where a material came from or whether a requirement was tested.",
+  "COTS": "Commercial Off-The-Shelf — software you buy ready-made, not custom-written.",
+  "V-model": "A diagram shaped like a V showing that every design document (going down the left) has a matching test (coming up the right).",
+  "FAT": "Factory Acceptance Test — testing equipment at the maker's factory before it gets shipped.",
+  "SAT": "Site Acceptance Test — testing equipment after it's been installed at the customer's site.",
+  "GxP": "Umbrella term for all the Good-Practice rules (GMP, GLP, GCP etc.).",
+  "OT": "Operational Technology — the computers that run the factory floor (PLCs, DCS, SCADA, sensors).",
+  "IT/OT": "The meeting point where office computers (IT) and factory computers (OT) have to work together.",
+  "FDA": "US Food and Drug Administration — they inspect medicine factories in the US.",
+  "EMA": "European Medicines Agency — the European equivalent of the FDA.",
+  "483": "A written finding from an FDA inspector — 'this thing isn't right, fix it'.",
+  "warning letter": "A serious FDA letter — sent when a 483 wasn't fixed. Often made public.",
+  "KPI": "Key Performance Indicator — a number used to measure how well something is going.",
+  "QA": "Quality Assurance — the team that makes sure everything is done to the rules.",
+  "Deviation": "When something doesn't go exactly to plan during production — must be written up and investigated.",
+  "CAPA": "Corrective And Preventive Action — the plan to fix a problem and stop it happening again.",
+  "firewall": "A security guard between networks, only letting approved traffic through.",
+  "VLAN": "A way of splitting one physical network into separate 'virtual' networks for safety.",
+  "bioreactor": "A big tank where living cells grow to make medicine.",
+  "reactor": "A big tank where a chemical reaction happens.",
+  "skid": "A pre-built package of pipes, pumps and controls on a steel frame — plug-and-play.",
+  "skids": "Pre-built packages of pipes, pumps and controls on steel frames — plug-and-play factory kit.",
+  "CHARMs": "Smart DeltaV I/O cards that let you wire cables first and assign signals later in software — saves time.",
+  "I/O": "Input/Output — the connections between a control computer and the sensors and valves out in the plant.",
+  "MSI": "Manufacturing Suite Integration — Körber's newer PAS-X platform.",
+  "PAS-X Savvy": "An add-on to PAS-X that analyses the data and finds trends or problems.",
+  "PAS-X LIMS": "Körber's lab information system — part of the PAS-X family.",
+  "ProfessionalPLUS": "The main DeltaV engineering workstation — the master copy of all the plant's control config.",
+  "Batch Executive": "The part of DeltaV that runs recipes step-by-step.",
+  "DeltaV Live": "The modern, web-style version of DeltaV's operator screens.",
+  "DeltaV Operate": "The older, desktop version of DeltaV's operator screens.",
+  "AMS Device Manager": "Emerson software that keeps track of and configures smart field devices.",
+  "Opcenter": "Siemens' MES software.",
+  "PharmaSuite": "Rockwell's MES software for life sciences.",
+  "FactoryTalk": "Rockwell's family of factory software products (HMI, historian etc.).",
+  "AVEVA": "A software company (owns PI and Wonderware among others).",
+  "Wonderware": "A well-known SCADA software, now part of AVEVA.",
+  "Ignition": "A modern, flexible SCADA software made by Inductive Automation.",
+  "Tulip": "A newer, app-style factory software that's easier for non-programmers to use.",
+  "TrendMiner": "Self-service analytics software that sits on top of historian data like PI.",
+  "Seeq": "Self-service analytics software that sits on top of historian data like PI.",
+  "historian": "A system that remembers every sensor reading over time, so engineers can look back and understand what happened.",
+  "PI AF": "The Asset Framework — PI's way of organising raw sensor tags into a neat tree matching the plant.",
+  "tag": "A single sensor reading being tracked — e.g. 'the temperature in reactor 1'.",
+  "tags": "Single sensor readings being tracked — like individual named slots in the historian.",
+  "audit trail": "An automatic, tamper-proof log of every change made — who, what, when.",
+  "electronic signature": "A secure digital signature — e.g. a user types their password to 'sign' they did something.",
+  "GS1": "A worldwide standards body that defines the barcodes used on most products (like GTIN).",
+  "GTIN": "A unique product number (a kind of barcode) defined by GS1.",
+  "SGTIN": "GTIN plus a unique serial number for that individual pack — used for medicine serialisation.",
+  "NIS1": "The 2016 European cyber-security law, now replaced by NIS2.",
+  "Industry 4.0": "The idea of modern factories being super-connected, data-driven and a bit smarter — using cloud, AI and lots of sensors.",
+  "digital transformation": "Turning old manual or paper processes into modern digital ones with software, data and automation.",
+  "CAPEX": "Capital Expenditure — money spent building or upgrading physical things (like a new production line).",
+  "single source of truth": "One agreed, authoritative place for a piece of information — so everybody uses the same version."
+};
+
+/* Core engine that finds those terms in rendered text and makes them hoverable */
+function explainize(root) {
+  if (!root) return;
+  const keys = Object.keys(SIMPLE_EXPLANATIONS).sort((a,b) => b.length - a.length);
+  if (!keys.length) return;
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const src = '(?<!\\w)(' + keys.map(esc).join('|') + ')(?!\\w)';
+  const lookup = {};
+  keys.forEach(k => { lookup[k.toLowerCase()] = SIMPLE_EXPLANATIONS[k]; });
+  const SKIP_TAGS = new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','CODE','BUTTON']);
+  const nodes = [];
+  (function walk(node) {
+    if (node.nodeType === 3) { nodes.push(node); return; }
+    if (node.nodeType !== 1) return;
+    if (SKIP_TAGS.has(node.tagName)) return;
+    if (node.classList && node.classList.contains('tip')) return;
+    if (node.classList && node.classList.contains('no-tip')) return;
+    for (const c of Array.from(node.childNodes)) walk(c);
+  })(root);
+  nodes.forEach(node => {
+    const text = node.nodeValue;
+    if (!text || text.length < 2) return;
+    const re = new RegExp(src, 'gi');
+    let m, last = 0, found = false;
+    const frag = document.createDocumentFragment();
+    while ((m = re.exec(text)) !== null) {
+      found = true;
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const span = document.createElement('span');
+      span.className = 'tip';
+      span.setAttribute('tabindex', '0');
+      const def = lookup[m[0].toLowerCase()] || '';
+      span.setAttribute('data-tip', def);
+      span.textContent = m[0];
+      frag.appendChild(span);
+      last = m.index + m[0].length;
+    }
+    if (!found) return;
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    if (node.parentNode) node.parentNode.replaceChild(frag, node);
+  });
+  /* Flip tooltip below if near top edge */
+  root.querySelectorAll('.tip').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      const r = el.getBoundingClientRect();
+      if (r.top < 140) el.classList.add('tip-flip'); else el.classList.remove('tip-flip');
+    });
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.tip.tip-show').forEach(x => { if (x !== el) x.classList.remove('tip-show'); });
+      el.classList.toggle('tip-show');
+    });
+  });
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('.tip')) {
+    document.querySelectorAll('.tip.tip-show').forEach(x => x.classList.remove('tip-show'));
+  }
+});
+
+/* ============================================================
    AYME — state, persistence, XP
    ============================================================ */
 
@@ -1294,6 +1580,7 @@ function navigate(view, params) {
   v.innerHTML = "";
   const fn = VIEWS[view] || VIEWS.dashboard;
   fn(v, params || {});
+  try { explainize(v); } catch(e) { console.warn("explainize failed", e); }
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
@@ -1440,6 +1727,7 @@ VIEWS.module = (root, {id}) => {
     if (t==="quiz")  renderQuiz(body, m);
     if (t==="role")  renderRoleCard(body, m);
     if (t==="notes") renderNotes(body, m);
+    try { explainize(body); } catch(e) { console.warn("explainize tab failed", e); }
   };
   tabs.forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
   showTab("brief");
@@ -2152,6 +2440,7 @@ VIEWS.toolkit = (root) => {
     if (t==="cheat") body.innerHTML = `<div class="grid cols-2">${TOOLKIT.cheatSheet.map(c => `<div class="card"><h3>${c.title}</h3><p>${c.text}</p></div>`).join("")}</div>`;
     if (t==="prep") body.innerHTML = renderCallPrep();
     if (t==="prep") wireCallPrep(body);
+    try { explainize(body); } catch(e) { console.warn("explainize toolkit tab failed", e); }
   };
   tabs.forEach(t => t.addEventListener("click", () => show(t.dataset.tab)));
   show("open");
