@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { createClerkClient } from '@clerk/backend';
+import { createClerkClient, verifyToken } from '@clerk/backend';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     const token = authHeader.replace(/^Bearer\s+/i, '');
     if (!token) return res.status(401).json({ error: 'Missing session token' });
 
-    const claims = await clerk.verifyToken(token);
+    const claims = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
     const userId = claims.sub;
     const user = await clerk.users.getUser(userId);
     const email = user.emailAddresses[0]?.emailAddress;
