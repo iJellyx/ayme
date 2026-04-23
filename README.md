@@ -119,7 +119,7 @@ npm run deploy   # One-shot deploy to production (requires vercel login)
 
 ## Operational notes
 
-- **Access control**: deployments are public by default. To restrict to PM Group, turn on **Deployment Protection** under Project → Settings (Vercel Authentication is free; Password Protection needs Pro).
+- **Access control**: deployments are gated by Clerk auth + Stripe subscription. Anyone who hits the URL sees the landing/paywall; only paid subscribers unlock the app.
 - **Custom domain**: Project → Settings → Domains. Add `ayme.yourdomain.com` and Vercel guides you through the DNS records.
 - **Storage**: progress is stored in each visitor's own browser via localStorage. Each person gets a private tracker — no shared backend to manage.
 - **Updating content**: edit `index.html` and push (or re-upload). No build. No migrations.

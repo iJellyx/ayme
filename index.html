@@ -438,7 +438,7 @@ body[data-auth="gate"] #gate { display: flex; }
         <div id="userButton"></div>
         <button id="billingBtn" class="theme-toggle" style="font-size:11px; padding:6px 10px;">Billing</button>
       </div>
-      <div style="margin-top:10px">Built for PM Group KAMs</div>
+      <div style="margin-top:10px">For pharma &amp; biotech automation teams</div>
     </div>
   </aside>
   <main class="main">
@@ -525,7 +525,7 @@ const GATE = {
         </div>
       </div>
       <h1>Master connected automation in pharma &amp; biotech</h1>
-      <p>The learning platform built for PM Group key account managers. DeltaV, MES, CSV, IT/OT, Syncade, PAS-X — made simple.</p>
+      <p>The learning platform for key account managers, sales engineers, and consultants working in pharma &amp; biotech automation. DeltaV, MES, CSV, IT/OT, Syncade, PAS-X — made simple.</p>
       <ul class="gate-features">
         <li>12 core modules with flashcards, quizzes &amp; mini-games</li>
         <li>140+ jargon tooltips in plain English</li>
@@ -759,7 +759,7 @@ const MODULES = [
     icon: "🌐",
     tagline: "Where the office network meets the plant floor — and where cyber threats now live.",
     whatItIs: "IT (Information Technology) runs the business — email, ERP, laptops, Active Directory. OT (Operational Technology) runs the plant — PLCs, DCS, SCADA, sensors. Historically air-gapped, they now increasingly connect so data can flow from floor to cloud. That convergence is a massive topic: architecture, data, and cybersecurity all at once.",
-    whyItMatters: "Every digital transformation project at a client involves IT/OT. PM Group's connected automation practice lives in this space. Key drivers: Industry 4.0, AI/ML on manufacturing data, and regulatory pressure on OT cybersecurity (NIS2 in the EU, IEC 62443 globally).",
+    whyItMatters: "Every digital transformation project at a client involves IT/OT. Connected automation consultancies live in this space. Key drivers: Industry 4.0, AI/ML on manufacturing data, and regulatory pressure on OT cybersecurity (NIS2 in the EU, IEC 62443 globally).",
     keyConcepts: [
       {t: "Purdue Model", d: "The reference architecture — Levels 0 (physical) up to 5 (enterprise). DMZ between Level 3 and Level 4."},
       {t: "DMZ", d: "Demilitarised Zone between IT and OT networks. Hosts jump servers, historians, and reverse proxies."},
@@ -780,7 +780,7 @@ const MODULES = [
       "Is your Purdue-model architecture documented and current?",
       "Who owns OT cybersecurity — IT, engineering, or a shared function?",
       "Any NIS2 readiness or IEC 62443 programme in flight?",
-      "How do external vendors (like PM Group) get remote access for support?",
+      "How do external vendors and engineering partners get remote access for support?",
       "Are you exporting historian data to the cloud? Which platform — PI, AWS, Azure?"
     ],
     redFlags: [
@@ -814,7 +814,7 @@ const MODULES = [
     clientQuestions: [
       "Which Syncade version — 5.x? Are you on the current release?",
       "Is Syncade handling W&D only, or full EBR?",
-      "Who supports Syncade — you, Emerson, or a partner like PM Group?",
+      "Who supports Syncade — you, Emerson, or an engineering partner?",
       "Is Syncade talking to SAP, or a separate warehousing system?"
     ],
     redFlags: [
@@ -868,7 +868,7 @@ const MODULES = [
     icon: "⚙️",
     tagline: "Programmable Logic Controllers — the rugged workhorses of machine and skid control.",
     whatItIs: "PLCs are industrial computers that control machines and skids — from filler lines to CIP skids to packaging equipment. Programmed in IEC 61131-3 languages (ladder logic, function block, structured text). Different from a DCS: PLCs are best for fast, discrete, machine-level control.",
-    whyItMatters: "Every site has PLCs. PM Group often needs controls engineers for skid integrators, OEM equipment, and packaging lines — plus retrofit projects. Allen-Bradley and Siemens dominate.",
+    whyItMatters: "Every site has PLCs. Consultancies and integrators often need controls engineers for skid integrators, OEM equipment, and packaging lines — plus retrofit projects. Allen-Bradley and Siemens dominate.",
     keyConcepts: [
       {t: "Allen-Bradley / Rockwell", d: "ControlLogix, CompactLogix, Studio 5000 programming environment."},
       {t: "Siemens", d: "S7-1500, S7-1200, TIA Portal. PCS 7 is Siemens' DCS built on S7 PLCs."},
@@ -1163,7 +1163,7 @@ const QUIZZES = {
     {q:"What are CHARMs in DeltaV?", a:["Certified field devices","A soft-marshalling I/O system","A safety PLC family","An operator training module"], c:1, e:"CHARMs = CHARacterisation Modules. They let you wire cables first and assign signals later in software."},
     {q:"Your client says 'we're on DeltaV Live'. What does that tell you?", a:["They use Siemens HMIs","They've adopted the modern HTML5 DeltaV operator stations","They are about to decommission DeltaV","They're on a v8 or earlier version"], c:1, e:"DeltaV Live is the modern HTML5 HMI — a strong indicator they're on a current DeltaV version."},
     {q:"Which standard governs DeltaV batch recipes?", a:["ISA-95","ISA-88","GAMP 5","OPC UA"], c:1, e:"ISA-88 (S88) is the batch control standard."},
-    {q:"A client asks PM Group for 'a few DeltaV engineers'. Best response:", a:["Quote the ask as-is","Ask about phases, graphics count, and recipe scope first","Offer only senior engineers","Refer them to Emerson"], c:1, e:"Always probe scope. 'A few DeltaV engineers' hides enormous variation in effort."}
+    {q:"A client asks your firm for 'a few DeltaV engineers'. Best response:", a:["Quote the ask as-is","Ask about phases, graphics count, and recipe scope first","Offer only senior engineers","Refer them to Emerson"], c:1, e:"Always probe scope. 'A few DeltaV engineers' hides enormous variation in effort."}
   ],
   mes: [
     {q:"Where does MES sit in the ISA-95 stack?", a:["Level 1","Level 2","Level 3","Level 4"], c:2, e:"MES is Level 3, between Control (L2) and Enterprise (L4)."},
@@ -1339,7 +1339,7 @@ const TOOLKIT = {
   ],
   discovery: [
     "What does the org chart look like for automation, MES, and validation — who owns what?",
-    "Do you use external partners like PM Group on a dedicated basis, or project-by-project?",
+    "Do you use external engineering partners on a dedicated basis, or project-by-project?",
     "Which roles are hardest to hire right now, and which are you replacing fastest?",
     "What's the rate structure — day rates, fixed price, outcome-based?",
     "Are there any technology standards or preferred-vendor lists I should know about?",
@@ -1845,7 +1845,7 @@ VIEWS.dashboard = (root) => {
   const next = MODULES.filter(m => !moduleState(m.id).completed).slice(0,3);
   root.innerHTML = `
     <h1>Welcome back 👋</h1>
-    <p class="subtitle">Your personal ramp-up engine for PM Group's connected automation clients.</p>
+    <p class="subtitle">Your personal ramp-up engine for connected automation in pharma &amp; biotech.</p>
 
     <div class="grid cols-3">
       <div class="card">
@@ -2161,7 +2161,7 @@ function renderBrief(body, m) {
       <div class="card">
         <h3>What it is</h3>
         <p>${m.whatItIs}</p>
-        <h3 style="margin-top:14px">Why it matters to PM Group</h3>
+        <h3 style="margin-top:14px">Why it matters</h3>
         <p>${m.whyItMatters}</p>
         <div class="pill good">60-sec pitch:</div>
         <p style="margin-top:6px;font-style:italic">"${m.oneLiner}"</p>
@@ -2634,7 +2634,7 @@ VIEWS.roles = (root) => {
   const buckets = [...new Set(ROLES.map(r => r.bucket))];
   root.innerHTML = `
     <h1>Role Cards</h1>
-    <p class="subtitle">A quick-reference atlas of the roles PM Group hires for, grouped by technology area.</p>
+    <p class="subtitle">A quick-reference atlas of the roles in connected automation projects, grouped by technology area.</p>
     ${buckets.map(b => `
       <h2 style="margin-top:20px">${b}</h2>
       <div class="grid cols-2">
@@ -2661,7 +2661,7 @@ VIEWS.roles = (root) => {
 VIEWS.toolkit = (root) => {
   root.innerHTML = `
     <h1>Client Toolkit</h1>
-    <p class="subtitle">Openers, discovery questions, and landmines for your next PM Group client conversation.</p>
+    <p class="subtitle">Openers, discovery questions, and landmines for your next client conversation.</p>
     <div class="tabs" id="tkTabs">
       <div class="tab active" data-tab="open">💬 Openers</div>
       <div class="tab" data-tab="disc">🔍 Discovery</div>
@@ -2891,7 +2891,7 @@ VIEWS.settings = (root) => {
     <div style="height:14px"></div>
     <div class="card">
       <h3>About AYME</h3>
-      <p>AYME — <b>A</b>utomation & <b>Y</b>ou <b>M</b>astery <b>E</b>ngine. Built to help PM Group Key Account Managers get fluent in Connected Automation fast. Single-file, offline, private.</p>
+      <p>AYME — <b>A</b>utomation & <b>Y</b>ou <b>M</b>astery <b>E</b>ngine. Built to help key account managers, sales engineers, and consultants get fluent in connected automation fast.</p>
       <p class="tiny muted">Content based on common industry usage as of 2026. Always validate specific client stacks during discovery.</p>
     </div>
   `;
