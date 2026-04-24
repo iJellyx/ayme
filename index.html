@@ -171,6 +171,44 @@ h3 { font-size: 16px; margin: 0 0 8px; }
 /* Module list */
 .module-card h3 { display: flex; align-items:center; gap: 8px; }
 .module-card .meta { display:flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;}
+
+/* Tier sections */
+.tier { margin-top: 26px; }
+.tier:first-of-type { margin-top: 18px; }
+.tier-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.tier-head h2 { margin: 0; }
+.tier-blurb { color: var(--muted); font-size: 14px; margin: 0 0 14px; line-height: 1.5; }
+.tier-status {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.tier-status-open {
+  background: rgba(34, 211, 200, 0.14);
+  color: var(--accent);
+  border: 1px solid rgba(34, 211, 200, 0.4);
+}
+.tier-status-locked {
+  background: rgba(154, 163, 199, 0.12);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+.tier-locked .tier-grid { opacity: 0.72; }
+.card-locked { position: relative; }
+.card-locked::after {
+  content: "🔒";
+  position: absolute;
+  top: 12px; right: 14px;
+  font-size: 16px;
+  opacity: 0.55;
+  pointer-events: none;
+}
 .kv { display:grid; grid-template-columns: 140px 1fr; gap: 6px 12px; font-size: 13px; }
 .kv div:nth-child(odd) { color: var(--muted); }
 
@@ -1888,6 +1926,23 @@ const NAV = [
   {id:"settings", label:"Settings", icon:"⚙️"}
 ];
 
+/* Module difficulty tiers — used for the soft-launch learning path */
+const MODULE_TIERS = {
+  foundation: ["itot", "plc", "mes", "deltav"],
+  core: ["isa88", "isa95", "historian", "dataintegrity"],
+  advanced: ["syncade", "pasx", "csv", "serialization"],
+};
+const TIER_META = {
+  foundation: { label: "Foundations", emoji: "🟢", blurb: "Start here — the vocabulary and building blocks everyone needs.", unlockAt: 0 },
+  core: { label: "Core systems", emoji: "🔵", blurb: "Structural knowledge for confident client conversations.", unlockAt: 2 },
+  advanced: { label: "Advanced & vendor-specific", emoji: "🟣", blurb: "Deep dives for senior-level technical and compliance discussions.", unlockAt: 5 },
+};
+function getTier(id) {
+  for (const [tier, ids] of Object.entries(MODULE_TIERS)) if (ids.includes(id)) return tier;
+  return "advanced";
+}
+function tierUnlocked(tier) { return completedCount() >= (TIER_META[tier].unlockAt || 0); }
+
 function renderNav(active) {
   const nav = document.getElementById("nav");
   nav.innerHTML = NAV.map(n =>
@@ -2135,7 +2190,16 @@ const VIEWS = {};
 VIEWS.dashboard = (root) => {
   const c = completedCount();
   const overallPct = Math.round(MODULES.reduce((s,m) => s + moduleProgress(m.id).pct, 0) / MODULES.length);
-  const next = MODULES.filter(m => !moduleState(m.id).completed).slice(0,3);
+  // Recommend from lowest unlocked tier first (Foundation → Core → Advanced)
+  const tiersByPriority = ["foundation", "core", "advanced"];
+  let next = [];
+  for (const tier of tiersByPriority) {
+    if (!tierUnlocked(tier)) continue;
+    const picks = MODULES.filter(m => getTier(m.id) === tier && !moduleState(m.id).completed);
+    next = next.concat(picks);
+    if (next.length >= 3) break;
+  }
+  next = next.slice(0, 3);
   root.innerHTML = `
     <h1>Welcome back 👋</h1>
     <p class="subtitle">Your personal ramp-up engine for connected automation in pharma &amp; biotech.</p>
@@ -2189,6 +2253,8 @@ VIEWS.dashboard = (root) => {
 
 function moduleCardEl(m) {
   const p = moduleProgress(m.id);
+  const tier = getTier(m.id);
+  const unlocked = tierUnlocked(tier);
   const el = document.createElement("div");
   el.className = "card module-card";
   el.innerHTML = `
@@ -2198,22 +2264,59 @@ function moduleCardEl(m) {
     <div class="progress"><span style="width:${p.pct}%"></span></div>
     <div class="row" style="margin-top:10px;justify-content:space-between">
       <span class="tiny muted">${p.pct}% complete</span>
-      <button class="btn small primary">Open</button>
+      <button class="btn small primary">${unlocked ? 'Open' : 'Open anyway'}</button>
     </div>
   `;
-  el.addEventListener("click", () => navigate("module", {id: m.id}));
+  el.addEventListener("click", (e) => {
+    if (!unlocked) {
+      e.stopPropagation();
+      const need = TIER_META[tier].unlockAt - completedCount();
+      const ok = confirm(`This module is in the "${TIER_META[tier].label}" tier. We recommend finishing ${need} more Foundation module${need===1?'':'s'} first so this makes sense.\n\nOpen it anyway?`);
+      if (!ok) return;
+    }
+    navigate("module", {id: m.id});
+  });
   return el;
 }
 
 /* ---------- Modules index ---------- */
 VIEWS.modules = (root) => {
+  const done = completedCount();
   root.innerHTML = `
     <h1>Modules</h1>
-    <p class="subtitle">${MODULES.length} topics · Each has a briefing, flashcards, a quiz, and a role card.</p>
-    <div class="grid cols-2" id="moduleGrid"></div>
+    <p class="subtitle">${MODULES.length} topics across three tiers. Work through Foundations first — the other tiers open up as you go.</p>
+    ${Object.keys(MODULE_TIERS).map(tier => {
+      const meta = TIER_META[tier];
+      const unlocked = tierUnlocked(tier);
+      const needs = (meta.unlockAt || 0) - done;
+      const tierIds = MODULE_TIERS[tier];
+      const tierDone = tierIds.filter(id => moduleState(id).completed).length;
+      const statusLabel = unlocked
+        ? (tierDone === tierIds.length
+            ? `✓ Tier complete`
+            : `${tierDone} of ${tierIds.length} done`)
+        : `🔒 ${needs} more foundation module${needs===1?'':'s'} to unlock`;
+      return `
+        <section class="tier ${unlocked ? 'tier-open' : 'tier-locked'}">
+          <div class="tier-head">
+            <h2>${meta.emoji} ${meta.label}</h2>
+            <span class="tier-status ${unlocked ? 'tier-status-open' : 'tier-status-locked'}">${statusLabel}</span>
+          </div>
+          <p class="tier-blurb">${meta.blurb}</p>
+          <div class="grid cols-2 tier-grid" data-tier="${tier}"></div>
+        </section>
+      `;
+    }).join('')}
   `;
-  const g = root.querySelector("#moduleGrid");
-  MODULES.forEach(m => g.appendChild(moduleCardEl(m)));
+  Object.keys(MODULE_TIERS).forEach(tier => {
+    const grid = root.querySelector(`[data-tier="${tier}"]`);
+    const unlocked = tierUnlocked(tier);
+    MODULES.filter(m => getTier(m.id) === tier).forEach(m => {
+      const card = moduleCardEl(m);
+      if (!unlocked) card.classList.add("card-locked");
+      grid.appendChild(card);
+    });
+  });
 };
 
 /* ---------- Single module ---------- */
