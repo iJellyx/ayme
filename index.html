@@ -210,6 +210,26 @@ h3 { font-size: 16px; margin: 0 0 8px; }
   pointer-events: none;
 }
 
+/* Beginner dashboard hero */
+.dash-hero {
+  text-align: center;
+  padding: 32px 28px;
+  background: linear-gradient(135deg, rgba(108,140,255,0.12), rgba(34,211,200,0.12));
+  border: 1px solid var(--primary);
+}
+.dash-hero-kicker {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.dash-hero h2 { margin: 6px 0 0; font-size: 26px; }
+.btn.large { font-size: 15px; padding: 12px 22px; }
+.dash-howto { background: var(--panel-2); }
+.dash-howto h3 { margin-top: 0; }
+
 /* First-run welcome overlay */
 #welcome {
   display: none;
@@ -2253,6 +2273,7 @@ const VIEWS = {};
 VIEWS.dashboard = (root) => {
   const c = completedCount();
   const overallPct = Math.round(MODULES.reduce((s,m) => s + moduleProgress(m.id).pct, 0) / MODULES.length);
+  const foundationDone = MODULE_TIERS.foundation.filter(id => moduleState(id).completed).length;
   // Recommend from lowest unlocked tier first (Foundation → Core → Advanced)
   const tiersByPriority = ["foundation", "core", "advanced"];
   let next = [];
@@ -2263,6 +2284,126 @@ VIEWS.dashboard = (root) => {
     if (next.length >= 3) break;
   }
   next = next.slice(0, 3);
+
+  if (c === 0 && state.xp === 0) {
+    renderBeginnerDashboard(root, next);
+  } else if (c < 4) {
+    renderGrowingDashboard(root, next, c, foundationDone);
+  } else {
+    renderFullDashboard(root, next, c, foundationDone, overallPct);
+  }
+};
+
+function renderBeginnerDashboard(root, next) {
+  const first = next[0];
+  const rest = next.slice(1);
+  root.innerHTML = `
+    <h1>Let's get started 🚀</h1>
+    <p class="subtitle">One module at a time. No rush.</p>
+
+    <div class="card dash-hero">
+      <div class="dash-hero-kicker">Recommended first module</div>
+      ${first ? `
+        <h2>${first.icon} ${first.name}</h2>
+        <p class="muted" style="margin:6px 0 16px">${first.tagline}</p>
+        <button class="btn primary large" data-go="${first.id}">Start this module →</button>
+        <p class="tiny muted" style="margin-top:12px">Takes about 10 minutes. You can pause any time — your progress is saved automatically.</p>
+      ` : `
+        <p class="muted">You've picked your first path — keep going.</p>
+      `}
+    </div>
+
+    ${rest.length ? `
+      <div style="height:20px"></div>
+      <h3 style="margin-bottom:6px">Or pick a different foundation module</h3>
+      <p class="tiny muted" style="margin:0 0 12px">All four foundation modules are available now.</p>
+      <div class="grid cols-2" id="dashAlt"></div>
+    ` : ''}
+
+    <div style="height:22px"></div>
+    <div class="card dash-howto">
+      <h3>How AYME works</h3>
+      <ul class="welcome-how" style="margin-top:10px">
+        <li><div class="wh-icon">📚</div><div>Each module has a briefing, flashcards, and a quick quiz.</div></li>
+        <li><div class="wh-icon">💡</div><div>Hover anything with a dotted underline for a plain-English explanation.</div></li>
+        <li><div class="wh-icon">🔓</div><div>Finish two foundation modules to unlock the Core tier — and five to unlock Advanced.</div></li>
+      </ul>
+    </div>
+  `;
+  root.querySelectorAll("[data-go]").forEach(el=>{
+    el.addEventListener("click", ()=> navigate("module", {id:el.dataset.go}));
+  });
+  const alt = root.querySelector("#dashAlt");
+  if (alt) rest.forEach(m => alt.appendChild(moduleCardEl(m)));
+}
+
+function renderGrowingDashboard(root, next, c, foundationDone) {
+  const foundationTotal = MODULE_TIERS.foundation.length;
+  const foundationPct = Math.round((foundationDone / foundationTotal) * 100);
+  root.innerHTML = `
+    <h1>Welcome back 👋</h1>
+    <p class="subtitle">You're ${foundationDone} of ${foundationTotal} through the Foundation tier. Keep going.</p>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Foundation progress</h3>
+        <div class="row" style="align-items:center;gap:18px;margin-top:8px">
+          <div class="ring" style="--p:${foundationPct}"><span>${foundationPct}%</span></div>
+          <div>
+            <div class="tiny muted">Foundation modules done</div>
+            <div style="font-size:22px;font-weight:700">${foundationDone} / ${foundationTotal}</div>
+            ${foundationDone >= 2 ? `<div class="pill good" style="margin-top:6px">Core tier unlocked 🎉</div>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Next up</h3>
+        <p class="tiny muted">${foundationDone < foundationTotal ? 'Stay in the Foundation tier' : 'Time to move into Core systems'}</p>
+        ${next.map(m => `
+          <div class="row" style="justify-content:space-between;margin-top:8px">
+            <div>${m.icon} ${m.name}</div>
+            <button class="btn small" data-go="${m.id}">Open →</button>
+          </div>`).join("") || "<p class='muted'>Everything complete. Legend.</p>"}
+      </div>
+    </div>
+
+    ${c >= 2 ? `
+      <div style="height:22px"></div>
+      <div class="card">
+        <h3>🎮 Try a 60-second warm-up</h3>
+        <p class="tiny muted">Unlocked now — quick reps to lock in what you've learned.</p>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn primary" id="dashDaily">⚡ Speed Round</button>
+          <button class="btn" id="dashAcronym">🔤 Acronym Challenge</button>
+          <button class="btn" id="dashMatch">🧩 Matching Game</button>
+        </div>
+      </div>
+    ` : ''}
+
+    <div style="height:22px"></div>
+    <h2>Continue where you left off</h2>
+    <div class="grid cols-2" id="dashModules"></div>
+  `;
+  root.querySelectorAll("[data-go]").forEach(el=>{
+    el.addEventListener("click", ()=> navigate("module", {id:el.dataset.go}));
+  });
+  const daily = root.querySelector("#dashDaily");
+  if (daily) daily.addEventListener("click", ()=> navigate("speedround"));
+  const acr = root.querySelector("#dashAcronym");
+  if (acr) acr.addEventListener("click", ()=> navigate("acronym"));
+  const match = root.querySelector("#dashMatch");
+  if (match) match.addEventListener("click", ()=> navigate("matching"));
+  const wrap = root.querySelector("#dashModules");
+  MODULES.slice().sort((a,b) => moduleProgress(b.id).pct - moduleProgress(a.id).pct)
+    .filter(m => moduleProgress(m.id).pct > 0 && !moduleState(m.id).completed)
+    .slice(0,4)
+    .forEach(m => wrap.appendChild(moduleCardEl(m)));
+  if (wrap.children.length === 0) {
+    MODULES.filter(m => !moduleState(m.id).completed).slice(0,4).forEach(m => wrap.appendChild(moduleCardEl(m)));
+  }
+}
+
+function renderFullDashboard(root, next, c, foundationDone, overallPct) {
   root.innerHTML = `
     <h1>Welcome back 👋</h1>
     <p class="subtitle">Your personal ramp-up engine for connected automation in pharma &amp; biotech.</p>
@@ -2308,11 +2449,10 @@ VIEWS.dashboard = (root) => {
   root.querySelector("#dashDaily").addEventListener("click", ()=> navigate("speedround"));
   root.querySelector("#dashAcronym").addEventListener("click", ()=> navigate("acronym"));
   root.querySelector("#dashMatch").addEventListener("click", ()=> navigate("matching"));
-
   const wrap = root.querySelector("#dashModules");
   MODULES.slice().sort((a,b) => moduleProgress(a.id).pct - moduleProgress(b.id).pct).slice(0,4)
     .forEach(m => wrap.appendChild(moduleCardEl(m)));
-};
+}
 
 function moduleCardEl(m) {
   const p = moduleProgress(m.id);
