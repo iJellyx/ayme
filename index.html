@@ -210,6 +210,63 @@ h3 { font-size: 16px; margin: 0 0 8px; }
   pointer-events: none;
 }
 
+/* Linear module walkthrough */
+.linear-topbar { justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.linear-stepper {
+  display: flex;
+  align-items: center;
+  margin: 20px 0 22px;
+  padding: 12px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  gap: 6px;
+}
+.linear-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: default;
+}
+.linear-step[data-goto] { cursor: pointer; }
+.linear-step[data-goto]:hover { background: var(--panel); color: var(--text); }
+.linear-step .ls-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 700;
+  transition: background 0.15s ease;
+}
+.linear-step.active .ls-num {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #0b1020; border-color: transparent;
+}
+.linear-step.active { color: var(--text); font-weight: 600; }
+.linear-step.done .ls-num { background: var(--accent); color: #0b1020; border-color: transparent; }
+.linear-step.done { color: var(--text); }
+.ls-line { flex: 1; height: 1px; background: var(--border); min-width: 16px; }
+.linear-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  gap: 12px;
+}
+.linear-nav > div { min-width: 1px; }
+@media (max-width: 600px) {
+  .linear-stepper { padding: 8px 10px; }
+  .linear-step { padding: 4px 6px; gap: 6px; }
+  .linear-step .ls-label { display: none; }
+  .linear-step.active .ls-label { display: inline; }
+  .ls-line { min-width: 10px; }
+}
+
 /* Beginner dashboard hero */
 .dash-hero {
   text-align: center;
@@ -2523,18 +2580,111 @@ VIEWS.modules = (root) => {
 };
 
 /* ---------- Single module ---------- */
-VIEWS.module = (root, {id}) => {
-  const m = MODULES.find(x => x.id===id);
+VIEWS.module = (root, params) => {
+  const { id } = params;
+  const m = MODULES.find(x => x.id === id);
   if (!m) { navigate("modules"); return; }
+  const ms = moduleState(id);
+  const defaultMode = ms.completed ? "tabbed" : "linear";
+  // Presence of a step param implies the user is in the linear walkthrough,
+  // even if the module is marked complete (e.g., replaying the flow).
+  const mode = params.mode || (params.step ? "linear" : defaultMode);
+  if (mode === "linear") {
+    const step = params.step || deriveLinearStep(m, ms);
+    renderLinearModule(root, m, step);
+  } else {
+    renderTabbedModule(root, m, params.tab || "brief");
+  }
+};
+
+function deriveLinearStep(m, ms) {
+  const flashTotal = (FLASHCARDS[m.id] || []).length;
+  if (flashTotal > 0 && ms.flashSeen >= flashTotal) return "quiz";
+  if (ms.flashSeen > 0) return "flashcards";
+  return "briefing";
+}
+
+function renderLinearModule(root, m, step) {
+  const id = m.id;
+  const steps = ["briefing", "flashcards", "quiz"];
+  const labels = { briefing: "Briefing", flashcards: "Flashcards", quiz: "Quiz" };
+  const stepIdx = steps.indexOf(step);
+  root.innerHTML = `
+    <div class="row linear-topbar">
+      <button class="btn ghost" id="back">← All modules</button>
+      <button class="btn ghost" id="viewAll" title="Reveal every section including Role Card and Notes">View all sections →</button>
+    </div>
+    <h1 style="margin-top:14px">${m.icon} ${m.name}</h1>
+    <p class="subtitle">${m.tagline}</p>
+
+    <div class="linear-stepper">
+      ${steps.map((s, i) => {
+        const isActive = i === stepIdx;
+        const isDone = i < stepIdx;
+        const cls = isActive ? "active" : (isDone ? "done" : "upcoming");
+        return `
+          ${i > 0 ? '<div class="ls-line"></div>' : ""}
+          <div class="linear-step ${cls}" ${isDone ? `data-goto="${s}"` : ""}>
+            <span class="ls-num">${isDone ? "✓" : i + 1}</span>
+            <span class="ls-label">${labels[s]}</span>
+          </div>
+        `;
+      }).join("")}
+    </div>
+
+    <div id="linearBody"></div>
+    <div class="linear-nav" id="linearNav"></div>
+  `;
+  root.querySelector("#back").onclick = () => navigate("modules");
+  root.querySelector("#viewAll").onclick = () => navigate("module", { id, mode: "tabbed" });
+  root.querySelectorAll("[data-goto]").forEach(el => {
+    el.onclick = () => navigate("module", { id, step: el.dataset.goto });
+  });
+
+  const body = root.querySelector("#linearBody");
+  const nav = root.querySelector("#linearNav");
+
+  if (step === "briefing") {
+    renderBrief(body, m);
+    nav.innerHTML = `
+      <div></div>
+      <button class="btn primary large" id="linNext">Start flashcards →</button>
+    `;
+    nav.querySelector("#linNext").onclick = () => navigate("module", { id, step: "flashcards" });
+  } else if (step === "flashcards") {
+    renderFlashcards(body, m);
+    nav.innerHTML = `
+      <button class="btn ghost" id="linPrev">← Briefing</button>
+      <button class="btn primary large" id="linNext">Take the quiz →</button>
+    `;
+    nav.querySelector("#linPrev").onclick = () => navigate("module", { id, step: "briefing" });
+    nav.querySelector("#linNext").onclick = () => navigate("module", { id, step: "quiz" });
+  } else if (step === "quiz") {
+    renderQuiz(body, m);
+    nav.innerHTML = `
+      <button class="btn ghost" id="linPrev">← Flashcards</button>
+      <div></div>
+    `;
+    nav.querySelector("#linPrev").onclick = () => navigate("module", { id, step: "flashcards" });
+  }
+
+  try { explainize(body); } catch(e) { console.warn("explainize linear failed", e); }
+}
+
+function renderTabbedModule(root, m, initialTab) {
+  const id = m.id;
   const p = moduleProgress(id);
   const ms = moduleState(id);
   root.innerHTML = `
-    <button class="btn ghost" id="back">← Back</button>
+    <div class="row linear-topbar">
+      <button class="btn ghost" id="back">← Back</button>
+      ${!ms.completed ? `<button class="btn ghost" id="guided" title="Switch back to the step-by-step walkthrough">← Back to guided flow</button>` : ""}
+    </div>
     <h1 style="margin-top:14px">${m.icon} ${m.name}</h1>
     <p class="subtitle">${m.tagline}</p>
 
     <div class="tabs" id="modTabs">
-      <div class="tab active" data-tab="brief">📋 Briefing</div>
+      <div class="tab" data-tab="brief">📋 Briefing</div>
       <div class="tab" data-tab="flash">🃏 Flashcards</div>
       <div class="tab" data-tab="quiz">📝 Quiz</div>
       <div class="tab" data-tab="role">🧑‍💼 Role Card</div>
@@ -2557,21 +2707,23 @@ VIEWS.module = (root, {id}) => {
       <div class="progress"><span style="width:${p.pct}%"></span></div>
     </div>
   `;
-  root.querySelector("#back").addEventListener("click", ()=> navigate("modules"));
+  root.querySelector("#back").onclick = () => navigate("modules");
+  const guided = root.querySelector("#guided");
+  if (guided) guided.onclick = () => navigate("module", { id, mode: "linear" });
   const tabs = root.querySelectorAll("#modTabs .tab");
   const body = root.querySelector("#modBody");
   const showTab = (t) => {
-    tabs.forEach(x => x.classList.toggle("active", x.dataset.tab===t));
-    if (t==="brief") renderBrief(body, m);
-    if (t==="flash") renderFlashcards(body, m);
-    if (t==="quiz")  renderQuiz(body, m);
-    if (t==="role")  renderRoleCard(body, m);
-    if (t==="notes") renderNotes(body, m);
+    tabs.forEach(x => x.classList.toggle("active", x.dataset.tab === t));
+    if (t === "brief") renderBrief(body, m);
+    if (t === "flash") renderFlashcards(body, m);
+    if (t === "quiz")  renderQuiz(body, m);
+    if (t === "role")  renderRoleCard(body, m);
+    if (t === "notes") renderNotes(body, m);
     try { explainize(body); } catch(e) { console.warn("explainize tab failed", e); }
   };
   tabs.forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
-  showTab("brief");
-};
+  showTab(initialTab);
+}
 
 function renderFlashcards(body, m) {
   const cards = FLASHCARDS[m.id] || [];
