@@ -3,7 +3,7 @@
 > **Status:** Starter document. Fill placeholders in `[brackets]` with your specifics before sharing with clients. Have your legal/security lead review before distribution.
 
 **Last updated:** 24 April 2026
-**Contact:** [security@your-domain.com]
+**Contact:** security@aymetraining.com
 **Owner:** [Your Legal Entity Name Ltd.]
 
 This document summarises how AYME is designed, deployed, and operated. It is intended to answer common procurement and information-security questionnaires (SIG Lite, CAIQ, vendor onboarding forms) for enterprise clients in the pharmaceutical and biotechnology industries.
@@ -101,7 +101,7 @@ Each subprocessor has signed a Data Processing Agreement with [Your Legal Entity
 
 ## 8. Vulnerability management
 
-- **Disclosure:** Security researchers can report vulnerabilities at [security@your-domain.com]. See `/.well-known/security.txt` on the production site.
+- **Disclosure:** Security researchers can report vulnerabilities at security@aymetraining.com. See `/.well-known/security.txt` on the production site.
 - **Triage:** Reports are acknowledged within 2 business days and remediated per severity:
   - Critical: ≤7 days
   - High: ≤30 days
@@ -149,9 +149,9 @@ AYME acts as a **Data Controller** for the limited personal data it holds (accou
 - Objection to processing (Article 21)
 - Restriction of processing (Article 18)
 
-Requests are handled at [privacy@your-domain.com] and resolved within 30 days.
+Requests are handled at privacy@aymetraining.com and resolved within 30 days.
 
-A Data Processing Agreement is available on request for Enterprise customers: [dpa@your-domain.com].
+A Data Processing Agreement is available on request for Enterprise customers: dpa@aymetraining.com.
 
 ---
 
