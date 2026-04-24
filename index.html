@@ -255,10 +255,30 @@ h3 { font-size: 16px; margin: 0 0 8px; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 24px;
   gap: 12px;
+  position: sticky;
+  bottom: 0;
+  margin: 32px -28px 0;
+  padding: 16px 28px;
+  background: linear-gradient(180deg, transparent 0%, rgba(11,16,32,0.85) 25%, var(--bg) 60%);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  z-index: 20;
 }
 .linear-nav > div { min-width: 1px; }
+.linear-next-ctx {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.linear-next-ctx .ln-hint { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+#linearBody { padding-bottom: 8px; }
+@media (max-width: 700px) {
+  .linear-nav { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
+  .linear-next-ctx { display: none; }
+  .btn.large { padding: 10px 16px; font-size: 14px; }
+}
 @media (max-width: 600px) {
   .linear-stepper { padding: 8px 10px; }
   .linear-step { padding: 4px 6px; gap: 6px; }
@@ -2644,10 +2664,16 @@ function renderLinearModule(root, m, step) {
   const body = root.querySelector("#linearBody");
   const nav = root.querySelector("#linearNav");
 
+  const flashCount = (FLASHCARDS[id] || []).length;
+  const quizCount = (QUIZZES[id] || []).length;
+
   if (step === "briefing") {
     renderBrief(body, m);
     nav.innerHTML = `
-      <div></div>
+      <div class="linear-next-ctx" style="align-items:flex-start">
+        <span class="ln-hint">Step 1 of 3 · Briefing</span>
+        <span class="tiny muted">When you're ready</span>
+      </div>
       <button class="btn primary large" id="linNext">Start flashcards →</button>
     `;
     nav.querySelector("#linNext").onclick = () => navigate("module", { id, step: "flashcards" });
@@ -2655,6 +2681,10 @@ function renderLinearModule(root, m, step) {
     renderFlashcards(body, m);
     nav.innerHTML = `
       <button class="btn ghost" id="linPrev">← Briefing</button>
+      <div class="linear-next-ctx">
+        <span class="ln-hint">Next up</span>
+        <span class="tiny muted">${quizCount}-question quiz</span>
+      </div>
       <button class="btn primary large" id="linNext">Take the quiz →</button>
     `;
     nav.querySelector("#linPrev").onclick = () => navigate("module", { id, step: "briefing" });
@@ -2663,6 +2693,10 @@ function renderLinearModule(root, m, step) {
     renderQuiz(body, m);
     nav.innerHTML = `
       <button class="btn ghost" id="linPrev">← Flashcards</button>
+      <div class="linear-next-ctx">
+        <span class="ln-hint">Final step</span>
+        <span class="tiny muted">Finish the quiz to complete the module</span>
+      </div>
       <div></div>
     `;
     nav.querySelector("#linPrev").onclick = () => navigate("module", { id, step: "flashcards" });
