@@ -365,6 +365,85 @@ body[data-welcome="on"] #welcome { display: flex; }
 @media (max-width: 520px) {
   .welcome-modules { grid-template-columns: 1fr; }
 }
+
+/* Module completion celebration */
+#celebration {
+  display: none;
+  position: fixed; inset: 0; z-index: 9500;
+  background: rgba(11, 16, 32, 0.85);
+  backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+body[data-celebration="on"] #celebration { display: flex; }
+.celebration-card {
+  width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(34,211,200,0.15);
+  position: relative;
+  text-align: center;
+  animation: cel-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes cel-pop {
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.celebration-confetti {
+  font-size: 54px;
+  animation: cel-bounce 0.8s ease 0.1s both;
+}
+@keyframes cel-bounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-14px) rotate(-8deg); }
+  60% { transform: translateY(4px) rotate(6deg); }
+}
+.celebration-kicker {
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 8px 0 4px;
+}
+.celebration-card h1 { margin: 4px 0 6px; font-size: 26px; }
+.celebration-card > p { color: var(--muted); line-height: 1.5; margin: 0 0 20px; font-size: 14px; }
+.celebration-section {
+  background: rgba(11, 16, 32, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-top: 12px;
+  text-align: left;
+}
+.celebration-section h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--primary-2);
+}
+.celebration-section ul { list-style: none; padding: 0; margin: 0; }
+.celebration-section li { display: flex; gap: 10px; padding: 4px 0; line-height: 1.45; font-size: 14px; color: var(--text); }
+.celebration-section li .ci { flex: 0 0 24px; text-align: center; font-size: 16px; }
+.celebration-tier {
+  background: linear-gradient(135deg, rgba(108,140,255,0.18), rgba(34,211,200,0.18));
+  border: 1px solid var(--accent);
+}
+.celebration-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
+}
+.celebration-actions .btn { width: 100%; }
+@media (min-width: 520px) {
+  .celebration-actions { flex-direction: row; }
+  .celebration-actions .btn { flex: 1; }
+}
 .kv { display:grid; grid-template-columns: 140px 1fr; gap: 6px 12px; font-size: 13px; }
 .kv div:nth-child(odd) { color: var(--muted); }
 
@@ -702,6 +781,9 @@ body[data-auth="gate"] #gate { display: flex; }
 <div id="toast" style="display:none"></div>
 <div id="welcome">
   <div class="welcome-card" id="welcomeCard"></div>
+</div>
+<div id="celebration">
+  <div class="celebration-card" id="celebrationCard"></div>
 </div>
 <script>
 /* ============================================================
@@ -2023,10 +2105,26 @@ function moduleCompleted(id) {
   const ms = moduleState(id);
   const newly = p >= 85 && !ms.completed;
   if (newly) {
+    const badgesBefore = [...state.badges];
+    const completedOthersBefore = MODULES.filter(m => m.id !== id && moduleState(m.id).completed).length;
     ms.completed = true;
     saveState();
     awardXP(40, `${MODULES.find(m=>m.id===id).name} mastered`);
     checkBadges();
+    const completedAfter = completedOthersBefore + 1;
+    const newBadges = state.badges.filter(b => !badgesBefore.includes(b));
+    const unlockedTier = Object.keys(TIER_META).find(t => {
+      const threshold = TIER_META[t].unlockAt;
+      return threshold > 0 && completedOthersBefore < threshold && completedAfter >= threshold;
+    });
+    if (window.CELEBRATION) {
+      setTimeout(() => CELEBRATION.show({
+        module: MODULES.find(m => m.id === id),
+        xpGained: 40,
+        newBadges,
+        unlockedTier,
+      }), 400);
+    }
   }
   return p >= 85;
 }
@@ -3745,6 +3843,77 @@ VIEWS.disclaimer = (root) => renderLegalView(root, 'disclaimer');
 /* ============================================================
    Bootstrap — only runs after Clerk auth + active subscription
    ============================================================ */
+/* ---------- Module completion celebration ---------- */
+const CELEBRATION = {
+  el: null,
+  nextModule(excludeId) {
+    const tiersByPriority = ["foundation", "core", "advanced"];
+    for (const tier of tiersByPriority) {
+      if (!tierUnlocked(tier)) continue;
+      const pick = MODULES.find(m => getTier(m.id) === tier && m.id !== excludeId && !moduleState(m.id).completed);
+      if (pick) return pick;
+    }
+    return null;
+  },
+  show({ module: m, xpGained, newBadges, unlockedTier }) {
+    this.el = document.getElementById('celebrationCard');
+    if (!this.el || !m) return;
+    const next = this.nextModule(m.id);
+    const tier = unlockedTier ? TIER_META[unlockedTier] : null;
+    const badgeLis = (newBadges || []).map(id => {
+      const b = BADGE_DEFS.find(x => x.id === id);
+      return b ? `<li><span class="ci">${b.icon}</span><div><b>${b.name}</b> — ${b.desc}</div></li>` : '';
+    }).join('');
+    this.el.innerHTML = `
+      <div class="celebration-confetti">🎉</div>
+      <div class="celebration-kicker">Module complete</div>
+      <h1>${m.icon} ${m.name}</h1>
+      <p>Next time a client brings up ${m.name}, you'll know exactly what they mean — and what to ask back.</p>
+
+      <div class="celebration-section">
+        <h3>You earned</h3>
+        <ul>
+          <li><span class="ci">⚡</span><div><b>+${xpGained} XP</b> — keep the streak going</div></li>
+          ${badgeLis}
+        </ul>
+      </div>
+
+      ${tier ? `
+        <div class="celebration-section celebration-tier">
+          <h3>🔓 New tier unlocked</h3>
+          <ul>
+            <li><span class="ci">${tier.emoji}</span><div><b>${tier.label}</b> — ${tier.blurb}</div></li>
+          </ul>
+        </div>
+      ` : ''}
+
+      <div class="celebration-section">
+        <h3>Unlocked for this module</h3>
+        <ul>
+          <li><span class="ci">🧑‍💼</span><div><b>Role Card</b> — who you'll hire or talk to, plus a client opener line</div></li>
+          <li><span class="ci">🗒️</span><div><b>Notes</b> — your personal study sheet for this topic</div></li>
+        </ul>
+      </div>
+
+      <div class="celebration-actions">
+        <button class="btn" id="celStay">Explore this module</button>
+        ${next ? `<button class="btn primary" id="celNext">Next: ${next.icon} ${next.name} →</button>` : `<button class="btn primary" id="celDashboard">Back to dashboard →</button>`}
+      </div>
+    `;
+    document.body.setAttribute('data-celebration', 'on');
+    const stay = this.el.querySelector('#celStay');
+    if (stay) stay.onclick = () => { this.dismiss(); navigate('module', { id: m.id, mode: 'tabbed' }); };
+    const nxt = this.el.querySelector('#celNext');
+    if (nxt) nxt.onclick = () => { this.dismiss(); navigate('module', { id: next.id }); };
+    const dash = this.el.querySelector('#celDashboard');
+    if (dash) dash.onclick = () => { this.dismiss(); navigate('dashboard'); };
+  },
+  dismiss() {
+    document.body.removeAttribute('data-celebration');
+  },
+};
+window.CELEBRATION = CELEBRATION;
+
 /* ---------- First-run welcome ---------- */
 const WELCOME = {
   el: null,
