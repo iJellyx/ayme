@@ -209,6 +209,65 @@ h3 { font-size: 16px; margin: 0 0 8px; }
   opacity: 0.55;
   pointer-events: none;
 }
+
+/* First-run welcome overlay */
+#welcome {
+  display: none;
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(11, 16, 32, 0.82);
+  backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+body[data-welcome="on"] #welcome { display: flex; }
+.welcome-card {
+  width: 100%; max-width: 560px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+.welcome-step { animation: welcome-fade 0.25s ease; }
+@keyframes welcome-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.welcome-step h1 { margin: 0 0 8px; font-size: 24px; line-height: 1.25; }
+.welcome-step p { color: var(--muted); line-height: 1.55; margin: 0 0 14px; }
+.welcome-how { margin: 18px 0 10px; display: flex; flex-direction: column; gap: 10px; }
+.welcome-how li { list-style: none; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--text); line-height: 1.5; }
+.welcome-how li .wh-icon { flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: rgba(108,140,255,0.16); font-size: 15px; }
+.welcome-dots { display: flex; gap: 8px; margin-top: 22px; justify-content: center; }
+.welcome-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.welcome-dot.active { background: var(--primary); }
+.welcome-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: space-between; align-items: center; }
+.welcome-skip { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: underline; }
+.welcome-btn {
+  padding: 11px 20px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--panel-2); color: var(--text); font-weight: 600; cursor: pointer;
+  font-size: 14px;
+}
+.welcome-btn.primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #0b1020; border-color: transparent;
+}
+.welcome-btn:hover { filter: brightness(1.08); }
+.welcome-modules { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0 4px; }
+.welcome-mod {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s ease, transform 0.08s ease;
+}
+.welcome-mod:hover { border-color: var(--primary); transform: translateY(-1px); }
+.welcome-mod.selected { border-color: var(--accent); background: rgba(34,211,200,0.08); }
+.welcome-mod .wm-icon { font-size: 22px; }
+.welcome-mod .wm-name { font-weight: 600; margin-top: 4px; font-size: 14px; }
+.welcome-mod .wm-tag { color: var(--muted); font-size: 12px; margin-top: 3px; line-height: 1.4; }
+@media (max-width: 520px) {
+  .welcome-modules { grid-template-columns: 1fr; }
+}
 .kv { display:grid; grid-template-columns: 140px 1fr; gap: 6px 12px; font-size: 13px; }
 .kv div:nth-child(odd) { color: var(--muted); }
 
@@ -538,6 +597,9 @@ body[data-auth="gate"] #gate { display: flex; }
   </main>
 </div>
 <div id="toast" style="display:none"></div>
+<div id="welcome">
+  <div class="welcome-card" id="welcomeCard"></div>
+</div>
 <script>
 /* ============================================================
    AYME — auth gate (Clerk + Stripe)
@@ -1785,7 +1847,8 @@ const defaultState = () => ({
   quizzesTaken: 0,
   gamesPlayed: 0,
   notes: {}, // module id -> notes
-  bookmarks: [] // glossary terms
+  bookmarks: [], // glossary terms
+  onboarded: false // first-run welcome flow completed
 });
 
 function loadState() {
@@ -3350,6 +3413,91 @@ VIEWS.disclaimer = (root) => renderLegalView(root, 'disclaimer');
 /* ============================================================
    Bootstrap — only runs after Clerk auth + active subscription
    ============================================================ */
+/* ---------- First-run welcome ---------- */
+const WELCOME = {
+  el: null,
+  step: 1,
+  picked: null,
+  show(user) {
+    this.el = document.getElementById('welcomeCard');
+    this.step = 1;
+    this.picked = null;
+    document.body.setAttribute('data-welcome', 'on');
+    this.renderStep1(user);
+  },
+  finish(navigateToPicked) {
+    state.onboarded = true;
+    saveState();
+    document.body.removeAttribute('data-welcome');
+    if (navigateToPicked && this.picked) navigate('module', { id: this.picked });
+  },
+  renderStep1(user) {
+    const name = user && (user.firstName || (user.emailAddresses && user.emailAddresses[0]?.emailAddress?.split('@')[0])) || 'there';
+    this.el.innerHTML = `
+      <div class="welcome-step">
+        <h1>Welcome, ${this.escape(name)} 👋</h1>
+        <p>AYME helps you get fluent in connected automation for pharma &amp; biotech — one small win at a time. No cramming, no 200-page PDFs.</p>
+        <ul class="welcome-how">
+          <li><div class="wh-icon">📚</div><div><b>Start with Foundations.</b> Four modules cover the vocabulary everyone uses on client calls.</div></li>
+          <li><div class="wh-icon">💡</div><div><b>Hover anything underlined</b> for a plain-English explanation. Jargon won't slow you down.</div></li>
+          <li><div class="wh-icon">🔓</div><div><b>Core and Advanced tiers unlock</b> as you progress. One focus at a time.</div></li>
+        </ul>
+        <div class="welcome-dots">
+          <div class="welcome-dot active"></div>
+          <div class="welcome-dot"></div>
+        </div>
+        <div class="welcome-actions">
+          <button class="welcome-skip" id="wSkip">Skip intro</button>
+          <button class="welcome-btn primary" id="wNext">Pick my first module →</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('wSkip').onclick = () => this.finish(false);
+    document.getElementById('wNext').onclick = () => { this.step = 2; this.renderStep2(); };
+  },
+  renderStep2() {
+    const foundation = MODULE_TIERS.foundation.map(id => MODULES.find(m => m.id === id));
+    this.el.innerHTML = `
+      <div class="welcome-step">
+        <h1>Pick a starting module</h1>
+        <p>We suggest <b>IT/OT</b> — it's the gentlest entry point and ties everything else together. But any of these four is a fine place to start.</p>
+        <div class="welcome-modules" id="wMods">
+          ${foundation.map(m => `
+            <button class="welcome-mod" data-id="${m.id}">
+              <div class="wm-icon">${m.icon}</div>
+              <div class="wm-name">${m.name}</div>
+              <div class="wm-tag">${m.tagline}</div>
+            </button>
+          `).join('')}
+        </div>
+        <div class="welcome-dots">
+          <div class="welcome-dot"></div>
+          <div class="welcome-dot active"></div>
+        </div>
+        <div class="welcome-actions">
+          <button class="welcome-skip" id="wBack">← Back</button>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="welcome-skip" id="wLater">I'll decide later</button>
+            <button class="welcome-btn primary" id="wStart" disabled>Start learning →</button>
+          </div>
+        </div>
+      </div>
+    `;
+    this.el.querySelectorAll('.welcome-mod').forEach(btn => {
+      btn.onclick = () => {
+        this.picked = btn.dataset.id;
+        this.el.querySelectorAll('.welcome-mod').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('wStart').disabled = false;
+      };
+    });
+    document.getElementById('wBack').onclick = () => this.renderStep1(window.Clerk?.user);
+    document.getElementById('wStart').onclick = () => this.finish(true);
+    document.getElementById('wLater').onclick = () => this.finish(false);
+  },
+  escape(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
+};
+
 window.onAymeAuthReady = function(user) {
   updateTopbar();
   navigate("dashboard");
@@ -3362,6 +3510,13 @@ window.onAymeAuthReady = function(user) {
       a.onclick = (e) => { e.preventDefault(); navigate(a.dataset.legalSidebar); };
     });
   } catch(e) { console.warn('account mount failed', e); }
+  // Existing users with any progress shouldn't see the first-run welcome
+  if (!state.onboarded && completedCount() === 0 && state.xp === 0 && state.quizzesTaken === 0) {
+    setTimeout(() => WELCOME.show(user), 300);
+  } else if (!state.onboarded) {
+    state.onboarded = true;
+    saveState();
+  }
 };
 
 
