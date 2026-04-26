@@ -2033,7 +2033,8 @@ const defaultState = () => ({
   gamesPlayed: 0,
   notes: {}, // module id -> notes
   bookmarks: [], // glossary terms
-  onboarded: false // first-run welcome flow completed
+  onboarded: false, // first-run welcome flow completed
+  savedAt: null // ISO timestamp of last saveState() — drives cloud merge
 });
 
 function loadState() {
@@ -2046,8 +2047,62 @@ function loadState() {
 }
 
 function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  try {
+    state.savedAt = new Date().toISOString();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {}
+  scheduleCloudSync();
 }
+
+/* Cloud sync — debounced push to Clerk publicMetadata */
+let _cloudSyncTimer = null;
+let _cloudSyncInFlight = false;
+function scheduleCloudSync() {
+  if (_cloudSyncTimer) clearTimeout(_cloudSyncTimer);
+  _cloudSyncTimer = setTimeout(pushStateToCloud, 1500);
+}
+async function pushStateToCloud() {
+  if (_cloudSyncInFlight) return;
+  if (!window.Clerk?.session) return;
+  _cloudSyncInFlight = true;
+  try {
+    const token = await window.Clerk.session.getToken();
+    const res = await fetch('/api/save-state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ state }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.warn('[cloud-sync] save failed', res.status, err);
+    }
+  } catch (e) {
+    console.warn('[cloud-sync] save error', e?.message);
+  } finally {
+    _cloudSyncInFlight = false;
+  }
+}
+async function hydrateStateFromCloud(user) {
+  try {
+    const cloud = user?.publicMetadata?.savedState;
+    if (!cloud) return false;
+    const cloudTime = new Date(user.publicMetadata.savedStateAt || 0).getTime();
+    const localTime = new Date(state.savedAt || 0).getTime();
+    if (cloudTime > localTime) {
+      state = Object.assign(defaultState(), cloud);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+      if (state.theme) document.body.setAttribute("data-theme", state.theme);
+      return true;
+    } else if (localTime > cloudTime) {
+      // Local is newer — push to cloud
+      pushStateToCloud();
+    }
+  } catch (e) {
+    console.warn('[cloud-sync] hydrate error', e?.message);
+  }
+  return false;
+}
+window.AYME_HYDRATE = hydrateStateFromCloud;
 
 let state = loadState();
 if (state.theme) document.body.setAttribute("data-theme", state.theme);
@@ -3999,7 +4054,9 @@ const WELCOME = {
   escape(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
 };
 
-window.onAymeAuthReady = function(user) {
+window.onAymeAuthReady = async function(user) {
+  // Pull cloud-saved progress before rendering so XP/streaks/etc. reflect latest device
+  try { if (window.AYME_HYDRATE) await window.AYME_HYDRATE(user); } catch(e) { console.warn('hydrate failed', e); }
   updateTopbar();
   navigate("dashboard");
   try {
