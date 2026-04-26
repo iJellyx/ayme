@@ -254,6 +254,53 @@ h3 { font-size: 16px; margin: 0 0 8px; }
   pointer-events: none;
 }
 
+/* Module content review stamp / banner */
+.review-stamp, .review-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.review-stamp {
+  background: rgba(34, 211, 200, 0.08);
+  border: 1px solid rgba(34, 211, 200, 0.4);
+  color: var(--text);
+}
+.review-banner {
+  background: rgba(245, 176, 65, 0.08);
+  border: 1px solid rgba(245, 176, 65, 0.35);
+  color: var(--text);
+}
+.review-stamp .rs-icon, .review-banner .rs-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 1.2;
+  padding-top: 1px;
+}
+.review-stamp .rs-icon { color: var(--accent); font-weight: 800; }
+.rs-sources { margin-top: 6px; }
+.rs-sources summary { cursor: pointer; color: var(--primary-2); font-size: 12.5px; }
+.rs-sources ul { margin: 8px 0 0; padding-left: 20px; }
+.rs-sources li { font-size: 12.5px; line-height: 1.55; padding: 2px 0; }
+.rs-sources a { color: var(--primary-2); }
+.feedback-row { margin-top: 18px; text-align: center; }
+.feedback-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.feedback-btn:hover { color: var(--primary-2); border-color: var(--primary); }
+
 /* Linear module walkthrough */
 .linear-topbar { justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .linear-stepper {
@@ -2338,6 +2385,24 @@ document.getElementById("themeBtn").addEventListener("click", () => {
 });
 
 /* ============================================================
+   Content review metadata. Populated as a SME signs off on each
+   module. Until a key is added here, the module's briefing shows
+   a "Verify with vendor docs" banner instead of a review stamp.
+   See CONTENT-REVIEW.md for the methodology and review template.
+   ============================================================ */
+const CONTENT_REVIEW = {
+  // Example shape — uncomment and edit once a SME has reviewed a module:
+  // deltav: {
+  //   reviewer: "Jane Doe, CSV consultant (LinkedIn link)",
+  //   date: "2026-04-24",
+  //   sources: [
+  //     { title: "Emerson DeltaV product overview", url: "https://www.emerson.com/...", note: "vendor" },
+  //     { title: "ISA-88 Part 1 (2010)", url: "https://www.isa.org/...", note: "standard" }
+  //   ]
+  // }
+};
+
+/* ============================================================
    Legal documents — STARTER TEMPLATES. Review with counsel
    before production launch. Placeholders in [brackets].
    ============================================================ */
@@ -3144,7 +3209,33 @@ function renderNotes(body, m) {
 function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 
 function renderBrief(body, m) {
+  const review = (typeof CONTENT_REVIEW !== 'undefined') ? CONTENT_REVIEW[m.id] : null;
+  const reviewBlock = review ? `
+    <div class="review-stamp">
+      <span class="rs-icon">✓</span>
+      <div>
+        <div><b>Reviewed ${review.date}</b> by ${review.reviewer}</div>
+        ${review.sources?.length ? `
+          <details class="rs-sources">
+            <summary>${review.sources.length} source${review.sources.length === 1 ? '' : 's'}</summary>
+            <ul>
+              ${review.sources.map(s => `<li><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title}</a>${s.note ? ` — <span class="muted">${s.note}</span>` : ''}</li>`).join("")}
+            </ul>
+          </details>
+        ` : ''}
+      </div>
+    </div>
+  ` : `
+    <div class="review-banner">
+      <span class="rs-icon">📝</span>
+      <div>This is an educational summary written for fast onboarding. Verify against vendor documentation and current regulatory guidance before relying on it for client work.</div>
+    </div>
+  `;
+  const feedbackHref = "mailto:feedback@aymetraining.com" +
+    "?subject=" + encodeURIComponent(`AYME correction — ${m.name}`) +
+    "&body=" + encodeURIComponent(`Hi,\n\nI noticed something in the ${m.name} module that may be incorrect or out of date:\n\n[describe what you saw and what it should be — link to a source if you have one]\n\nThanks!`);
   body.innerHTML = `
+    ${reviewBlock}
     <div class="grid cols-2">
       <div class="card">
         <h3>What it is</h3>
@@ -3186,6 +3277,9 @@ function renderBrief(body, m) {
           </div>
         `).join("")}
       </div>
+    </div>
+    <div class="feedback-row">
+      <a class="feedback-btn" href="${feedbackHref}">💡 Spotted something inaccurate? Tell us</a>
     </div>
   `;
 }
