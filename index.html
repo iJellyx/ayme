@@ -1972,32 +1972,32 @@ const MODULES = [
       eyebrow: "GAMP 5 V-Model",
       title: "Every spec on the left has a test on the right",
       caption: "User Requirements drive the highest-level test (PQ). Functional Spec drives Operational Qualification. Design Spec drives Installation Qualification. The traceability matrix is what proves each requirement was tested.",
-      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GAMP 5 V-Model">
+      svg: `<svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GAMP 5 V-Model">
   <defs>
     <radialGradient id="dg2Glow" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(159,212,255,0.22)"/><stop offset="100%" stop-color="rgba(159,212,255,0)"/></radialGradient>
     <radialGradient id="dg2Build" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(245,176,65,0.28)"/><stop offset="100%" stop-color="rgba(245,176,65,0)"/></radialGradient>
   </defs>
-  <!-- V shape lines -->
-  <line x1="120" y1="60" x2="360" y2="220" stroke="rgba(159,212,255,0.25)" stroke-width="1.2" stroke-dasharray="3 5"/>
-  <line x1="600" y1="60" x2="360" y2="220" stroke="rgba(159,212,255,0.25)" stroke-width="1.2" stroke-dasharray="3 5"/>
   <!-- Trace lines (left ↔ right) -->
-  <line x1="170" y1="80" x2="550" y2="80" stroke="rgba(124,240,229,0.18)" stroke-width="1" stroke-dasharray="1 4"/>
-  <line x1="220" y1="130" x2="500" y2="130" stroke="rgba(124,240,229,0.16)" stroke-width="1" stroke-dasharray="1 4"/>
-  <line x1="270" y1="180" x2="450" y2="180" stroke="rgba(124,240,229,0.14)" stroke-width="1" stroke-dasharray="1 4"/>
+  <line x1="170" y1="40" x2="550" y2="40" stroke="rgba(124,240,229,0.20)" stroke-width="1" stroke-dasharray="1 4"/>
+  <line x1="220" y1="90" x2="500" y2="90" stroke="rgba(124,240,229,0.18)" stroke-width="1" stroke-dasharray="1 4"/>
+  <line x1="270" y1="140" x2="450" y2="140" stroke="rgba(124,240,229,0.16)" stroke-width="1" stroke-dasharray="1 4"/>
+  <!-- V-shape connecting lines through the boxes -->
+  <line x1="170" y1="40" x2="380" y2="180" stroke="rgba(159,212,255,0.20)" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="550" y1="40" x2="340" y2="180" stroke="rgba(159,212,255,0.20)" stroke-width="1" stroke-dasharray="3 5"/>
   <!-- Left arm: specs -->
-  <g transform="translate(120,60)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">URS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">User Requirements</text></g>
-  <g transform="translate(170,110)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">FS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Functional Spec</text></g>
-  <g transform="translate(220,160)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">DS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Design Spec</text></g>
+  <g transform="translate(120,20)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">URS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">User Requirements</text></g>
+  <g transform="translate(170,70)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">FS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Functional Spec</text></g>
+  <g transform="translate(220,120)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">DS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Design Spec</text></g>
   <!-- Build (bottom of V) -->
-  <g transform="translate(310,210)"><ellipse cx="50" cy="20" rx="60" ry="24" fill="url(#dg2Build)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(245,176,65,0.55)" stroke-width="1.2"/><text x="50" y="18" text-anchor="middle" fill="#F5B041" font-size="11.5" font-weight="600">BUILD</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">configure / code</text></g>
+  <g transform="translate(310,170)"><ellipse cx="50" cy="20" rx="60" ry="24" fill="url(#dg2Build)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(245,176,65,0.55)" stroke-width="1.2"/><text x="50" y="18" text-anchor="middle" fill="#F5B041" font-size="11.5" font-weight="600">BUILD</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">configure / code</text></g>
   <!-- Right arm: tests -->
-  <g transform="translate(400,160)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">IQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Installation Qual</text></g>
-  <g transform="translate(450,110)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">OQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Operational Qual</text></g>
-  <g transform="translate(500,60)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">PQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Performance Qual</text></g>
+  <g transform="translate(400,120)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">IQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Installation Qual</text></g>
+  <g transform="translate(450,70)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">OQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Operational Qual</text></g>
+  <g transform="translate(500,20)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">PQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Performance Qual</text></g>
   <!-- Side labels -->
-  <text x="60" y="86" text-anchor="start" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.5">SPECIFY</text>
-  <text x="660" y="86" text-anchor="end" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.5">VERIFY</text>
-  <text x="360" y="270" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">Traceability matrix proves every requirement on the left is tested on the right.</text>
+  <text x="40" y="46" text-anchor="start" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.5">SPECIFY</text>
+  <text x="680" y="46" text-anchor="end" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.5">VERIFY</text>
+  <text x="360" y="220" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">Traceability matrix proves every requirement on the left is tested on the right.</text>
 </svg>`
     }]
   },
@@ -2941,11 +2941,15 @@ function explainize(root) {
   const lookup = {};
   keys.forEach(k => { lookup[k.toLowerCase()] = SIMPLE_EXPLANATIONS[k]; });
   const SKIP_TAGS = new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','CODE','BUTTON']);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
   const nodes = [];
   (function walk(node) {
     if (node.nodeType === 3) { nodes.push(node); return; }
     if (node.nodeType !== 1) return;
     if (SKIP_TAGS.has(node.tagName)) return;
+    // Skip the entire SVG subtree — we can't insert HTML <span class="tip"> into SVG <text>;
+    // doing so silently makes the wrapped term invisible and breaks every diagram.
+    if (node.namespaceURI === SVG_NS || node.tagName === 'svg' || node.tagName === 'SVG') return;
     if (node.classList && node.classList.contains('tip')) return;
     if (node.classList && node.classList.contains('no-tip')) return;
     for (const c of Array.from(node.childNodes)) walk(c);
