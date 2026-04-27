@@ -955,6 +955,25 @@ body[data-auth="gate"] #gate { display: flex; }
 .gate-user { color: var(--muted); font-size: 13px; margin-top: 14px; }
 .gate-user b { color: var(--text); }
 .signout-link { background: none; border: none; color: var(--primary-2); cursor: pointer; padding: 0; font-size: 13px; text-decoration: underline; }
+.preview-badge {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #0b1020;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+body[data-preview="on"] .topbar::after {
+  content: "Preview mode — progress on this device only";
+  display: block;
+  margin-top: 6px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.4px;
+}
 
 /* Legal doc pages */
 .legal-banner {
@@ -1071,6 +1090,14 @@ const GATE = {
   async init() {
     this.el = document.getElementById('gateCard');
     try {
+      // Preview mode — bypass Clerk for shareable demo links.
+      // NOTE: the password is in client code by design; this is a soft demo
+      // gate, not a security boundary. Anyone determined can extract it.
+      const params = new URLSearchParams(window.location.search);
+      const wantsPreview = params.get('preview') === '1' || window.location.pathname === '/preview';
+      if (this.isPreviewMode()) { this.unlockPreviewApp(); return; }
+      if (wantsPreview) { this.renderPreviewGate(); return; }
+
       await this.waitForClerk();
       this.clerk = window.Clerk;
       await this.clerk.load({ afterSignOutUrl: '/' });
@@ -1081,6 +1108,61 @@ const GATE = {
       console.error('Gate init failed', err);
       this.renderError(err);
     }
+  },
+  isPreviewMode() {
+    try { return localStorage.getItem('ayme.preview') === 'true'; } catch { return false; }
+  },
+  renderPreviewGate() {
+    document.body.setAttribute('data-auth', 'gate');
+    this.el.className = 'gate-card';
+    this.el.innerHTML = `
+      <div class="gate-brand">
+        <div class="gate-logo">AY</div>
+        <div style="text-align:left">
+          <div class="gate-name">AYME</div>
+          <div class="gate-sub">Preview access</div>
+        </div>
+      </div>
+      <h1>Enter preview password</h1>
+      <p>This is a shared preview link. Enter the password you were given to explore the platform — no account required.</p>
+      <input type="password" id="previewPwd" placeholder="Password"
+        style="width:100%;box-sizing:border-box;padding:12px 14px;margin-top:14px;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;outline:none;">
+      <div class="gate-actions" style="margin-top:14px">
+        <button class="gate-btn primary" id="previewBtn">Unlock preview</button>
+      </div>
+      <div class="gate-err" id="previewErr" style="display:none;margin-top:8px">Incorrect password. Try again.</div>
+      <div class="gate-foot" style="margin-top:14px">Have an account? <a href="/" style="color:var(--primary-2);text-decoration:none">Sign in normally →</a></div>
+    `;
+    const tryUnlock = () => {
+      const val = document.getElementById('previewPwd').value;
+      if (val === 'AYME123') {
+        try { localStorage.setItem('ayme.preview', 'true'); } catch {}
+        window.location.replace('/');
+      } else {
+        document.getElementById('previewErr').style.display = 'block';
+      }
+    };
+    document.getElementById('previewBtn').onclick = tryUnlock;
+    document.getElementById('previewPwd').onkeydown = (e) => { if (e.key === 'Enter') tryUnlock(); };
+    setTimeout(() => { const f = document.getElementById('previewPwd'); if (f) f.focus(); }, 80);
+  },
+  unlockPreviewApp() {
+    document.body.setAttribute('data-auth', 'ready');
+    document.body.setAttribute('data-preview', 'on');
+    this.state = 'ready';
+    if (window.onAymeAuthReady && !this.booted) {
+      this.booted = true;
+      const stubUser = {
+        firstName: 'Preview',
+        emailAddresses: [{ emailAddress: 'preview@aymetraining.com' }],
+        publicMetadata: {},
+      };
+      try { window.onAymeAuthReady(stubUser); } catch(e) { console.warn(e); }
+    }
+  },
+  exitPreview() {
+    try { localStorage.removeItem('ayme.preview'); } catch {}
+    window.location.replace('/');
   },
   waitForClerk() {
     return new Promise((resolve, reject) => {
@@ -4719,25 +4801,42 @@ const WELCOME = {
 };
 
 window.onAymeAuthReady = async function(user) {
-  // Pull cloud-saved progress before rendering so XP/streaks/etc. reflect latest device
-  try { if (window.AYME_HYDRATE) await window.AYME_HYDRATE(user); } catch(e) { console.warn('hydrate failed', e); }
+  const isPreview = document.body.getAttribute('data-preview') === 'on';
+  // Cloud sync only for real Clerk users — preview sessions stay localStorage-only
+  if (!isPreview) {
+    try { if (window.AYME_HYDRATE) await window.AYME_HYDRATE(user); } catch(e) { console.warn('hydrate failed', e); }
+  }
   updateTopbar();
   navigate("dashboard");
   try {
-    const mount = document.getElementById('userButton');
-    if (mount && window.Clerk) window.Clerk.mountUserButton(mount, { afterSignOutUrl: '/' });
-    const billing = document.getElementById('billingBtn');
-    if (billing) billing.onclick = () => window.AYME_GATE.openBillingPortal();
+    if (isPreview) {
+      const accountBox = document.getElementById('accountBox');
+      if (accountBox) {
+        accountBox.innerHTML = `
+          <div class="preview-badge">PREVIEW</div>
+          <button id="exitPreviewBtn" class="theme-toggle" style="font-size:11px;padding:6px 10px">Exit preview</button>
+        `;
+        const exitBtn = document.getElementById('exitPreviewBtn');
+        if (exitBtn) exitBtn.onclick = () => window.AYME_GATE.exitPreview();
+      }
+    } else {
+      const mount = document.getElementById('userButton');
+      if (mount && window.Clerk) window.Clerk.mountUserButton(mount, { afterSignOutUrl: '/' });
+      const billing = document.getElementById('billingBtn');
+      if (billing) billing.onclick = () => window.AYME_GATE.openBillingPortal();
+    }
     document.querySelectorAll('[data-legal-sidebar]').forEach(a => {
       a.onclick = (e) => { e.preventDefault(); navigate(a.dataset.legalSidebar); };
     });
   } catch(e) { console.warn('account mount failed', e); }
-  // Existing users with any progress shouldn't see the first-run welcome
-  if (!state.onboarded && completedCount() === 0 && state.xp === 0 && state.quizzesTaken === 0) {
-    setTimeout(() => WELCOME.show(user), 300);
-  } else if (!state.onboarded) {
-    state.onboarded = true;
-    saveState();
+  // First-run welcome flow only for real (non-preview) users
+  if (!isPreview) {
+    if (!state.onboarded && completedCount() === 0 && state.xp === 0 && state.quizzesTaken === 0) {
+      setTimeout(() => WELCOME.show(user), 300);
+    } else if (!state.onboarded) {
+      state.onboarded = true;
+      saveState();
+    }
   }
 };
 
