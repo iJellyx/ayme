@@ -1929,7 +1929,33 @@ const MODULES = [
       "MES selected before process flows are stable — rework follows."
     ],
     oneLiner: "MES is the Level-3 digital brain — recipes in, batch records out, SAP in sync.",
-    hours: 30
+    hours: 30,
+    diagrams: [{
+      eyebrow: "Where MES lives",
+      title: "The middle layer that translates business orders into production",
+      caption: "Production orders flow down from ERP at Level 4. MES turns them into recipes the control system can execute at Level 2. Events and finished batch records flow back up. Without MES, that translation is paper or spreadsheets.",
+      svg: `<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MES sitting between ERP and Control">
+  <defs>
+    <linearGradient id="dgMesL4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(108,140,255,0.28)"/><stop offset="100%" stop-color="rgba(108,140,255,0.08)"/></linearGradient>
+    <linearGradient id="dgMesL3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(159,212,255,0.42)"/><stop offset="100%" stop-color="rgba(91,217,201,0.20)"/></linearGradient>
+    <linearGradient id="dgMesL2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(91,217,201,0.26)"/><stop offset="100%" stop-color="rgba(91,217,201,0.06)"/></linearGradient>
+  </defs>
+  <!-- L4 ERP -->
+  <g transform="translate(60,20)"><rect width="600" height="58" rx="12" fill="url(#dgMesL4)" stroke="rgba(108,140,255,0.5)"/><text x="20" y="22" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L4</text><text x="20" y="38" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">ENTERPRISE</text><text x="20" y="52" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">SAP / Oracle</text><text x="320" y="28" fill="#EAF2FF" font-size="13" font-weight="500">Business systems</text><text x="320" y="44" fill="#94A3C2" font-size="11">production planning · finance · inventory</text></g>
+  <!-- Down arrow + label -->
+  <g transform="translate(140,82)"><line x1="0" y1="0" x2="0" y2="22" stroke="rgba(108,140,255,0.7)" stroke-width="1.4"/><polygon points="-4,18 4,18 0,26" fill="rgba(108,140,255,0.85)"/><text x="14" y="16" fill="#9FD4FF" font-size="10" font-weight="600">Production orders</text></g>
+  <!-- Up arrow + label -->
+  <g transform="translate(580,82)"><line x1="0" y1="26" x2="0" y2="4" stroke="rgba(91,217,201,0.7)" stroke-width="1.4"/><polygon points="-4,8 4,8 0,0" fill="rgba(91,217,201,0.85)"/><text x="-148" y="16" fill="#5BD9C9" font-size="10" font-weight="600">Batch records · confirmations</text></g>
+  <!-- L3 MES (highlighted) -->
+  <g transform="translate(60,112)"><rect width="600" height="64" rx="14" fill="url(#dgMesL3)" stroke="#9FD4FF" stroke-width="1.5"/><text x="20" y="22" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="0.8">L3</text><text x="20" y="38" fill="#9FD4FF" font-size="9.5" letter-spacing="0.6">MES</text><text x="20" y="54" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">PAS-X / Syncade</text><text x="320" y="32" fill="#EAF2FF" font-size="14" font-weight="600">Manufacturing operations</text><text x="320" y="50" fill="#EAF2FF" font-size="11">EBR · weigh &amp; dispense · review by exception · genealogy</text></g>
+  <!-- Down arrow + label -->
+  <g transform="translate(140,180)"><line x1="0" y1="0" x2="0" y2="22" stroke="rgba(91,217,201,0.7)" stroke-width="1.4"/><polygon points="-4,18 4,18 0,26" fill="rgba(91,217,201,0.85)"/><text x="14" y="16" fill="#5BD9C9" font-size="10" font-weight="600">Recipes · phase commands</text></g>
+  <!-- Up arrow + label -->
+  <g transform="translate(580,180)"><line x1="0" y1="26" x2="0" y2="4" stroke="rgba(124,240,229,0.7)" stroke-width="1.4"/><polygon points="-4,8 4,8 0,0" fill="rgba(124,240,229,0.85)"/><text x="-128" y="16" fill="#7CF0E5" font-size="10" font-weight="600">Process events · alarms · data</text></g>
+  <!-- L2 Control -->
+  <g transform="translate(60,210)"><rect width="600" height="58" rx="12" fill="url(#dgMesL2)" stroke="rgba(91,217,201,0.5)"/><text x="20" y="22" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L2</text><text x="20" y="38" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">CONTROL</text><text x="20" y="52" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">DeltaV / PLC</text><text x="320" y="28" fill="#EAF2FF" font-size="13" font-weight="500">Real-time control</text><text x="320" y="44" fill="#94A3C2" font-size="11">runs the equipment · valves · pumps · reactors</text></g>
+</svg>`
+    }]
   },
   {
     id: "csv",
@@ -2037,7 +2063,44 @@ const MODULES = [
       "No patching plan for OT — either frozen in time, or uncontrolled."
     ],
     oneLiner: "IT/OT is where plant data meets the enterprise — architecture, identity, and cyber all in one.",
-    hours: 25
+    hours: 25,
+    diagrams: [{
+      eyebrow: "IT meets OT",
+      title: "Three networks, one demilitarised bridge",
+      caption: "IT and OT used to be separate networks with no link. They now connect — via a DMZ that runs jump servers, historians and reverse proxies. Every conduit through the DMZ is monitored and audited; nothing on IT touches OT directly.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IT, DMZ and OT zones with conduits">
+  <defs>
+    <linearGradient id="dgItotIT" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(108,140,255,0.22)"/><stop offset="100%" stop-color="rgba(108,140,255,0.05)"/></linearGradient>
+    <linearGradient id="dgItotDMZ" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(245,176,65,0.22)"/><stop offset="100%" stop-color="rgba(245,176,65,0.05)"/></linearGradient>
+    <linearGradient id="dgItotOT" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(91,217,201,0.22)"/><stop offset="100%" stop-color="rgba(91,217,201,0.05)"/></linearGradient>
+  </defs>
+  <!-- Internet cloud at top -->
+  <g transform="translate(310,8)"><ellipse cx="50" cy="14" rx="56" ry="14" fill="rgba(255,107,138,0.10)" stroke="rgba(255,107,138,0.4)" stroke-dasharray="2 3"/><text x="50" y="18" text-anchor="middle" fill="#FF6B8A" font-size="10.5" font-weight="700" letter-spacing="1">INTERNET / VENDORS</text></g>
+  <!-- IT column -->
+  <g transform="translate(40,50)"><rect width="200" height="220" rx="14" fill="url(#dgItotIT)" stroke="rgba(108,140,255,0.45)"/><text x="100" y="22" text-anchor="middle" fill="#6C8CFF" font-size="11" font-weight="700" letter-spacing="1.5">IT NETWORK</text><text x="100" y="38" text-anchor="middle" fill="#94A3C2" font-size="10">the office</text>
+    <rect x="20" y="58" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(108,140,255,0.35)"/><text x="100" y="74" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Email · ERP</text><text x="100" y="88" text-anchor="middle" fill="#94A3C2" font-size="9.5">SAP · Oracle</text>
+    <rect x="20" y="106" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(108,140,255,0.35)"/><text x="100" y="122" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Active Directory</text><text x="100" y="136" text-anchor="middle" fill="#94A3C2" font-size="9.5">corporate identity</text>
+    <rect x="20" y="154" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(108,140,255,0.35)"/><text x="100" y="170" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Cloud · analytics</text><text x="100" y="184" text-anchor="middle" fill="#94A3C2" font-size="9.5">Azure · AWS · Power BI</text>
+  </g>
+  <!-- DMZ column (highlighted) -->
+  <g transform="translate(260,50)"><rect width="200" height="220" rx="14" fill="url(#dgItotDMZ)" stroke="#F5B041" stroke-width="1.5" stroke-dasharray="6 4"/><text x="100" y="22" text-anchor="middle" fill="#F5B041" font-size="11" font-weight="700" letter-spacing="1.5">DMZ — L3.5</text><text x="100" y="38" text-anchor="middle" fill="#94A3C2" font-size="10">controlled bridge</text>
+    <rect x="20" y="58" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(245,176,65,0.4)"/><text x="100" y="74" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Jump server · PAM</text><text x="100" y="88" text-anchor="middle" fill="#94A3C2" font-size="9.5">audited remote access</text>
+    <rect x="20" y="106" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(245,176,65,0.4)"/><text x="100" y="122" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Historian / PI</text><text x="100" y="136" text-anchor="middle" fill="#94A3C2" font-size="9.5">data flows OT → IT</text>
+    <rect x="20" y="154" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(245,176,65,0.4)"/><text x="100" y="170" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Reverse proxy · firewall</text><text x="100" y="184" text-anchor="middle" fill="#94A3C2" font-size="9.5">every packet inspected</text>
+  </g>
+  <!-- OT column -->
+  <g transform="translate(480,50)"><rect width="200" height="220" rx="14" fill="url(#dgItotOT)" stroke="rgba(91,217,201,0.45)"/><text x="100" y="22" text-anchor="middle" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="1.5">OT NETWORK</text><text x="100" y="38" text-anchor="middle" fill="#94A3C2" font-size="10">the plant</text>
+    <rect x="20" y="58" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(91,217,201,0.35)"/><text x="100" y="74" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">DCS · MES</text><text x="100" y="88" text-anchor="middle" fill="#94A3C2" font-size="9.5">DeltaV · PAS-X · Syncade</text>
+    <rect x="20" y="106" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(91,217,201,0.35)"/><text x="100" y="122" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">PLCs · SCADA</text><text x="100" y="136" text-anchor="middle" fill="#94A3C2" font-size="9.5">Allen-Bradley · Siemens</text>
+    <rect x="20" y="154" width="160" height="38" rx="8" fill="#0E1828" stroke="rgba(91,217,201,0.35)"/><text x="100" y="170" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="500">Sensors · valves</text><text x="100" y="184" text-anchor="middle" fill="#94A3C2" font-size="9.5">the physical kit</text>
+  </g>
+  <!-- Conduit arrows IT↔DMZ and DMZ↔OT -->
+  <g><line x1="240" y1="160" x2="260" y2="160" stroke="rgba(245,176,65,0.7)" stroke-width="1.4"/><polygon points="256,156 264,160 256,164" fill="rgba(245,176,65,0.85)"/></g>
+  <g><line x1="460" y1="160" x2="480" y2="160" stroke="rgba(245,176,65,0.7)" stroke-width="1.4"/><polygon points="476,156 484,160 476,164" fill="rgba(245,176,65,0.85)"/></g>
+  <!-- Internet → DMZ -->
+  <g><line x1="360" y1="36" x2="360" y2="50" stroke="rgba(245,176,65,0.7)" stroke-width="1.4"/><polygon points="356,46 364,46 360,54" fill="rgba(245,176,65,0.85)"/></g>
+</svg>`
+    }]
   },
   {
     id: "syncade",
@@ -2208,7 +2271,50 @@ const MODULES = [
       "S88 terminology used loosely — always double-check what the client means by 'recipe'."
     ],
     oneLiner: "S88 separates equipment from procedure — it's the grammar of batch.",
-    hours: 14
+    hours: 14,
+    diagrams: [{
+      eyebrow: "ISA-88 procedural model",
+      title: "Recipes nest from whole-process down to one control action",
+      caption: "A Procedure orchestrates several Unit Procedures (work done by individual reactors / blenders / etc.). Each Unit Procedure runs Operations like Heat or React. Each Operation triggers Phases — the smallest reusable building blocks of control logic.",
+      svg: `<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ISA-88 recipe hierarchy">
+  <defs>
+    <linearGradient id="dgS88P" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(108,140,255,0.12)"/><stop offset="100%" stop-color="rgba(108,140,255,0.02)"/></linearGradient>
+    <linearGradient id="dgS88U" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(159,212,255,0.16)"/><stop offset="100%" stop-color="rgba(159,212,255,0.04)"/></linearGradient>
+    <linearGradient id="dgS88O" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(91,217,201,0.20)"/><stop offset="100%" stop-color="rgba(91,217,201,0.04)"/></linearGradient>
+    <linearGradient id="dgS88Ph" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(124,240,229,0.30)"/><stop offset="100%" stop-color="rgba(124,240,229,0.08)"/></linearGradient>
+  </defs>
+  <!-- Procedure (outer) -->
+  <rect x="40" y="20" width="640" height="210" rx="16" fill="url(#dgS88P)" stroke="rgba(108,140,255,0.5)" stroke-width="1.2"/>
+  <text x="60" y="42" fill="#6C8CFF" font-size="11" font-weight="700" letter-spacing="1.5">PROCEDURE</text>
+  <text x="60" y="58" fill="#94A3C2" font-size="10.5">the entire recipe — make one batch of product X</text>
+  <!-- Unit Procedure (next level) -->
+  <rect x="70" y="74" width="580" height="146" rx="14" fill="url(#dgS88U)" stroke="rgba(159,212,255,0.5)" stroke-width="1.2"/>
+  <text x="90" y="96" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="1.2">UNIT PROCEDURE</text>
+  <text x="90" y="112" fill="#94A3C2" font-size="10.5">one batch of work on one piece of equipment (e.g. Reactor 101)</text>
+  <!-- Operation -->
+  <rect x="100" y="126" width="520" height="86" rx="12" fill="url(#dgS88O)" stroke="rgba(91,217,201,0.5)" stroke-width="1.2"/>
+  <text x="120" y="146" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="1.2">OPERATION</text>
+  <text x="120" y="162" fill="#94A3C2" font-size="10.5">a stage of the batch — Heat · Hold · React · Cool · Discharge · CIP</text>
+  <!-- Phases (3 small inside) -->
+  <g transform="translate(130,178)">
+    <rect width="148" height="28" rx="8" fill="url(#dgS88Ph)" stroke="rgba(124,240,229,0.6)"/>
+    <text x="74" y="14" text-anchor="middle" fill="#7CF0E5" font-size="10" font-weight="700" letter-spacing="0.6">PHASE</text>
+    <text x="74" y="24" text-anchor="middle" fill="#EAF2FF" font-size="10">Charge</text>
+  </g>
+  <g transform="translate(290,178)">
+    <rect width="148" height="28" rx="8" fill="url(#dgS88Ph)" stroke="rgba(124,240,229,0.6)"/>
+    <text x="74" y="14" text-anchor="middle" fill="#7CF0E5" font-size="10" font-weight="700" letter-spacing="0.6">PHASE</text>
+    <text x="74" y="24" text-anchor="middle" fill="#EAF2FF" font-size="10">Heat to setpoint</text>
+  </g>
+  <g transform="translate(450,178)">
+    <rect width="148" height="28" rx="8" fill="url(#dgS88Ph)" stroke="rgba(124,240,229,0.6)"/>
+    <text x="74" y="14" text-anchor="middle" fill="#7CF0E5" font-size="10" font-weight="700" letter-spacing="0.6">PHASE</text>
+    <text x="74" y="24" text-anchor="middle" fill="#EAF2FF" font-size="10">Hold 30 min</text>
+  </g>
+  <!-- Right-side hint label about reuse -->
+  <text x="678" y="244" text-anchor="end" fill="#94A3C2" font-size="10" font-style="italic">Phases are class-based and reusable across every recipe.</text>
+</svg>`
+    }]
   },
   {
     id: "isa95",
@@ -2305,7 +2411,57 @@ const MODULES = [
       "Excel used for GMP calculations without validation."
     ],
     oneLiner: "ALCOA+ is the nine-word summary of every data-integrity conversation.",
-    hours: 12
+    hours: 12,
+    diagrams: [{
+      eyebrow: "ALCOA+ at a glance",
+      title: "Nine principles every regulated record must satisfy",
+      caption: "ALCOA covers the original five: Attributable, Legible, Contemporaneous, Original, Accurate. The plus adds Complete, Consistent, Enduring, Available — making the standard mnemonic regulators expect.",
+      svg: `<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ALCOA+ nine-spoke principle wheel">
+  <defs>
+    <radialGradient id="dgAlcoaCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(159,212,255,0.55)"/>
+      <stop offset="55%" stop-color="rgba(159,212,255,0.18)"/>
+      <stop offset="100%" stop-color="rgba(159,212,255,0)"/>
+    </radialGradient>
+    <radialGradient id="dgAlcoaDot" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(124,240,229,0.9)"/>
+      <stop offset="100%" stop-color="rgba(124,240,229,0)"/>
+    </radialGradient>
+  </defs>
+  <!-- Outer circle guide -->
+  <circle cx="360" cy="160" r="120" fill="none" stroke="rgba(159,212,255,0.10)" stroke-dasharray="2 5"/>
+  <!-- Spokes -->
+  <g stroke="rgba(159,212,255,0.22)" stroke-width="1">
+    <line x1="360" y1="160" x2="360" y2="40"/>
+    <line x1="360" y1="160" x2="437" y2="68.6"/>
+    <line x1="360" y1="160" x2="478.2" y2="139.2"/>
+    <line x1="360" y1="160" x2="463.9" y2="220"/>
+    <line x1="360" y1="160" x2="401" y2="272.7"/>
+    <line x1="360" y1="160" x2="319" y2="272.7"/>
+    <line x1="360" y1="160" x2="256.1" y2="220"/>
+    <line x1="360" y1="160" x2="241.8" y2="139.2"/>
+    <line x1="360" y1="160" x2="283" y2="68.6"/>
+  </g>
+  <!-- Center node -->
+  <ellipse cx="360" cy="160" rx="58" ry="40" fill="url(#dgAlcoaCenter)"/>
+  <rect x="312" y="138" width="96" height="46" rx="12" fill="#0E1828" stroke="rgba(159,212,255,0.6)" stroke-width="1.2"/>
+  <text x="360" y="158" text-anchor="middle" fill="#9FD4FF" font-size="15" font-weight="700" letter-spacing="0.5">ALCOA+</text>
+  <text x="360" y="172" text-anchor="middle" fill="#94A3C2" font-size="9.5" letter-spacing="0.4">data integrity</text>
+  <!-- Spoke endpoint dots -->
+  <g fill="url(#dgAlcoaDot)"><circle cx="360" cy="40" r="6"/><circle cx="437" cy="68.6" r="6"/><circle cx="478.2" cy="139.2" r="6"/><circle cx="463.9" cy="220" r="6"/><circle cx="401" cy="272.7" r="6"/><circle cx="319" cy="272.7" r="6"/><circle cx="256.1" cy="220" r="6"/><circle cx="241.8" cy="139.2" r="6"/><circle cx="283" cy="68.6" r="6"/></g>
+  <g fill="#7CF0E5"><circle cx="360" cy="40" r="2.5"/><circle cx="437" cy="68.6" r="2.5"/><circle cx="478.2" cy="139.2" r="2.5"/><circle cx="463.9" cy="220" r="2.5"/><circle cx="401" cy="272.7" r="2.5"/><circle cx="319" cy="272.7" r="2.5"/><circle cx="256.1" cy="220" r="2.5"/><circle cx="241.8" cy="139.2" r="2.5"/><circle cx="283" cy="68.6" r="2.5"/></g>
+  <!-- Labels (clockwise from top) -->
+  <text x="360" y="28" text-anchor="middle" fill="#EAF2FF" font-size="12" font-weight="600">A · Attributable</text>
+  <text x="447" y="65" text-anchor="start" fill="#EAF2FF" font-size="12" font-weight="600">L · Legible</text>
+  <text x="488" y="142" text-anchor="start" fill="#EAF2FF" font-size="12" font-weight="600">C · Contemporaneous</text>
+  <text x="473" y="223" text-anchor="start" fill="#EAF2FF" font-size="12" font-weight="600">O · Original</text>
+  <text x="401" y="294" text-anchor="middle" fill="#EAF2FF" font-size="12" font-weight="600">A · Accurate</text>
+  <text x="319" y="294" text-anchor="middle" fill="#EAF2FF" font-size="12" font-weight="600">+ Complete</text>
+  <text x="246" y="223" text-anchor="end" fill="#EAF2FF" font-size="12" font-weight="600">+ Consistent</text>
+  <text x="232" y="142" text-anchor="end" fill="#EAF2FF" font-size="12" font-weight="600">+ Enduring</text>
+  <text x="273" y="65" text-anchor="end" fill="#EAF2FF" font-size="12" font-weight="600">+ Available</text>
+</svg>`
+    }]
   },
   {
     id: "serialization",
