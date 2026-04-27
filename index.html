@@ -378,25 +378,153 @@ h3 { font-size: 16px; margin: 0 0 8px; }
   .ls-line { min-width: 10px; }
 }
 
-/* Beginner dashboard hero */
+/* Path-picker dashboard */
 .dash-hero {
-  text-align: center;
-  padding: 32px 28px;
+  margin-bottom: 16px;
+}
+.dash-hero h1 { margin: 0 0 4px; font-size: 28px; }
+.dash-hero .subtitle { margin: 0; max-width: 640px; }
+.dash-recommend {
   background: linear-gradient(135deg, rgba(108,140,255,0.12), rgba(34,211,200,0.12));
   border: 1px solid var(--primary);
+  margin-bottom: 14px;
 }
-.dash-hero-kicker {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 11px;
-  color: var(--accent);
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.dash-hero h2 { margin: 6px 0 0; font-size: 26px; }
+.dash-recommend h3 { margin-top: 0; }
 .btn.large { font-size: 15px; padding: 12px 22px; }
-.dash-howto { background: var(--panel-2); }
-.dash-howto h3 { margin-top: 0; }
+
+.dash-resume { display: flex; flex-direction: column; gap: 8px; }
+.dash-resume-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px;
+  background: var(--panel-2); border: 1px solid var(--border);
+  border-radius: 12px; cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+.dash-resume-item:hover { border-color: var(--primary); transform: translateY(-1px); }
+.dash-resume-item .dri-icon { font-size: 24px; }
+.dash-resume-item .dri-meta { flex: 1; min-width: 0; }
+.dash-resume-item .dri-meta b { display: block; font-size: 14px; }
+.dash-resume-item .dri-meta .tiny { font-size: 12px; }
+.dash-resume-item button { margin-left: auto; }
+
+.path-grid-title { font-size: 22px; margin: 22px 0 10px; }
+.path-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.path-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--path-color, var(--primary));
+  border-radius: 16px;
+  padding: 20px 20px 18px;
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.path-card:hover {
+  border-color: var(--path-color, var(--primary));
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+}
+.path-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.path-card .path-icon { font-size: 30px; line-height: 1; }
+.path-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.path-tag.active { color: var(--path-color, var(--primary)); border-color: var(--path-color, var(--primary)); }
+.path-tag.done { color: #0b1020; background: var(--accent); border-color: var(--accent); }
+.path-card h3 { margin: 4px 0 2px; font-size: 17px; }
+.path-tagline { font-size: 13px; color: var(--text); margin: 0 0 6px; }
+.path-blurb { font-size: 12.5px; line-height: 1.5; margin: 0; }
+.path-progress {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: auto; padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.path-progress-meta b { color: var(--text); }
+.path-progress-meta .tiny { font-size: 11.5px; }
+
+/* Path detail */
+.path-detail-hero {
+  display: flex; align-items: center; gap: 16px;
+  margin: 14px 0 6px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(108,140,255,0.06), rgba(34,211,200,0.06));
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--path-color, var(--primary));
+  border-radius: 14px;
+}
+.path-detail-hero .pdh-icon { font-size: 36px; }
+
+.path-journey { margin: 6px 0 24px; }
+.journey-row { display: flex; flex-direction: column; }
+.journey-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.js-marker {
+  flex: 0 0 36px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 2px solid var(--border);
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 14px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.journey-step.done .js-marker {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0b1020;
+}
+.journey-step.active .js-marker {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-color: transparent;
+  color: #0b1020;
+}
+.journey-step.todo { opacity: 0.85; }
+.js-content {
+  flex: 1; min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+.journey-step:hover .js-content {
+  border-color: var(--path-color, var(--primary));
+  transform: translateX(2px);
+}
+.js-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.js-tagline { color: var(--muted); font-size: 13px; line-height: 1.4; margin: 0; }
+.js-progress { margin-top: 8px; height: 6px; }
+.js-cta { margin-top: 8px; }
+.js-connector {
+  width: 2px;
+  height: 18px;
+  background: var(--border);
+  margin-left: 17px;
+}
+
+@media (max-width: 600px) {
+  .path-grid { grid-template-columns: 1fr; }
+  .path-detail-hero { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
 
 /* First-run welcome overlay */
 #welcome {
@@ -2478,6 +2606,71 @@ function getTier(id) {
 }
 function tierUnlocked(tier) { return completedCount() >= (TIER_META[tier].unlockAt || 0); }
 
+/* ============================================================
+   Learning paths — Duolingo-style. Modules grouped by domain
+   so beginners can pick a side of pharma automation rather
+   than face a flat list of jargon module names.
+   ============================================================ */
+const PATHS = [
+  {
+    id: "process",
+    label: "Process",
+    icon: "⚙️",
+    color: "#6c8cff",
+    tagline: "How a pharma plant actually makes its products.",
+    blurb: "Recipes, batches, MES, workflows — the digital instructions that turn raw materials into finished medicine.",
+    modules: ["isa88", "mes", "syncade", "pasx"],
+  },
+  {
+    id: "machinery",
+    label: "Machinery",
+    icon: "🛠️",
+    color: "#22d3c8",
+    tagline: "The kit on the floor and the data it generates.",
+    blurb: "PLCs and historians — the physical-world side of automation, from sensor signals to time-series storage.",
+    modules: ["plc", "historian"],
+  },
+  {
+    id: "technical",
+    label: "Technical",
+    icon: "💻",
+    color: "#f5b041",
+    tagline: "The digital plant, end to end.",
+    blurb: "DCS, networks, IT/OT, the Purdue model — the architecture that ties production data to enterprise systems.",
+    modules: ["isa95", "deltav", "itot"],
+  },
+  {
+    id: "compliance",
+    label: "Compliance",
+    icon: "🛡️",
+    color: "#a78bfa",
+    tagline: "Staying within regulator and audit expectations.",
+    blurb: "CSV, data integrity, serialization — proving your systems are trustworthy and auditable to FDA, EMA and beyond.",
+    modules: ["dataintegrity", "csv", "serialization"],
+  },
+];
+const MODULE_TO_PATH = (() => {
+  const map = {};
+  PATHS.forEach(p => p.modules.forEach(id => { map[id] = p.id; }));
+  return map;
+})();
+function getPath(moduleId) { return MODULE_TO_PATH[moduleId] || null; }
+function modulesInPath(pathId) {
+  const path = PATHS.find(p => p.id === pathId);
+  if (!path) return [];
+  return path.modules.map(id => MODULES.find(m => m.id === id)).filter(Boolean);
+}
+function pathProgress(pathId) {
+  const mods = modulesInPath(pathId);
+  if (!mods.length) return { completed: 0, total: 0, pct: 0, inProgress: 0 };
+  const completed = mods.filter(m => moduleState(m.id).completed).length;
+  const inProgress = mods.filter(m => {
+    const p = moduleProgress(m.id);
+    return p.pct > 0 && !moduleState(m.id).completed;
+  }).length;
+  return { completed, total: mods.length, pct: Math.round((completed / mods.length) * 100), inProgress };
+}
+
 function renderNav(active) {
   const nav = document.getElementById("nav");
   nav.innerHTML = NAV.map(n =>
@@ -2742,187 +2935,179 @@ const VIEWS = {};
 /* ---------- Dashboard ---------- */
 VIEWS.dashboard = (root) => {
   const c = completedCount();
-  const overallPct = Math.round(MODULES.reduce((s,m) => s + moduleProgress(m.id).pct, 0) / MODULES.length);
-  const foundationDone = MODULE_TIERS.foundation.filter(id => moduleState(id).completed).length;
-  // Recommend from lowest unlocked tier first (Foundation → Core → Advanced)
-  const tiersByPriority = ["foundation", "core", "advanced"];
-  let next = [];
-  for (const tier of tiersByPriority) {
-    if (!tierUnlocked(tier)) continue;
-    const picks = MODULES.filter(m => getTier(m.id) === tier && !moduleState(m.id).completed);
-    next = next.concat(picks);
-    if (next.length >= 3) break;
-  }
-  next = next.slice(0, 3);
+  const inProgress = MODULES.filter(m => {
+    const p = moduleProgress(m.id);
+    return p.pct > 0 && !moduleState(m.id).completed;
+  }).slice(0, 2);
 
-  if (c === 0 && state.xp === 0) {
-    renderBeginnerDashboard(root, next);
-  } else if (c < 4) {
-    renderGrowingDashboard(root, next, c, foundationDone);
-  } else {
-    renderFullDashboard(root, next, c, foundationDone, overallPct);
-  }
-};
+  // Recommend the most foundational not-started module (first module of Process path is the easiest entry)
+  const recommended = !c && !state.xp
+    ? MODULES.find(m => m.id === PATHS[0].modules[0])
+    : null;
 
-function renderBeginnerDashboard(root, next) {
-  const first = next[0];
-  const rest = next.slice(1);
   root.innerHTML = `
-    <h1>Let's get started 🚀</h1>
-    <p class="subtitle">One module at a time. No rush.</p>
-
-    <div class="card dash-hero">
-      <div class="dash-hero-kicker">Recommended first module</div>
-      ${first ? `
-        <h2>${first.icon} ${first.name}</h2>
-        <p class="muted" style="margin:6px 0 16px">${first.tagline}</p>
-        <button class="btn primary large" data-go="${first.id}">Start this module →</button>
-        <p class="tiny muted" style="margin-top:12px">Takes about 10 minutes. You can pause any time — your progress is saved automatically.</p>
-      ` : `
-        <p class="muted">You've picked your first path — keep going.</p>
-      `}
+    <div class="dash-hero">
+      <h1>${c === 0 && state.xp === 0 ? 'Welcome 👋' : 'Welcome back 👋'}</h1>
+      <p class="subtitle">Pick a path. Each one teaches a different side of pharma automation — start anywhere.</p>
     </div>
 
-    ${rest.length ? `
-      <div style="height:20px"></div>
-      <h3 style="margin-bottom:6px">Or pick a different foundation module</h3>
-      <p class="tiny muted" style="margin:0 0 12px">All four foundation modules are available now.</p>
-      <div class="grid cols-2" id="dashAlt"></div>
-    ` : ''}
-
-    <div style="height:22px"></div>
-    <div class="card dash-howto">
-      <h3>How AYME works</h3>
-      <ul class="welcome-how" style="margin-top:10px">
-        <li><div class="wh-icon">📚</div><div>Each module has a briefing, flashcards, and a quick quiz.</div></li>
-        <li><div class="wh-icon">💡</div><div>Hover anything with a dotted underline for a plain-English explanation.</div></li>
-        <li><div class="wh-icon">🔓</div><div>Finish two foundation modules to unlock the Core tier — and five to unlock Advanced.</div></li>
-      </ul>
-    </div>
-  `;
-  root.querySelectorAll("[data-go]").forEach(el=>{
-    el.addEventListener("click", ()=> navigate("module", {id:el.dataset.go}));
-  });
-  const alt = root.querySelector("#dashAlt");
-  if (alt) rest.forEach(m => alt.appendChild(moduleCardEl(m)));
-}
-
-function renderGrowingDashboard(root, next, c, foundationDone) {
-  const foundationTotal = MODULE_TIERS.foundation.length;
-  const foundationPct = Math.round((foundationDone / foundationTotal) * 100);
-  root.innerHTML = `
-    <h1>Welcome back 👋</h1>
-    <p class="subtitle">You're ${foundationDone} of ${foundationTotal} through the Foundation tier. Keep going.</p>
-
-    <div class="grid cols-2">
-      <div class="card">
-        <h3>Foundation progress</h3>
-        <div class="row" style="align-items:center;gap:18px;margin-top:8px">
-          <div class="ring" style="--p:${foundationPct}"><span>${foundationPct}%</span></div>
+    ${recommended ? `
+      <div class="card dash-recommend">
+        <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
           <div>
-            <div class="tiny muted">Foundation modules done</div>
-            <div style="font-size:22px;font-weight:700">${foundationDone} / ${foundationTotal}</div>
-            ${foundationDone >= 2 ? `<div class="pill good" style="margin-top:6px">Core tier unlocked 🎉</div>` : ''}
+            <div class="tiny" style="color:var(--accent);text-transform:uppercase;letter-spacing:0.6px;font-weight:700">Suggested first stop</div>
+            <h3 style="margin:6px 0 4px">${recommended.icon} ${recommended.name}</h3>
+            <p class="tiny muted" style="margin:0;max-width:480px">${recommended.tagline}</p>
           </div>
+          <button class="btn primary" data-go="${recommended.id}">Start here →</button>
         </div>
       </div>
-      <div class="card">
-        <h3>Next up</h3>
-        <p class="tiny muted">${foundationDone < foundationTotal ? 'Stay in the Foundation tier' : 'Time to move into Core systems'}</p>
-        ${next.map(m => `
-          <div class="row" style="justify-content:space-between;margin-top:8px">
-            <div>${m.icon} ${m.name}</div>
-            <button class="btn small" data-go="${m.id}">Open →</button>
-          </div>`).join("") || "<p class='muted'>Everything complete. Legend.</p>"}
+    ` : ''}
+
+    ${inProgress.length > 0 ? `
+      <div class="card" style="margin-top:14px">
+        <h3 style="margin-top:0">📍 Continue where you left off</h3>
+        <div class="dash-resume">
+          ${inProgress.map(m => {
+            const p = moduleProgress(m.id);
+            return `
+              <div class="dash-resume-item" data-go="${m.id}">
+                <span class="dri-icon">${m.icon}</span>
+                <div class="dri-meta">
+                  <b>${m.name}</b>
+                  <div class="tiny muted">${p.pct}% · ${m.tagline.split('—')[0].trim()}</div>
+                </div>
+                <button class="btn small">Resume</button>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
+    ` : ''}
+
+    <h2 class="path-grid-title">Choose a path</h2>
+    <div class="path-grid">
+      ${PATHS.map(p => {
+        const prog = pathProgress(p.id);
+        const stateLabel = prog.completed === prog.total
+          ? `<span class="path-tag done">✓ Complete</span>`
+          : prog.completed > 0 || prog.inProgress > 0
+            ? `<span class="path-tag active">In progress</span>`
+            : `<span class="path-tag">Not started</span>`;
+        return `
+          <div class="path-card" data-path="${p.id}" style="--path-color:${p.color}">
+            <div class="path-card-top">
+              <div class="path-icon">${p.icon}</div>
+              ${stateLabel}
+            </div>
+            <h3>${p.label}</h3>
+            <p class="path-tagline">${p.tagline}</p>
+            <p class="path-blurb tiny muted">${p.blurb}</p>
+            <div class="path-progress">
+              <div class="ring" style="--p:${prog.pct}"><span>${prog.pct}%</span></div>
+              <div class="path-progress-meta">
+                <div class="tiny muted">${prog.total} module${prog.total === 1 ? '' : 's'}</div>
+                <div><b>${prog.completed}</b> / ${prog.total} complete${prog.inProgress > 0 ? ` · ${prog.inProgress} in progress` : ''}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
     </div>
 
     ${c >= 2 ? `
-      <div style="height:22px"></div>
+      <div style="height:18px"></div>
       <div class="card">
-        <h3>🎮 Try a 60-second warm-up</h3>
-        <p class="tiny muted">Unlocked now — quick reps to lock in what you've learned.</p>
+        <h3 style="margin-top:0">🎮 Quick games to lock it in</h3>
+        <p class="tiny muted">Fast drills to keep the vocabulary sharp.</p>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="btn primary" id="dashDaily">⚡ Speed Round</button>
           <button class="btn" id="dashAcronym">🔤 Acronym Challenge</button>
-          <button class="btn" id="dashMatch">🧩 Matching Game</button>
+          <button class="btn" id="dashMatch">🧩 Matching</button>
         </div>
       </div>
     ` : ''}
 
-    <div style="height:22px"></div>
-    <h2>Continue where you left off</h2>
-    <div class="grid cols-2" id="dashModules"></div>
+    <div style="height:14px"></div>
+    <div style="text-align:center"><button class="btn ghost" id="viewAllModules">View all ${MODULES.length} modules as a flat list →</button></div>
   `;
-  root.querySelectorAll("[data-go]").forEach(el=>{
-    el.addEventListener("click", ()=> navigate("module", {id:el.dataset.go}));
+
+  root.querySelectorAll('.path-card').forEach(el => {
+    el.onclick = () => navigate('path', { id: el.dataset.path });
   });
-  const daily = root.querySelector("#dashDaily");
-  if (daily) daily.addEventListener("click", ()=> navigate("speedround"));
-  const acr = root.querySelector("#dashAcronym");
-  if (acr) acr.addEventListener("click", ()=> navigate("acronym"));
-  const match = root.querySelector("#dashMatch");
-  if (match) match.addEventListener("click", ()=> navigate("matching"));
-  const wrap = root.querySelector("#dashModules");
-  MODULES.slice().sort((a,b) => moduleProgress(b.id).pct - moduleProgress(a.id).pct)
-    .filter(m => moduleProgress(m.id).pct > 0 && !moduleState(m.id).completed)
-    .slice(0,4)
-    .forEach(m => wrap.appendChild(moduleCardEl(m)));
-  if (wrap.children.length === 0) {
-    MODULES.filter(m => !moduleState(m.id).completed).slice(0,4).forEach(m => wrap.appendChild(moduleCardEl(m)));
-  }
-}
+  root.querySelectorAll('[data-go]').forEach(el => {
+    el.addEventListener('click', (e) => { e.stopPropagation(); navigate('module', { id: el.dataset.go }); });
+  });
+  const all = root.querySelector('#viewAllModules');
+  if (all) all.onclick = () => navigate('modules');
+  const daily = root.querySelector('#dashDaily');
+  if (daily) daily.onclick = () => navigate('speedround');
+  const acr = root.querySelector('#dashAcronym');
+  if (acr) acr.onclick = () => navigate('acronym');
+  const match = root.querySelector('#dashMatch');
+  if (match) match.onclick = () => navigate('matching');
+};
 
-function renderFullDashboard(root, next, c, foundationDone, overallPct) {
+VIEWS.path = (root, params) => {
+  const path = PATHS.find(p => p.id === params.id);
+  if (!path) { navigate('dashboard'); return; }
+  const mods = modulesInPath(path.id);
+  const prog = pathProgress(path.id);
   root.innerHTML = `
-    <h1>Welcome back 👋</h1>
-    <p class="subtitle">Your personal ramp-up engine for connected automation in pharma &amp; biotech.</p>
-
-    <div class="grid cols-3">
-      <div class="card">
-        <h3>Overall Mastery</h3>
-        <div class="row" style="align-items:center;gap:18px;margin-top:8px">
-          <div class="ring" style="--p:${overallPct}"><span>${overallPct}%</span></div>
-          <div>
-            <div class="tiny muted">Modules completed</div>
-            <div style="font-size:22px;font-weight:700">${c} / ${MODULES.length}</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <h3>What to learn next</h3>
-        <p class="tiny muted">Tailored to your progress</p>
-        ${next.map(m => `
-          <div class="row" style="justify-content:space-between;margin-top:8px">
-            <div>${m.icon} ${m.name}</div>
-            <button class="btn small" data-go="${m.id}">Open →</button>
-          </div>`).join("") || "<p class='muted'>Everything complete. Legend.</p>"}
-      </div>
-      <div class="card">
-        <h3>Today's warm-up</h3>
-        <p class="tiny muted">A 60-second routine to keep momentum</p>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
-          <button class="btn primary" id="dashDaily">⚡ 5-question Speed Round</button>
-          <button class="btn" id="dashAcronym">🔤 Acronym Challenge</button>
-          <button class="btn" id="dashMatch">🧩 Matching Game</button>
-        </div>
+    <button class="btn ghost" id="back">← All paths</button>
+    <div class="path-detail-hero" style="--path-color:${path.color}">
+      <div class="pdh-icon">${path.icon}</div>
+      <div>
+        <h1 style="margin:0">${path.label}</h1>
+        <p class="subtitle" style="margin:4px 0 0">${path.tagline}</p>
       </div>
     </div>
+    <p style="max-width:680px;color:var(--muted);line-height:1.55">${path.blurb}</p>
 
-    <div style="height:22px"></div>
-    <h2>Continue where you left off</h2>
-    <div class="grid cols-2" id="dashModules"></div>
+    <div class="card" style="margin:14px 0 18px">
+      <div class="row" style="justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+        <div>
+          <div class="tiny muted">Path progress</div>
+          <div style="font-size:22px;font-weight:700;margin-top:2px">${prog.completed} of ${prog.total} complete</div>
+          ${prog.inProgress > 0 ? `<div class="tiny muted">${prog.inProgress} in progress</div>` : ''}
+        </div>
+        <div class="ring" style="--p:${prog.pct}"><span>${prog.pct}%</span></div>
+      </div>
+      <div class="progress" style="margin-top:12px"><span style="width:${prog.pct}%"></span></div>
+    </div>
+
+    <h2 style="margin:22px 0 12px;font-size:20px">Your journey</h2>
+    <div class="path-journey" style="--path-color:${path.color}">
+      ${mods.map((m, i) => {
+        const ms = moduleState(m.id);
+        const p = moduleProgress(m.id);
+        const stateClass = ms.completed ? 'done' : (p.pct > 0 ? 'active' : 'todo');
+        const ctaLabel = ms.completed ? 'Review' : (p.pct > 0 ? 'Continue →' : 'Start →');
+        return `
+          <div class="journey-row">
+            <div class="journey-step ${stateClass}" data-go="${m.id}">
+              <div class="js-marker">${ms.completed ? '✓' : i + 1}</div>
+              <div class="js-content">
+                <div class="js-title">${m.icon} ${m.name}</div>
+                <p class="js-tagline">${m.tagline.split('—')[0].trim()}</p>
+                ${p.pct > 0 ? `<div class="progress js-progress"><span style="width:${p.pct}%"></span></div>` : ''}
+                <div class="js-cta">
+                  <button class="btn small ${ms.completed ? '' : 'primary'}">${ctaLabel}</button>
+                </div>
+              </div>
+            </div>
+            ${i < mods.length - 1 ? '<div class="js-connector"></div>' : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
   `;
-  root.querySelectorAll("[data-go]").forEach(el=>{
-    el.addEventListener("click", ()=> navigate("module", {id:el.dataset.go}));
+  root.querySelector('#back').onclick = () => navigate('dashboard');
+  root.querySelectorAll('[data-go]').forEach(el => {
+    el.onclick = () => navigate('module', { id: el.dataset.go });
   });
-  root.querySelector("#dashDaily").addEventListener("click", ()=> navigate("speedround"));
-  root.querySelector("#dashAcronym").addEventListener("click", ()=> navigate("acronym"));
-  root.querySelector("#dashMatch").addEventListener("click", ()=> navigate("matching"));
-  const wrap = root.querySelector("#dashModules");
-  MODULES.slice().sort((a,b) => moduleProgress(a.id).pct - moduleProgress(b.id).pct).slice(0,4)
-    .forEach(m => wrap.appendChild(moduleCardEl(m)));
-}
+};
+
 
 function moduleCardEl(m) {
   const p = moduleProgress(m.id);
