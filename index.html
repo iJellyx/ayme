@@ -55,21 +55,21 @@
 </script>
 <style>
 :root {
-  /* AYME palette — Deep Void / Midnight Blue / Glass White / Icy Blue Glow */
+  /* AYME — brand palette as foundation, with friendly accent colours kept for variety */
   --bg: #05070A;          /* Deep Void */
   --bg-2: #0B1220;        /* Midnight Blue */
-  --panel: #0E1828;       /* slightly lifted */
-  --panel-2: #131F33;     /* lifted further for input/card stacks */
-  --border: #1F2D44;      /* subtle structural line */
+  --panel: #101A2D;       /* lifted, slightly warmer than pure void */
+  --panel-2: #16223A;     /* lifted further for stacks */
+  --border: #243352;      /* a touch softer than austere brand border */
   --text: #EAF2FF;        /* Glass White */
-  --muted: #8B9BB8;       /* muted glass white */
+  --muted: #94A3C2;       /* slightly warmer muted */
   --primary: #6FBFFF;     /* Electric Edge */
   --primary-2: #9FD4FF;   /* Icy Blue Glow */
-  --accent: #9FD4FF;      /* same family — minimise colour noise */
-  --accent-2: #C7E8FF;    /* lightest glow */
-  --warn: #C8A467;        /* desaturated amber for attention only */
-  --danger: #E08299;      /* desaturated rose for destructive cues */
-  --success: #9FD4FF;     /* on-brand: confirmation = clarity glow */
+  --accent: #5BD9C9;      /* friendly teal — pairs with electric edge for the gradient buttons */
+  --accent-2: #7CF0E5;    /* mint highlight */
+  --warn: #F5B041;        /* warm amber for attention */
+  --danger: #FF6B8A;      /* warm rose for destructive cues */
+  --success: #34D399;     /* warm green for confirmation */
   --shadow: 0 10px 30px rgba(0,0,0,0.45);
   --glow-sm: 0 0 18px rgba(159,212,255,0.18);
   --glow-md: 0 0 32px rgba(159,212,255,0.22);
@@ -254,12 +254,13 @@ h3 { font-size: 16px; margin: 0 0 8px; }
 .btn { transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
 .btn:hover { border-color: var(--primary); box-shadow: var(--glow-sm); }
 .btn.primary {
-  background: linear-gradient(180deg, rgba(159,212,255,0.95), rgba(111,191,255,0.92));
-  border: 1px solid rgba(199,232,255,0.55);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border: 1px solid rgba(199,232,255,0.35);
   color: #05070A;
-  box-shadow: 0 0 24px rgba(159,212,255,0.25), inset 0 1px 0 rgba(255,255,255,0.25);
+  font-weight: 600;
+  box-shadow: 0 0 22px rgba(91,217,201,0.22), inset 0 1px 0 rgba(255,255,255,0.2);
 }
-.btn.primary:hover { box-shadow: 0 0 36px rgba(159,212,255,0.45), inset 0 1px 0 rgba(255,255,255,0.3); border-color: rgba(199,232,255,0.7); }
+.btn.primary:hover { box-shadow: 0 0 36px rgba(91,217,201,0.4), inset 0 1px 0 rgba(255,255,255,0.25); border-color: rgba(199,232,255,0.55); }
 .btn.ghost { background: transparent; }
 .btn.ghost:hover { box-shadow: none; background: rgba(159,212,255,0.04); }
 .btn.small { padding: 6px 10px; font-size: 12px; }
@@ -448,10 +449,11 @@ h3 { font-size: 16px; margin: 0 0 8px; }
 .dash-hero .subtitle { margin: 0; max-width: 640px; }
 .dash-recommend {
   background:
-    radial-gradient(ellipse 600px 300px at 50% -50%, rgba(159,212,255,0.10), transparent 70%),
+    radial-gradient(ellipse 700px 280px at 50% -30%, rgba(124,240,229,0.10), transparent 70%),
+    linear-gradient(135deg, rgba(111,191,255,0.10), rgba(91,217,201,0.10)),
     var(--panel);
-  border: 1px solid rgba(159,212,255,0.35);
-  box-shadow: var(--glow-sm);
+  border: 1px solid rgba(124,240,229,0.30);
+  box-shadow: 0 0 30px rgba(91,217,201,0.18);
   margin-bottom: 14px;
 }
 .dash-recommend h3 { margin-top: 0; }
@@ -3110,7 +3112,7 @@ const PATHS = [
     id: "foundations",
     label: "Foundations",
     icon: "🌱",
-    color: "#C7E8FF",
+    color: "#7CF0E5",
     tagline: "New to pharma? Start here.",
     blurb: "Plain-English intros to what gets made in a pharma plant, who's involved, why automation matters so much here, and the 20 acronyms you'll hear in your first 15 minutes.",
     modules: ["plant101", "cast", "whyauto", "vocab"],
@@ -3119,7 +3121,7 @@ const PATHS = [
     id: "process",
     label: "Process",
     icon: "⚙️",
-    color: "#9FD4FF",
+    color: "#6C8CFF",
     tagline: "How a pharma plant actually makes its products.",
     blurb: "Recipes, batches, MES, workflows — the digital instructions that turn raw materials into finished medicine.",
     modules: ["isa88", "mes", "syncade", "pasx"],
@@ -3128,7 +3130,7 @@ const PATHS = [
     id: "machinery",
     label: "Machinery",
     icon: "🛠️",
-    color: "#6FBFFF",
+    color: "#22D3C8",
     tagline: "The kit on the floor and the data it generates.",
     blurb: "PLCs and historians — the physical-world side of automation, from sensor signals to time-series storage.",
     modules: ["plc", "historian"],
@@ -3137,7 +3139,7 @@ const PATHS = [
     id: "technical",
     label: "Technical",
     icon: "💻",
-    color: "#4F9FE6",
+    color: "#F5B041",
     tagline: "The digital plant, end to end.",
     blurb: "DCS, networks, IT/OT, the Purdue model — the architecture that ties production data to enterprise systems.",
     modules: ["isa95", "deltav", "itot"],
@@ -3146,7 +3148,7 @@ const PATHS = [
     id: "compliance",
     label: "Compliance",
     icon: "🛡️",
-    color: "#3D7FBF",
+    color: "#A78BFA",
     tagline: "Staying within regulator and audit expectations.",
     blurb: "CSV, data integrity, serialization — proving your systems are trustworthy and auditable to FDA, EMA and beyond.",
     modules: ["dataintegrity", "csv", "serialization"],
