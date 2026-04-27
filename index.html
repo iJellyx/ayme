@@ -1355,6 +1355,140 @@ document.addEventListener('DOMContentLoaded', () => GATE.init());
 
 const MODULES = [
   {
+    id: "plant101",
+    name: "What a Pharma Plant Makes",
+    icon: "💊",
+    tagline: "Before any of the jargon makes sense — what's actually being produced inside the factory?",
+    whatItIs: "A pharma plant manufactures medicines. There are two big categories: drug substance (the active chemical or biological molecule, often called the API) and drug product (the finished tablet, capsule, vial or syringe a patient receives). Most plants specialise in one or the other, sometimes both. Production happens in batches — discrete runs of a fixed quantity, each fully traceable from raw material to finished pack.",
+    whyItMatters: "If you don't know whether a client makes drug substance or drug product, you'll miss key context. A drug-substance facility runs reactors, fermenters and downstream purification. A drug-product facility runs filling lines, blending vessels, packaging and serialization. The automation systems differ accordingly — DeltaV and Syncade dominate drug substance; PAS-X is more common in drug product.",
+    keyConcepts: [
+      {t: "API (Active Pharmaceutical Ingredient)", d: "The molecule that does the medical work. Made first; usually as a powder or solution."},
+      {t: "Drug substance vs drug product", d: "Drug substance = the API alone. Drug product = the API formulated into a dose form (tablet, capsule, vial)."},
+      {t: "Batch", d: "A discrete production run of a fixed quantity. Pharma is overwhelmingly batch-based, not continuous."},
+      {t: "Small molecule vs biologic", d: "Small molecules are chemically synthesised (aspirin, statins). Biologics are grown in living cells (insulin, monoclonal antibodies, vaccines)."},
+      {t: "Sterile vs non-sterile", d: "Injectables and ophthalmics must be sterile. Tablets need not be. Sterile manufacturing is dramatically more expensive and tightly controlled."},
+      {t: "Lot / batch number", d: "Every batch gets a unique identifier that follows it through production, packaging, distribution, and recall if needed."}
+    ],
+    roles: [
+      {title: "Manufacturing Operator", seniority: "Junior–Mid", note: "Runs equipment day-to-day; the human side of every batch."},
+      {title: "Production Manager / Shift Lead", seniority: "Senior", note: "Owns the schedule and the people. Your customer if you sell production tools."}
+    ],
+    clientQuestions: [
+      "Are you a drug substance site, drug product site, or both?",
+      "Small molecules, biologics, or both?",
+      "Sterile or non-sterile? Aseptic filling on site?",
+      "How many products do you run, and how many SKUs?"
+    ],
+    redFlags: [
+      "Don't assume 'pharma plant' means tablets — biologics, gene therapy, and ATMP plants look completely different.",
+      "Plants making both drug substance and drug product often run independent automation stacks per area."
+    ],
+    oneLiner: "Pharma plants make either the active molecule (drug substance) or the finished dose (drug product) — and the automation differs.",
+    hours: 8
+  },
+  {
+    id: "cast",
+    name: "The Cast of Characters",
+    icon: "🎭",
+    tagline: "Who's actually in the room when you're talking to a pharma client?",
+    whatItIs: "A pharma manufacturing project involves a wide cast: production operators on the floor, automation and validation engineers who design and prove the systems, QA who ensure compliance, project managers who orchestrate, IT and OT teams who own the infrastructure, and regulators on the outside who can stop the plant if anything's wrong. Each role has different priorities — knowing who you're talking to is half the battle.",
+    whyItMatters: "When you walk into a kickoff meeting, you might see all of these roles around the table. Knowing what each one cares about lets you frame your pitch correctly. A QA lead cares about audit trails and traceability. An automation manager cares about scope and resourcing. A production director cares about uptime and OEE. Speaking to the wrong concerns wastes the meeting.",
+    keyConcepts: [
+      {t: "Production / Operations", d: "Operators, shift leads, production managers. They run the plant and feel every minute of downtime."},
+      {t: "Quality Assurance (QA)", d: "Reviewers and approvers. They sign off batches, audit records, and stop releases when something's wrong."},
+      {t: "Validation / CSV", d: "Engineers who write and execute protocols proving systems work. Often blocked on documentation and chronically over-allocated."},
+      {t: "Automation / Process Control", d: "DCS, PLC, MES engineers and architects. Build and configure the control layer."},
+      {t: "IT and OT", d: "IT runs business systems. OT runs the plant. They report to different bosses and rarely fully agree."},
+      {t: "Project Management", d: "Owns schedule, budget, and scope. Your day-to-day point of contact in most projects."},
+      {t: "Regulators (FDA, EMA, MHRA, HPRA, PMDA)", d: "External — they inspect plants and issue findings. A bad inspection can shut down a site."}
+    ],
+    roles: [
+      {title: "Production Director", seniority: "Senior", note: "Owns the plant's output. Decisions on automation usually need their sign-off."},
+      {title: "QA Director / Head of Quality", seniority: "Senior", note: "The veto on anything regulated. Bring CSV thinking from day one."},
+      {title: "Automation Manager", seniority: "Senior", note: "Owns DCS/MES strategy. Likely your day-to-day buyer if you sell platform services."}
+    ],
+    clientQuestions: [
+      "Who's the executive sponsor for this project — production, quality, or engineering?",
+      "Where does your CSV organisation sit — inside QA, or as a standalone validation team?",
+      "Is automation a centralised function across sites, or per-site?",
+      "How are IT and OT split here — separate teams, single team, or shared services?"
+    ],
+    redFlags: [
+      "If only IT is in the room and no OT, expect surprises later — they own different parts of the stack.",
+      "If QA isn't engaged early, the timeline will slip. Validation re-work is the silent killer of pharma projects."
+    ],
+    oneLiner: "Automation, QA, validation, production, IT, OT — different priorities, different vocabulary. Know which seat you're talking to.",
+    hours: 6
+  },
+  {
+    id: "whyauto",
+    name: "Why Automate Here?",
+    icon: "🤔",
+    tagline: "Pharma is famously slow to change — so why is automation such a big topic?",
+    whatItIs: "Pharma is one of the most heavily regulated industries on earth. Every step of manufacturing must be reproducible, fully documented, and auditable years after the fact. Historically this meant paper records — operators writing values by hand, QA reviewing thousand-page binders. Automation replaces that paper with electronic batch records, audit trails, and integrated systems — saving time, reducing errors, and (when done right) making compliance easier rather than harder.",
+    whyItMatters: "Every conversation about MES, CSV, or data integrity ultimately traces back to the same regulatory pressure: the patient on the receiving end of the drug needs to be safe. That non-negotiable safety driver is why pharma will pay for automation, validation, and cybersecurity in ways other industries won't. It's also why projects move slower — every change has to be re-validated. Understanding this trade-off lets you frame proposals correctly.",
+    keyConcepts: [
+      {t: "GMP (Good Manufacturing Practice)", d: "The global rulebook for medicine manufacturing. Codified by FDA, EMA, WHO, and others. cGMP = current GMP."},
+      {t: "Batch record", d: "The paper or digital document capturing every step of a production batch. Must be complete and accurate."},
+      {t: "Paper vs electronic batch record (EBR)", d: "Paper batch records take days to review per batch. EBRs allow 'review by exception' — minutes per batch."},
+      {t: "Patient safety", d: "The ultimate driver. A wrong tablet or contaminated vial can kill. Regulators inspect with that in mind."},
+      {t: "Data integrity (ALCOA+)", d: "Records must be Attributable, Legible, Contemporaneous, Original, Accurate — plus Complete, Consistent, Enduring, Available."},
+      {t: "Validated state", d: "A system in compliance with its qualification protocols. Changes break the validated state and require re-qualification."},
+      {t: "Inspection / 483 / Warning Letter", d: "Regulator outcomes. A 483 is a list of observations. A warning letter is more serious. Both can shut a plant."}
+    ],
+    roles: [
+      {title: "Validation Lead", seniority: "Senior", note: "Owns the qualification strategy. Their pain point is the regulatory burden of every change."},
+      {title: "Continuous Improvement / OpEx Lead", seniority: "Senior", note: "Pushes for the productivity wins automation enables."}
+    ],
+    clientQuestions: [
+      "Are you currently on paper, hybrid, or fully electronic batch records?",
+      "What's driving this project — inspection finding, productivity, or cost pressure?",
+      "When was your last regulatory inspection, and were there any computerised-system observations?",
+      "What's your tolerance for downtime during a system upgrade?"
+    ],
+    redFlags: [
+      "Projects justified purely on cost savings underdeliver. The real ROI is usually compliance + productivity combined.",
+      "If a client says 'we're not regulated' but they make medicines, ask more questions — they may be confused about what GMP means for them."
+    ],
+    oneLiner: "Pharma automates because the alternative — paper-based GMP — is slow, error-prone, and a regulator nightmare.",
+    hours: 8
+  },
+  {
+    id: "vocab",
+    name: "Vocabulary Starter Kit",
+    icon: "📖",
+    tagline: "20 acronyms you'll hear in your first 15 minutes on a pharma project.",
+    whatItIs: "Pharma manufacturing has its own dialect. The acronyms aren't there to gatekeep — they're shorthand experienced practitioners use because writing the full term every time would slow everything down. This module is the cheat sheet: the most common acronyms, what they actually mean, and which conversations they'll come up in.",
+    whyItMatters: "Sounding fluent at the start of a conversation makes the rest of the conversation easier. If a client says 'we're driving the EBR off PAS-X with SAP integration via OPC UA, but our CSV team is questioning the GAMP 5 categorisation' — and you can keep up — you've already won credibility. This module gives you that vocabulary.",
+    keyConcepts: [
+      {t: "GMP / cGMP", d: "Good Manufacturing Practice — the global rulebook for medicines. cGMP = current GMP, what the FDA calls it."},
+      {t: "GxP", d: "Umbrella term: GMP + GLP (Lab) + GCP (Clinical) + GDP (Distribution). Anything regulated."},
+      {t: "FDA / EMA / MHRA / HPRA", d: "Regulators: US, EU, UK, Ireland. Each inspects plants and issues findings."},
+      {t: "21 CFR Part 11 / Annex 11", d: "FDA and EU rules on electronic records and signatures. Must-know for any computerised system."},
+      {t: "DCS / PLC / SCADA", d: "Three flavours of control. DCS = plant-wide. PLC = machine. SCADA = the visualisation/supervisory layer."},
+      {t: "MES / EBR / MBR", d: "Manufacturing Execution System runs production. EBR = the digital batch record produced. MBR = the approved template."},
+      {t: "ISA-88 / ISA-95", d: "Two standards. S88 is the grammar of batch (recipes, phases). S95 is the architecture (Levels 0–4)."},
+      {t: "CSV / GAMP 5 / IQ-OQ-PQ", d: "Computer System Validation. GAMP 5 is ISPE's framework. IQ/OQ/PQ are the three levels of qualification testing."},
+      {t: "ALCOA+", d: "Data integrity acronym: Attributable, Legible, Contemporaneous, Original, Accurate, +Complete, Consistent, Enduring, Available."},
+      {t: "URS / FS / DS", d: "User Requirements Spec → Functional Spec → Design Spec. The three documents that drive every regulated build."},
+      {t: "OT / IT", d: "Operational Technology (the plant) and Information Technology (the office). Different teams, different priorities."},
+      {t: "OPC UA", d: "The modern industrial data protocol. Cross-vendor, secure. The way to get plant data into IT systems."}
+    ],
+    roles: [
+      {title: "Anyone new to the project", seniority: "Junior", note: "Bookmark this module. Refer back during your first three meetings."}
+    ],
+    clientQuestions: [
+      "Which acronyms have come up in your project that you weren't sure about?",
+      "Who in the organisation owns the project glossary and terminology?"
+    ],
+    redFlags: [
+      "Don't fake fluency — if a client uses an acronym you don't know, ask. Pretending and getting it wrong is worse.",
+      "Some acronyms collide between organisations: PM = Project Manager? Process Manager? Production Manager? Always verify."
+    ],
+    oneLiner: "GMP, EBR, ISA-88, GAMP 5, ALCOA+ — the acronyms that buy you 80% of pharma fluency in week one.",
+    hours: 6
+  },
+  {
     id: "deltav",
     name: "DeltaV DCS",
     icon: "🟣",
@@ -1777,6 +1911,50 @@ const MODULES = [
 
 /* Flashcards: quick term↔definition for spaced recall */
 const FLASHCARDS = {
+  plant101: [
+    {t:"API", d:"Active Pharmaceutical Ingredient — the molecule that does the medical work. Made first."},
+    {t:"Drug substance", d:"The API alone, before formulation into a dose form."},
+    {t:"Drug product", d:"The finished medicine — tablet, capsule, vial, syringe — that the patient receives."},
+    {t:"Batch", d:"A discrete production run of a fixed quantity. Pharma is overwhelmingly batch-based."},
+    {t:"Small molecule", d:"A chemically synthesised drug — aspirin, statins, paracetamol."},
+    {t:"Biologic", d:"A drug grown in living cells — insulin, antibodies, vaccines."},
+    {t:"Sterile manufacturing", d:"Producing drugs that must be free of microbial contamination — injectables, eye drops, biologics."},
+    {t:"Lot number", d:"A unique identifier following a batch through production and into the supply chain."}
+  ],
+  cast: [
+    {t:"Operator", d:"The person physically running equipment in the plant. Day-to-day automation user."},
+    {t:"QA", d:"Quality Assurance. Approves and inspects everything regulated; signs off batch releases."},
+    {t:"Validation engineer", d:"Writes and executes qualification protocols (IQ/OQ/PQ) proving systems work as intended."},
+    {t:"Automation engineer", d:"Designs, builds, and configures DCS, PLC, MES systems."},
+    {t:"OT", d:"Operational Technology team — owns plant-floor systems."},
+    {t:"IT", d:"Information Technology team — owns business systems like email and ERP."},
+    {t:"Project manager", d:"Owns schedule, budget, and scope. Your day-to-day point of contact."},
+    {t:"Regulator", d:"FDA, EMA, MHRA and similar — external authorities who inspect plants and can shut them down."}
+  ],
+  whyauto: [
+    {t:"GMP", d:"Good Manufacturing Practice — the global rulebook for medicine manufacturing."},
+    {t:"cGMP", d:"Current GMP — FDA's term for the version in force right now."},
+    {t:"Batch record", d:"The document capturing every step of a production batch. Paper or electronic."},
+    {t:"EBR", d:"Electronic Batch Record — the digital version, allowing review by exception in minutes rather than days."},
+    {t:"Validated state", d:"A system that's in compliance with its qualification protocols — changes require re-qualification."},
+    {t:"483", d:"FDA inspection observation — a list of issues the regulator found during an inspection."},
+    {t:"Warning Letter", d:"More serious than a 483 — public, can affect operations and supply."},
+    {t:"Patient safety", d:"The non-negotiable driver behind every pharma regulation."}
+  ],
+  vocab: [
+    {t:"FDA", d:"US Food and Drug Administration. Regulates medicines for the US market."},
+    {t:"EMA", d:"European Medicines Agency. Regulates medicines for the EU."},
+    {t:"21 CFR Part 11", d:"FDA rule on electronic records and electronic signatures."},
+    {t:"Annex 11", d:"EU GMP rule on computerised systems — the European equivalent of Part 11."},
+    {t:"DCS", d:"Distributed Control System — plant-wide control."},
+    {t:"PLC", d:"Programmable Logic Controller — machine-level control."},
+    {t:"SCADA", d:"Supervisory Control and Data Acquisition — the visualisation/HMI layer."},
+    {t:"MES", d:"Manufacturing Execution System — runs production orders, generates EBRs."},
+    {t:"ISA-88", d:"Standard for batch process control — recipes, phases, units."},
+    {t:"ISA-95", d:"Standard for enterprise–control integration — Levels 0 through 4."},
+    {t:"GAMP 5", d:"ISPE's framework for computer system validation. The bible of CSV."},
+    {t:"ALCOA+", d:"Data integrity principles — Attributable, Legible, Contemporaneous, Original, Accurate, +CCEA."}
+  ],
   deltav: [
     {t:"DCS", d:"Distributed Control System — like a PLC's big brother; integrated controller + HMI + historian stack, optimised for plant-wide process control."},
     {t:"Module", d:"A reusable chunk of DeltaV control logic (valve, pump, PID). Instantiated many times across a plant."},
@@ -1872,6 +2050,30 @@ const FLASHCARDS = {
 
 /* Quizzes: multiple-choice per module */
 const QUIZZES = {
+  plant101: [
+    {q:"What's the difference between drug substance and drug product?", a:["They're the same thing","Drug substance is the API alone; drug product is the finished dose form","Drug substance is liquid; drug product is solid","Drug substance is generic; drug product is branded"], c:1, e:"Drug substance is the active molecule (API) by itself. Drug product is the formulated, finished medicine the patient takes."},
+    {q:"Which is true about pharma manufacturing?", a:["Mostly continuous, like petrochemicals","Mostly batch-based, with discrete runs","Always done in single units","Done only in clean rooms"], c:1, e:"Pharma is overwhelmingly batch-based. Each batch is a discrete run with a unique lot number, fully traceable end-to-end."},
+    {q:"What's a biologic?", a:["A chemical drug","A drug grown in living cells (cells, antibodies, etc.)","A herbal supplement","A drug for biological warfare"], c:1, e:"Biologics are produced in living cells — insulin, monoclonal antibodies, vaccines are common examples."},
+    {q:"What does 'sterile manufacturing' mean?", a:["Drugs made by sterile employees","Drugs that must be free of microbial contamination","Drugs without preservatives","Drugs not given to children"], c:1, e:"Sterile manufacturing produces drugs that cannot have any microbial contamination — typically injectables and ophthalmics."}
+  ],
+  cast: [
+    {q:"What does QA do in a pharma plant?", a:["Programs the PLCs","Approves and inspects everything regulated; signs off batch releases","Sells the drugs","Cleans the equipment"], c:1, e:"Quality Assurance is the gatekeeper for compliance — they approve batches, audit records, and can stop a release."},
+    {q:"What's the difference between IT and OT?", a:["No real difference","IT runs business systems (email, ERP); OT runs plant systems (DCS, PLCs)","IT is older; OT is newer","IT runs Windows; OT runs Linux"], c:1, e:"IT and OT are separate domains with different teams and priorities. Connected automation lives at their intersection."},
+    {q:"Who typically writes IQ/OQ/PQ protocols?", a:["Production operators","CSV / validation engineers","Sales reps","The regulator"], c:1, e:"CSV (Computer System Validation) engineers write and execute installation, operational, and performance qualification protocols."},
+    {q:"Which role is your most likely day-to-day buyer for an automation services pitch?", a:["Operator","QA Director","Automation Manager","Regulator"], c:2, e:"The Automation Manager owns DCS/MES strategy and is usually the day-to-day buyer for automation services."}
+  ],
+  whyauto: [
+    {q:"Why is pharma so heavily regulated?", a:["To slow innovation","Patient safety — wrong drugs can kill","To favour incumbents","Tradition"], c:1, e:"The whole regulatory framework — GMP, FDA, EMA — exists because patient safety is the non-negotiable driver."},
+    {q:"What's the main advantage of EBR over paper batch records?", a:["No advantage","Allows review by exception, dramatically reducing batch release time","EBRs are cheaper","EBRs are more colourful"], c:1, e:"With electronic batch records and review-by-exception, QA can release batches in minutes rather than days, saving huge time."},
+    {q:"What's a 483?", a:["A type of PLC","An FDA inspection observation listing issues found","A regulation number","A pharma stock ticker"], c:1, e:"FDA Form 483 is the document inspectors use to list observations after an inspection. Multiple findings can lead to a warning letter."},
+    {q:"What does ALCOA+ stand for?", a:["A pharma vendor","Data integrity principles: Attributable, Legible, Contemporaneous, Original, Accurate plus Complete/Consistent/Enduring/Available","An FDA office","A drug class"], c:1, e:"ALCOA+ is the standard mnemonic for the principles behind data integrity in regulated industries."}
+  ],
+  vocab: [
+    {q:"What's the difference between DCS and PLC?", a:["No difference","DCS is plant-wide control; PLC is machine-level control","DCS is digital; PLC is analog","DCS is FDA-approved; PLC isn't"], c:1, e:"DCS (Distributed Control System) runs a whole plant; PLC (Programmable Logic Controller) runs a machine or skid. Both have their place."},
+    {q:"What does MES stand for and what does it do?", a:["Mechanical Engineering Standard — building plants","Manufacturing Execution System — runs production orders and generates batch records","Measurement Error System — calibration","Major Equipment Standard"], c:1, e:"MES sits between control systems (DCS/PLC) and ERP (SAP). It runs production, generates EBRs, and tracks materials."},
+    {q:"What's the difference between ISA-88 and ISA-95?", a:["Same standard, different versions","S88 is batch process control; S95 is enterprise–control integration","S88 is older; S95 is newer","S88 is US; S95 is European"], c:1, e:"S88 = the grammar of batch (recipes, phases, units). S95 = the architecture (Levels 0 through 4 from sensors to ERP)."},
+    {q:"What does CSV stand for in pharma?", a:["Comma-Separated Values","Computer System Validation","Common Standard Volume","Certified Software Version"], c:1, e:"In pharma, CSV is Computer System Validation — proving software systems work as specified, per GAMP 5."}
+  ],
   deltav: [
     {q:"What does 'DCS' stand for?", a:["Distributed Control System","Digital Control Source","Direct Communication Signal","Data Collection Server"], c:0, e:"DCS = Distributed Control System. The word 'Distributed' matters — logic runs in many controllers, not one."},
     {q:"Which of these is NOT a native DeltaV component?", a:["ProfessionalPLUS","Batch Executive","TIA Portal","AMS Device Manager"], c:2, e:"TIA Portal is Siemens. The others are all Emerson DeltaV."},
@@ -2589,9 +2791,9 @@ const NAV = [
   {id:"settings", label:"Settings", icon:"⚙️"}
 ];
 
-/* Module difficulty tiers — used for the soft-launch learning path */
+/* Module difficulty tiers — used for the flat-list view and tier-unlock celebrations */
 const MODULE_TIERS = {
-  foundation: ["itot", "plc", "mes", "deltav"],
+  foundation: ["plant101", "cast", "whyauto", "vocab", "itot", "plc", "mes", "deltav"],
   core: ["isa88", "isa95", "historian", "dataintegrity"],
   advanced: ["syncade", "pasx", "csv", "serialization"],
 };
@@ -2612,6 +2814,15 @@ function tierUnlocked(tier) { return completedCount() >= (TIER_META[tier].unlock
    than face a flat list of jargon module names.
    ============================================================ */
 const PATHS = [
+  {
+    id: "foundations",
+    label: "Foundations",
+    icon: "🌱",
+    color: "#7cf0e5",
+    tagline: "New to pharma? Start here.",
+    blurb: "Plain-English intros to what gets made in a pharma plant, who's involved, why automation matters so much here, and the 20 acronyms you'll hear in your first 15 minutes.",
+    modules: ["plant101", "cast", "whyauto", "vocab"],
+  },
   {
     id: "process",
     label: "Process",
