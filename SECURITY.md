@@ -4,7 +4,7 @@
 
 **Last updated:** 24 April 2026
 **Contact:** security@aymetraining.com
-**Owner:** [Your Legal Entity Name Ltd.]
+**Owner:** Social Enviro Limited
 
 This document summarises how AYME is designed, deployed, and operated. It is intended to answer common procurement and information-security questionnaires (SIG Lite, CAIQ, vendor onboarding forms) for enterprise clients in the pharmaceutical and biotechnology industries.
 
@@ -66,7 +66,7 @@ There is **no AYME-operated database, no AYME-operated server, no persistent sto
 | Stripe, Inc. | Payment processing | Billing details, subscription records | US + EU (AWS) | PCI-DSS Level 1, SOC 2, GDPR |
 | Vercel Inc. | Static hosting, serverless runtime, CDN | Request logs, serverless function runtime | Configurable (default US) | SOC 2 Type II, GDPR |
 
-Each subprocessor has signed a Data Processing Agreement with [Your Legal Entity Name Ltd.] and provides EU Standard Contractual Clauses for international data transfers.
+Each subprocessor has signed a Data Processing Agreement with Social Enviro Limited and provides EU Standard Contractual Clauses for international data transfers.
 
 ---
 
@@ -84,7 +84,7 @@ Each subprocessor has signed a Data Processing Agreement with [Your Legal Entity
 - **Multi-factor authentication:** Available (TOTP, SMS) via Clerk's user profile UI. Can be made mandatory via Clerk settings for enterprise tenants.
 - **Session management:** Short-lived JWTs with automatic refresh. Sessions revoked server-side on sign-out or on password change.
 - **Subscription gating:** All application content is blocked until the Clerk user record has `publicMetadata.subscriptionStatus === "active"`, set only by the Stripe webhook after signature verification.
-- **Admin access to production:** Limited to named [Your Company] personnel via SSO on Vercel, Clerk, and Stripe dashboards. 2FA required.
+- **Admin access to production:** Limited to named Social Enviro Limited personnel via SSO on Vercel, Clerk, and Stripe dashboards. 2FA required.
 
 ---
 
