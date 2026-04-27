@@ -364,6 +364,47 @@ h3 { font-size: 16px; margin: 0 0 8px; }
 }
 .feedback-btn:hover { color: var(--primary-2); border-color: var(--primary); }
 
+/* Help & Support */
+.help-contact-grid { gap: 14px; margin: 18px 0 26px; }
+.help-contact-card {
+  display: flex; flex-direction: column; gap: 6px;
+  text-decoration: none; color: var(--text);
+  padding: 22px 22px 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.help-contact-card:hover { border-color: var(--primary); box-shadow: var(--glow-sm); }
+.help-contact-card .hcc-icon { font-size: 24px; line-height: 1; }
+.help-contact-card h3 { margin: 6px 0 0; font-size: 15px; }
+.help-contact-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.help-contact-card .hcc-link { margin-top: 8px; color: var(--primary-2); font-size: 12.5px; font-weight: 600; }
+.help-h2 { font-size: 22px; margin: 26px 0 12px; }
+.help-faq h3 {
+  font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--primary-2); font-weight: 700; margin: 6px 0 8px;
+}
+.help-faq details {
+  margin: 6px 0; padding: 12px 16px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel-2);
+  transition: border-color 0.15s ease;
+}
+.help-faq details[open] { border-color: rgba(159,212,255,0.3); }
+.help-faq summary {
+  cursor: pointer; font-weight: 500; font-size: 14px; color: var(--text);
+  list-style: none;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.help-faq summary::after { content: "+"; color: var(--muted); font-size: 18px; line-height: 1; }
+.help-faq details[open] summary::after { content: "−"; }
+.help-faq details p { margin-top: 8px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+.help-faq details p a { color: var(--primary-2); }
+.help-foot {
+  margin-top: 28px; padding: 18px;
+  border: 1px dashed var(--border); border-radius: 12px;
+  text-align: center; color: var(--muted); font-size: 13px;
+}
+.help-foot a { color: var(--primary-2); }
+
 /* Module diagrams */
 .diagram-card {
   margin-bottom: 14px;
@@ -3838,7 +3879,8 @@ const NAV = [
   {id:"toolkit", label:"Client Toolkit", icon:"🎙️"},
   {id:"glossary", label:"Glossary", icon:"📖"},
   {id:"badges", label:"Progress", icon:"🏅"},
-  {id:"settings", label:"Settings", icon:"⚙️"}
+  {id:"settings", label:"Settings", icon:"⚙️"},
+  {id:"help", label:"Help & Support", icon:"💬"}
 ];
 
 /* Module difficulty tiers — used for the flat-list view and tier-unlock celebrations */
@@ -5617,7 +5659,90 @@ VIEWS.settings = (root) => {
   });
 };
 
-/* ---------- Legal pages ---------- */
+/* ---------- Help & Support ---------- */
+VIEWS.help = (root) => {
+  const userEmail = (window.Clerk && window.Clerk.user && window.Clerk.user.emailAddresses && window.Clerk.user.emailAddresses[0]?.emailAddress) || '';
+  const ua = navigator.userAgent || '';
+  const buildEmail = (to, subject, intro) => {
+    const body = `${intro}\n\n— — —\nDiagnostics (please leave below the line):\nUser: ${userEmail || 'not signed in'}\nBrowser: ${ua}\nURL: ${window.location.origin}${window.location.pathname}\n— — —`;
+    return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+  const supportHref = buildEmail('support@aymetraining.com', 'AYME support — [short description]', 'Hi,\n\nI ran into the following issue:\n\n[describe what happened, what you expected, and what you saw instead]');
+  const feedbackHref = buildEmail('feedback@aymetraining.com', 'AYME content correction — [module name]', 'Hi,\n\nI noticed something in this module that may be incorrect or out of date:\n\n[paste the wording, link to the module, and what you think the correct answer is — link to a source if you have one]');
+  const featureHref = buildEmail('support@aymetraining.com', 'AYME feature request', 'Hi,\n\nI\'d love to see this added to AYME:\n\n[describe the feature and why it would help]');
+  const teamHref = buildEmail('support@aymetraining.com', 'AYME team plan enquiry', 'Hi,\n\nI\'m exploring AYME for my team / company. A few details:\n\nCompany: [name]\nLikely number of seats: [number]\nTimeline: [when you\'d roll it out]\n\nWhat would the pricing and onboarding look like?');
+
+  root.innerHTML = `
+    <h1>Help &amp; Support</h1>
+    <p class="subtitle">Got a question? Find an answer below — or email us directly. We respond within 1 business day.</p>
+
+    <div class="grid cols-2 help-contact-grid">
+      <a class="card help-contact-card" href="${supportHref}">
+        <div class="hcc-icon">📨</div>
+        <h3>Email support</h3>
+        <p>Account, billing, technical issues — anything that's blocking you.</p>
+        <span class="hcc-link">support@aymetraining.com →</span>
+      </a>
+      <a class="card help-contact-card" href="${feedbackHref}">
+        <div class="hcc-icon">📝</div>
+        <h3>Report a content issue</h3>
+        <p>Spotted something wrong in a module? Let us know and we'll review.</p>
+        <span class="hcc-link">feedback@aymetraining.com →</span>
+      </a>
+      <a class="card help-contact-card" href="${featureHref}">
+        <div class="hcc-icon">💡</div>
+        <h3>Request a feature</h3>
+        <p>Tell us what you'd like to see added. We read every suggestion.</p>
+        <span class="hcc-link">Send a feature request →</span>
+      </a>
+      <a class="card help-contact-card" href="${teamHref}">
+        <div class="hcc-icon">🧑‍🤝‍🧑</div>
+        <h3>Team / multi-seat</h3>
+        <p>Looking to roll AYME out across a team? Email us and we'll set you up.</p>
+        <span class="hcc-link">Talk about a team plan →</span>
+      </a>
+    </div>
+
+    <h2 class="help-h2">Frequently asked questions</h2>
+
+    <div class="help-faq">
+      <h3>Account &amp; sign-in</h3>
+      <details><summary>I forgot my password</summary><p>Click <b>Sign in</b> on the home page and choose <b>Forgot password</b>. Clerk (our auth provider) will email you a reset link. If you don't see it within a minute, check your spam folder.</p></details>
+      <details><summary>How do I change my email address?</summary><p>Click your profile icon in the sidebar and select <b>Manage account</b>. You can add a new email there and switch which one is primary.</p></details>
+      <details><summary>I want to delete my account</summary><p>Email <a href="${supportHref}">support@aymetraining.com</a> with the subject <b>Delete account</b>. We'll process the deletion within 5 business days, in line with our <a href="#" data-help-legal="privacy">Privacy Policy</a>. We retain only what tax law requires us to keep (typically billing records).</p></details>
+
+      <h3 style="margin-top:18px">Billing</h3>
+      <details><summary>How do I cancel my subscription?</summary><p>Click <b>Billing</b> in the sidebar. That opens the Stripe customer portal. Click <b>Cancel plan</b>. Your access continues until the end of the billing period and you won't be charged again.</p></details>
+      <details><summary>When am I charged?</summary><p>Monthly, on the same date you signed up. Your next charge date is visible in the billing portal.</p></details>
+      <details><summary>Do you offer refunds?</summary><p>Subscription fees are non-refundable for partial months — but cancellation is instant and you won't be charged again. EU consumers have a 14-day right of withdrawal from first purchase if you haven't started using the service. See our <a href="#" data-help-legal="terms">Terms of Service</a> for the full policy.</p></details>
+      <details><summary>Can I expense it?</summary><p>Yes. Stripe sends an itemised invoice for every payment. You can add company billing details (name, VAT number) in the billing portal so they appear on future invoices.</p></details>
+
+      <h3 style="margin-top:18px">Content &amp; learning</h3>
+      <details><summary>I think a module is wrong</summary><p>Every module briefing has a <b>Spotted something inaccurate?</b> button at the bottom — that's the fastest path. Or email <a href="${feedbackHref}">feedback@aymetraining.com</a> directly.</p></details>
+      <details><summary>How do you keep content accurate?</summary><p>Modules are reviewed by named subject-matter experts on a rolling basis. Each reviewed module shows the reviewer name, date, and source list at the top. Modules without a recent review show an amber "verify with vendor docs" banner. See our <a href="#" data-help-legal="disclaimer">Educational Disclaimer</a>.</p></details>
+      <details><summary>Can I share my account?</summary><p>No — accounts are personal. If you want a single login that several teammates can use, email <a href="${teamHref}">support@aymetraining.com</a> about a team plan.</p></details>
+      <details><summary>Where's my progress saved?</summary><p>Your progress is stored both in your browser (so it's instant) and synced to your account on our servers (so it follows you across devices). When you sign in on a new device, your progress hydrates from the cloud automatically.</p></details>
+
+      <h3 style="margin-top:18px">Technical issues</h3>
+      <details><summary>Something looks broken</summary><p>Refresh the page first — that fixes most one-off display issues. If it persists, email <a href="${supportHref}">support@aymetraining.com</a> with a screenshot. The diagnostic info (your browser, the page URL) is pre-filled when you click that link from this page so we can help fast.</p></details>
+      <details><summary>It looks weird on my phone</summary><p>The app is designed mobile-first but pharma diagrams can get tight on smaller screens. If a specific page is unusable, email us a screenshot and the model of phone — we'll fix it.</p></details>
+      <details><summary>Tooltips aren't showing</summary><p>Tooltips appear on hover (desktop) or tap (mobile) on any underlined-dotted term. If they're not appearing, your browser may be blocking JavaScript or you may have a content blocker installed.</p></details>
+
+      <h3 style="margin-top:18px">Privacy &amp; data</h3>
+      <details><summary>What data do you collect?</summary><p>Just enough to run the service: name and email (Clerk), payment details (Stripe — we never see your card), and your learning progress. The full list is in our <a href="#" data-help-legal="privacy">Privacy Policy</a>.</p></details>
+      <details><summary>Where is my data stored?</summary><p>Account data lives with Clerk. Billing data lives with Stripe. Both have signed Data Processing Agreements with us and provide EU Standard Contractual Clauses for international transfers. Servers are in the EU and US depending on the subprocessor.</p></details>
+      <details><summary>Can I get a copy of my data?</summary><p>Yes — under GDPR you have the right to data portability. Email <a href="mailto:privacy@aymetraining.com?subject=Data%20export%20request">privacy@aymetraining.com</a> with the subject <b>Data export request</b> and we'll respond within 30 days.</p></details>
+    </div>
+
+    <div class="help-foot">
+      <p>Still stuck? Email <a href="${supportHref}">support@aymetraining.com</a> — we read every message.</p>
+    </div>
+  `;
+  // Wire data-help-legal links to navigate to the matching legal view
+  root.querySelectorAll('[data-help-legal]').forEach(a => {
+    a.onclick = (e) => { e.preventDefault(); navigate(a.dataset.helpLegal); };
+  });
+};
 function renderLegalView(root, slug) {
   const doc = LEGAL_DOCS[slug];
   if (!doc) { navigate("dashboard"); return; }
