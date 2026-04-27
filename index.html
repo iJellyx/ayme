@@ -1785,7 +1785,47 @@ const MODULES = [
       "If QA isn't engaged early, the timeline will slip. Validation re-work is the silent killer of pharma projects."
     ],
     oneLiner: "Automation, QA, validation, production, IT, OT — different priorities, different vocabulary. Know which seat you're talking to.",
-    hours: 6
+    hours: 6,
+    diagrams: [{
+      eyebrow: "Who's in the room",
+      title: "Five domains and a regulator on the outside",
+      caption: "Each group has different priorities. Production cares about uptime. QA cares about audit trails. Validation cares about traceability. Automation cares about scope. IT/OT cares about networks and identity. Regulators sit outside the building and can stop everything.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five project domains around a project hub">
+  <defs>
+    <radialGradient id="dgCastHub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(159,212,255,0.45)"/><stop offset="100%" stop-color="rgba(159,212,255,0)"/></radialGradient>
+  </defs>
+  <!-- Regulator outside (top) -->
+  <g><rect x="280" y="6" width="160" height="34" rx="10" fill="rgba(255,107,138,0.10)" stroke="rgba(255,107,138,0.45)" stroke-dasharray="3 4"/><text x="360" y="22" text-anchor="middle" fill="#FF6B8A" font-size="10.5" font-weight="700" letter-spacing="1.2">REGULATOR · OUTSIDE</text><text x="360" y="34" text-anchor="middle" fill="#94A3C2" font-size="10">FDA · EMA · MHRA · HPRA</text></g>
+  <line x1="360" y1="40" x2="360" y2="65" stroke="rgba(255,107,138,0.4)" stroke-width="1" stroke-dasharray="3 4"/>
+  <polygon points="356,61 364,61 360,69" fill="rgba(255,107,138,0.55)"/>
+  <!-- Hub -->
+  <ellipse cx="360" cy="155" rx="80" ry="48" fill="url(#dgCastHub)"/>
+  <rect x="295" y="130" width="130" height="50" rx="14" fill="#0E1828" stroke="rgba(159,212,255,0.65)" stroke-width="1.3"/>
+  <text x="360" y="152" text-anchor="middle" fill="#9FD4FF" font-size="13" font-weight="600">Pharma project</text>
+  <text x="360" y="168" text-anchor="middle" fill="#94A3C2" font-size="10">your meeting room</text>
+  <!-- Spokes to 5 domains arranged around -->
+  <g stroke="rgba(159,212,255,0.18)" stroke-width="1">
+    <line x1="360" y1="130" x2="200" y2="100"/>
+    <line x1="295" y1="155" x2="180" y2="155"/>
+    <line x1="360" y1="180" x2="240" y2="240"/>
+    <line x1="360" y1="180" x2="480" y2="240"/>
+    <line x1="425" y1="155" x2="540" y2="155"/>
+    <line x1="360" y1="130" x2="520" y2="100"/>
+  </g>
+  <!-- Domain 1: Production -->
+  <g transform="translate(80,80)"><rect width="130" height="50" rx="10" fill="#0E1828" stroke="rgba(91,217,201,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="0.8">PRODUCTION</text><text x="65" y="36" text-anchor="middle" fill="#EAF2FF" font-size="10">operators · shift leads</text></g>
+  <!-- Domain 2: QA -->
+  <g transform="translate(50,135)"><rect width="130" height="50" rx="10" fill="#0E1828" stroke="rgba(108,140,255,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#6C8CFF" font-size="10.5" font-weight="700" letter-spacing="0.8">QA · QUALITY</text><text x="65" y="36" text-anchor="middle" fill="#EAF2FF" font-size="10">batch release · audit</text></g>
+  <!-- Domain 3: Validation/CSV -->
+  <g transform="translate(110,210)"><rect width="130" height="50" rx="10" fill="#0E1828" stroke="rgba(167,139,250,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#A78BFA" font-size="10.5" font-weight="700" letter-spacing="0.8">VALIDATION · CSV</text><text x="65" y="36" text-anchor="middle" fill="#EAF2FF" font-size="10">IQ / OQ / PQ</text></g>
+  <!-- Domain 4: Automation -->
+  <g transform="translate(480,210)"><rect width="130" height="50" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#9FD4FF" font-size="10.5" font-weight="700" letter-spacing="0.8">AUTOMATION</text><text x="65" y="36" text-anchor="middle" fill="#EAF2FF" font-size="10">DCS · MES · PLC</text></g>
+  <!-- Domain 5: IT/OT -->
+  <g transform="translate(540,135)"><rect width="130" height="50" rx="10" fill="#0E1828" stroke="rgba(245,176,65,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#F5B041" font-size="10.5" font-weight="700" letter-spacing="0.8">IT &amp; OT</text><text x="65" y="36" text-anchor="middle" fill="#EAF2FF" font-size="10">networks · identity</text></g>
+  <!-- Domain 6: Project mgmt -->
+  <g transform="translate(510,80)"><rect width="130" height="50" rx="10" fill="#0E1828" stroke="rgba(124,240,229,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#7CF0E5" font-size="10.5" font-weight="700" letter-spacing="0.8">PROJECT MGMT</text><text x="65" y="36" text-anchor="middle" fill="#EAF2FF" font-size="10">schedule · scope</text></g>
+</svg>`
+    }]
   },
   {
     id: "whyauto",
@@ -1818,7 +1858,80 @@ const MODULES = [
       "If a client says 'we're not regulated' but they make medicines, ask more questions — they may be confused about what GMP means for them."
     ],
     oneLiner: "Pharma automates because the alternative — paper-based GMP — is slow, error-prone, and a regulator nightmare.",
-    hours: 8
+    hours: 8,
+    diagrams: [{
+      eyebrow: "Why automate at all",
+      title: "Paper batch records vs. electronic batch records",
+      caption: "A typical paper batch record runs hundreds of pages and every signature, value, and timestamp is hand-written. EBRs capture the same data automatically and surface only the deviations — turning days of QA review into minutes.",
+      svg: `<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paper batch record vs electronic batch record comparison">
+  <defs>
+    <linearGradient id="dgWaPaper" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(245,176,65,0.18)"/><stop offset="100%" stop-color="rgba(245,176,65,0.04)"/></linearGradient>
+    <linearGradient id="dgWaEbr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(91,217,201,0.20)"/><stop offset="100%" stop-color="rgba(91,217,201,0.05)"/></linearGradient>
+  </defs>
+  <!-- LEFT: paper -->
+  <g transform="translate(40,30)">
+    <rect width="300" height="220" rx="14" fill="url(#dgWaPaper)" stroke="rgba(245,176,65,0.45)"/>
+    <text x="20" y="26" fill="#F5B041" font-size="11" font-weight="700" letter-spacing="1.5">PAPER</text>
+    <text x="20" y="42" fill="#94A3C2" font-size="10">the old way</text>
+    <!-- Pages stack -->
+    <g transform="translate(50,60)">
+      <rect x="0" y="14" width="100" height="120" rx="3" fill="#101A2D" stroke="rgba(245,176,65,0.3)"/>
+      <rect x="6" y="8" width="100" height="120" rx="3" fill="#101A2D" stroke="rgba(245,176,65,0.4)"/>
+      <rect x="12" y="2" width="100" height="120" rx="3" fill="#101A2D" stroke="rgba(245,176,65,0.55)"/>
+      <line x1="22" y1="20" x2="100" y2="20" stroke="rgba(159,212,255,0.4)"/>
+      <line x1="22" y1="34" x2="100" y2="34" stroke="rgba(159,212,255,0.4)"/>
+      <line x1="22" y1="48" x2="100" y2="48" stroke="rgba(159,212,255,0.4)"/>
+      <line x1="22" y1="62" x2="100" y2="62" stroke="rgba(159,212,255,0.4)"/>
+      <line x1="22" y1="76" x2="100" y2="76" stroke="rgba(159,212,255,0.4)"/>
+      <line x1="22" y1="90" x2="100" y2="90" stroke="rgba(159,212,255,0.4)"/>
+      <text x="62" y="116" text-anchor="middle" fill="#F5B041" font-size="9" font-style="italic">~1000 pages</text>
+    </g>
+    <!-- Stats -->
+    <g transform="translate(180,68)">
+      <rect width="100" height="46" rx="8" fill="#101A2D" stroke="rgba(245,176,65,0.35)"/>
+      <text x="50" y="20" text-anchor="middle" fill="#F5B041" font-size="20" font-weight="700">2-3</text>
+      <text x="50" y="36" text-anchor="middle" fill="#94A3C2" font-size="9.5">days to review</text>
+      <rect y="58" width="100" height="46" rx="8" fill="#101A2D" stroke="rgba(245,176,65,0.35)"/>
+      <text x="50" y="78" text-anchor="middle" fill="#F5B041" font-size="20" font-weight="700">100%</text>
+      <text x="50" y="94" text-anchor="middle" fill="#94A3C2" font-size="9.5">read line by line</text>
+    </g>
+    <text x="150" y="200" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">handwritten · transcription errors · lost pages</text>
+  </g>
+  <!-- Center divider arrow -->
+  <text x="360" y="135" text-anchor="middle" fill="#5BD9C9" font-size="22">→</text>
+  <text x="360" y="156" text-anchor="middle" fill="#5BD9C9" font-size="9.5" font-weight="700" letter-spacing="0.8">SAME DATA</text>
+  <text x="360" y="170" text-anchor="middle" fill="#5BD9C9" font-size="9.5" font-weight="700" letter-spacing="0.8">CAPTURED LIVE</text>
+  <!-- RIGHT: EBR -->
+  <g transform="translate(380,30)">
+    <rect width="300" height="220" rx="14" fill="url(#dgWaEbr)" stroke="rgba(91,217,201,0.45)"/>
+    <text x="20" y="26" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="1.5">EBR</text>
+    <text x="20" y="42" fill="#94A3C2" font-size="10">electronic batch record</text>
+    <!-- Screen -->
+    <g transform="translate(40,60)">
+      <rect width="120" height="124" rx="6" fill="#101A2D" stroke="rgba(91,217,201,0.45)"/>
+      <line x1="0" y1="22" x2="120" y2="22" stroke="rgba(91,217,201,0.3)"/>
+      <text x="8" y="16" fill="#5BD9C9" font-size="9" font-weight="700">Batch B-2204</text>
+      <g transform="translate(8,32)">
+        <text x="0" y="9" fill="#94A3C2" font-size="9">Charge 1</text><circle cx="98" cy="6" r="4" fill="rgba(91,217,201,0.5)"/><text x="98" y="9" text-anchor="middle" fill="#0E1828" font-size="8" font-weight="700">✓</text>
+        <text x="0" y="27" fill="#94A3C2" font-size="9">Heat to 65°</text><circle cx="98" cy="24" r="4" fill="rgba(91,217,201,0.5)"/><text x="98" y="27" text-anchor="middle" fill="#0E1828" font-size="8" font-weight="700">✓</text>
+        <text x="0" y="45" fill="#94A3C2" font-size="9">Hold 30 min</text><circle cx="98" cy="42" r="4" fill="rgba(245,176,65,0.5)"/><text x="98" y="45" text-anchor="middle" fill="#0E1828" font-size="8" font-weight="700">!</text>
+        <text x="0" y="63" fill="#94A3C2" font-size="9">Cool</text><circle cx="98" cy="60" r="4" fill="rgba(91,217,201,0.5)"/><text x="98" y="63" text-anchor="middle" fill="#0E1828" font-size="8" font-weight="700">✓</text>
+        <text x="0" y="81" fill="#94A3C2" font-size="9">Discharge</text><circle cx="98" cy="78" r="4" fill="rgba(91,217,201,0.5)"/><text x="98" y="81" text-anchor="middle" fill="#0E1828" font-size="8" font-weight="700">✓</text>
+      </g>
+    </g>
+    <!-- Stats -->
+    <g transform="translate(180,68)">
+      <rect width="100" height="46" rx="8" fill="#101A2D" stroke="rgba(91,217,201,0.35)"/>
+      <text x="50" y="20" text-anchor="middle" fill="#5BD9C9" font-size="20" font-weight="700">15</text>
+      <text x="50" y="36" text-anchor="middle" fill="#94A3C2" font-size="9.5">minutes to release</text>
+      <rect y="58" width="100" height="46" rx="8" fill="#101A2D" stroke="rgba(91,217,201,0.35)"/>
+      <text x="50" y="78" text-anchor="middle" fill="#5BD9C9" font-size="14" font-weight="700">EXCEPTION</text>
+      <text x="50" y="94" text-anchor="middle" fill="#94A3C2" font-size="9.5">QA only reviews flagged steps</text>
+    </g>
+    <text x="150" y="200" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">timestamps · audit trail · review by exception</text>
+  </g>
+</svg>`
+    }]
   },
   {
     id: "vocab",
@@ -1853,7 +1966,29 @@ const MODULES = [
       "Some acronyms collide between organisations: PM = Project Manager? Process Manager? Production Manager? Always verify."
     ],
     oneLiner: "GMP, EBR, ISA-88, GAMP 5, ALCOA+ — the acronyms that buy you 80% of pharma fluency in week one.",
-    hours: 6
+    hours: 6,
+    diagrams: [{
+      eyebrow: "Group the noise",
+      title: "Most pharma jargon falls into one of six buckets",
+      caption: "When an acronym lands, ask which bucket it sits in — that alone tells you who owns it and where the conversation is going. The full glossary in this app explains each one in plain language.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Six categories of pharma acronyms">
+  <defs>
+    <linearGradient id="dgVocReg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(255,107,138,0.18)"/><stop offset="100%" stop-color="rgba(255,107,138,0.04)"/></linearGradient>
+    <linearGradient id="dgVocStd" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(108,140,255,0.18)"/><stop offset="100%" stop-color="rgba(108,140,255,0.04)"/></linearGradient>
+    <linearGradient id="dgVocCtl" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(91,217,201,0.18)"/><stop offset="100%" stop-color="rgba(91,217,201,0.04)"/></linearGradient>
+    <linearGradient id="dgVocPro" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(159,212,255,0.18)"/><stop offset="100%" stop-color="rgba(159,212,255,0.04)"/></linearGradient>
+    <linearGradient id="dgVocCom" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(167,139,250,0.18)"/><stop offset="100%" stop-color="rgba(167,139,250,0.04)"/></linearGradient>
+    <linearGradient id="dgVocItOt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(245,176,65,0.18)"/><stop offset="100%" stop-color="rgba(245,176,65,0.04)"/></linearGradient>
+  </defs>
+  <!-- 6 buckets in 3x2 grid -->
+  <g transform="translate(40,30)"><rect width="200" height="100" rx="12" fill="url(#dgVocReg)" stroke="rgba(255,107,138,0.45)"/><text x="20" y="22" fill="#FF6B8A" font-size="10.5" font-weight="700" letter-spacing="1.4">REGULATORS</text><text x="20" y="46" fill="#EAF2FF" font-size="13" font-weight="500">FDA · EMA · MHRA · HPRA</text><text x="20" y="64" fill="#EAF2FF" font-size="13" font-weight="500">PMDA · NMPA</text><text x="20" y="86" fill="#94A3C2" font-size="10">they inspect, you comply</text></g>
+  <g transform="translate(260,30)"><rect width="200" height="100" rx="12" fill="url(#dgVocStd)" stroke="rgba(108,140,255,0.45)"/><text x="20" y="22" fill="#6C8CFF" font-size="10.5" font-weight="700" letter-spacing="1.4">STANDARDS</text><text x="20" y="46" fill="#EAF2FF" font-size="13" font-weight="500">ISA-88 · ISA-95 · GAMP 5</text><text x="20" y="64" fill="#EAF2FF" font-size="13" font-weight="500">21 CFR Part 11 · Annex 11</text><text x="20" y="86" fill="#94A3C2" font-size="10">the rulebooks of how to do things</text></g>
+  <g transform="translate(480,30)"><rect width="200" height="100" rx="12" fill="url(#dgVocCtl)" stroke="rgba(91,217,201,0.45)"/><text x="20" y="22" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.4">CONTROL</text><text x="20" y="46" fill="#EAF2FF" font-size="13" font-weight="500">DCS · PLC · SCADA · HMI</text><text x="20" y="64" fill="#EAF2FF" font-size="13" font-weight="500">CHARMs · OPC UA · HART</text><text x="20" y="86" fill="#94A3C2" font-size="10">runs the equipment in real-time</text></g>
+  <g transform="translate(40,150)"><rect width="200" height="100" rx="12" fill="url(#dgVocPro)" stroke="rgba(159,212,255,0.45)"/><text x="20" y="22" fill="#9FD4FF" font-size="10.5" font-weight="700" letter-spacing="1.4">PRODUCTION</text><text x="20" y="46" fill="#EAF2FF" font-size="13" font-weight="500">MES · EBR · MBR · S88 recipe</text><text x="20" y="64" fill="#EAF2FF" font-size="13" font-weight="500">SAP · OEE · genealogy</text><text x="20" y="86" fill="#94A3C2" font-size="10">orchestrates batches end-to-end</text></g>
+  <g transform="translate(260,150)"><rect width="200" height="100" rx="12" fill="url(#dgVocCom)" stroke="rgba(167,139,250,0.45)"/><text x="20" y="22" fill="#A78BFA" font-size="10.5" font-weight="700" letter-spacing="1.4">COMPLIANCE</text><text x="20" y="46" fill="#EAF2FF" font-size="13" font-weight="500">CSV · IQ/OQ/PQ · ALCOA+</text><text x="20" y="64" fill="#EAF2FF" font-size="13" font-weight="500">URS · FS · DS · 483</text><text x="20" y="86" fill="#94A3C2" font-size="10">proving everything works</text></g>
+  <g transform="translate(480,150)"><rect width="200" height="100" rx="12" fill="url(#dgVocItOt)" stroke="rgba(245,176,65,0.45)"/><text x="20" y="22" fill="#F5B041" font-size="10.5" font-weight="700" letter-spacing="1.4">IT &amp; OT</text><text x="20" y="46" fill="#EAF2FF" font-size="13" font-weight="500">DMZ · IEC 62443 · NIS2</text><text x="20" y="64" fill="#EAF2FF" font-size="13" font-weight="500">PAM · jump server · AD</text><text x="20" y="86" fill="#94A3C2" font-size="10">network architecture &amp; security</text></g>
+</svg>`
+    }]
   },
   {
     id: "deltav",
@@ -1891,7 +2026,67 @@ const MODULES = [
       "Migration projects from PlantPAx or Siemens PCS 7 to DeltaV are rarely straight swaps — logic rebuilds are common."
     ],
     oneLiner: "DeltaV is Emerson's DCS — the dominant control platform in pharma batch manufacturing.",
-    hours: 35
+    hours: 35,
+    diagrams: [{
+      eyebrow: "DeltaV system architecture",
+      title: "Configuration master, operator stations, controllers, support modules",
+      caption: "ProfessionalPLUS holds the single source of truth for the configuration. Operator Stations are where production staff drive the plant. Controllers run logic in real-time. AMS, Batch Executive and the Continuous Historian are the support modules every DeltaV site has.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeltaV system architecture">
+  <defs>
+    <radialGradient id="dgDvHub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(159,212,255,0.45)"/><stop offset="100%" stop-color="rgba(159,212,255,0)"/></radialGradient>
+  </defs>
+  <!-- Network bus -->
+  <line x1="60" y1="140" x2="660" y2="140" stroke="rgba(159,212,255,0.30)" stroke-width="2"/>
+  <text x="360" y="156" text-anchor="middle" fill="#94A3C2" font-size="9.5" font-style="italic" letter-spacing="0.5">DeltaV control network</text>
+  <!-- Top row: engineering / operator -->
+  <g transform="translate(80,40)">
+    <ellipse cx="80" cy="40" rx="86" ry="36" fill="url(#dgDvHub)"/>
+    <rect width="160" height="64" rx="12" fill="#0E1828" stroke="#9FD4FF" stroke-width="1.4"/>
+    <text x="80" y="24" text-anchor="middle" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="0.8">PROFESSIONALPLUS</text>
+    <text x="80" y="40" text-anchor="middle" fill="#EAF2FF" font-size="11">Master engineering</text>
+    <text x="80" y="55" text-anchor="middle" fill="#94A3C2" font-size="10">single source of truth</text>
+  </g>
+  <g transform="translate(280,40)">
+    <rect width="160" height="64" rx="12" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/>
+    <text x="80" y="22" text-anchor="middle" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="0.8">OPERATOR STATIONS</text>
+    <text x="80" y="40" text-anchor="middle" fill="#EAF2FF" font-size="11">DeltaV Live · Operate</text>
+    <text x="80" y="55" text-anchor="middle" fill="#94A3C2" font-size="10">graphics for the floor</text>
+  </g>
+  <g transform="translate(480,40)">
+    <rect width="160" height="64" rx="12" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/>
+    <text x="80" y="22" text-anchor="middle" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="0.8">BATCH EXECUTIVE</text>
+    <text x="80" y="40" text-anchor="middle" fill="#EAF2FF" font-size="11">runs S88 recipes</text>
+    <text x="80" y="55" text-anchor="middle" fill="#94A3C2" font-size="10">orchestrates phases</text>
+  </g>
+  <!-- Vertical lines from top to bus -->
+  <line x1="160" y1="104" x2="160" y2="140" stroke="rgba(159,212,255,0.4)"/>
+  <line x1="360" y1="104" x2="360" y2="140" stroke="rgba(159,212,255,0.4)"/>
+  <line x1="560" y1="104" x2="560" y2="140" stroke="rgba(159,212,255,0.4)"/>
+  <!-- Vertical lines from bus to bottom -->
+  <line x1="160" y1="140" x2="160" y2="176" stroke="rgba(159,212,255,0.4)"/>
+  <line x1="360" y1="140" x2="360" y2="176" stroke="rgba(159,212,255,0.4)"/>
+  <line x1="560" y1="140" x2="560" y2="176" stroke="rgba(159,212,255,0.4)"/>
+  <!-- Bottom row: controllers, AMS, historian -->
+  <g transform="translate(80,176)">
+    <rect width="160" height="64" rx="12" fill="#0E1828" stroke="rgba(91,217,201,0.45)"/>
+    <text x="80" y="22" text-anchor="middle" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="0.8">CONTROLLERS</text>
+    <text x="80" y="40" text-anchor="middle" fill="#EAF2FF" font-size="11">CHARMs · field I/O</text>
+    <text x="80" y="55" text-anchor="middle" fill="#94A3C2" font-size="10">runs logic in real-time</text>
+  </g>
+  <g transform="translate(280,176)">
+    <rect width="160" height="64" rx="12" fill="#0E1828" stroke="rgba(91,217,201,0.45)"/>
+    <text x="80" y="22" text-anchor="middle" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="0.8">AMS DEVICE MGR</text>
+    <text x="80" y="40" text-anchor="middle" fill="#EAF2FF" font-size="11">HART · WirelessHART</text>
+    <text x="80" y="55" text-anchor="middle" fill="#94A3C2" font-size="10">smart device asset mgmt</text>
+  </g>
+  <g transform="translate(480,176)">
+    <rect width="160" height="64" rx="12" fill="#0E1828" stroke="rgba(91,217,201,0.45)"/>
+    <text x="80" y="22" text-anchor="middle" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="0.8">HISTORIAN</text>
+    <text x="80" y="40" text-anchor="middle" fill="#EAF2FF" font-size="11">Continuous Historian</text>
+    <text x="80" y="55" text-anchor="middle" fill="#94A3C2" font-size="10">often paired with PI</text>
+  </g>
+</svg>`
+    }]
   },
   {
     id: "mes",
@@ -2134,7 +2329,77 @@ const MODULES = [
       "Low availability of Syncade talent in the market — factor rates and lead time."
     ],
     oneLiner: "Syncade is Emerson's MES — best-in-class when paired with DeltaV on an all-Emerson site.",
-    hours: 20
+    hours: 20,
+    diagrams: [{
+      eyebrow: "Syncade ↔ DeltaV stack",
+      title: "Same vendor, two layers, native integration",
+      caption: "Syncade owns the recipes, EBR, and weigh-and-dispense at L3. DeltaV's Batch Executive runs the phases at L2. Because both are Emerson, the integration is out-of-the-box: phase commands flow down, batch data flows up.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Syncade and DeltaV integration">
+  <defs>
+    <linearGradient id="dgSyL3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(159,212,255,0.32)"/><stop offset="100%" stop-color="rgba(91,217,201,0.16)"/></linearGradient>
+    <linearGradient id="dgSyL2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(91,217,201,0.20)"/><stop offset="100%" stop-color="rgba(91,217,201,0.04)"/></linearGradient>
+  </defs>
+  <!-- L3: Syncade -->
+  <g transform="translate(60,30)">
+    <rect width="600" height="92" rx="14" fill="url(#dgSyL3)" stroke="#9FD4FF" stroke-width="1.4"/>
+    <text x="20" y="24" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="1">L3 · SYNCADE MES</text>
+    <text x="20" y="40" fill="#94A3C2" font-size="10.5">Emerson's manufacturing operations layer</text>
+    <!-- Internal modules -->
+    <g transform="translate(20,52)">
+      <rect width="130" height="32" rx="8" fill="#101A2D" stroke="rgba(159,212,255,0.45)"/>
+      <text x="65" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Recipe Authoring</text>
+      <text x="65" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">S88 master recipes</text>
+    </g>
+    <g transform="translate(160,52)">
+      <rect width="130" height="32" rx="8" fill="#101A2D" stroke="rgba(159,212,255,0.45)"/>
+      <text x="65" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Workflow / EBR</text>
+      <text x="65" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">step-by-step batch record</text>
+    </g>
+    <g transform="translate(300,52)">
+      <rect width="130" height="32" rx="8" fill="#101A2D" stroke="rgba(159,212,255,0.45)"/>
+      <text x="65" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Weigh &amp; Dispense</text>
+      <text x="65" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">barcode · tolerances</text>
+    </g>
+    <g transform="translate(440,52)">
+      <rect width="140" height="32" rx="8" fill="#101A2D" stroke="rgba(159,212,255,0.45)"/>
+      <text x="70" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Genealogy</text>
+      <text x="70" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">forward / backward trace</text>
+    </g>
+  </g>
+  <!-- Bidirectional arrows -->
+  <g transform="translate(220,128)">
+    <line x1="0" y1="0" x2="0" y2="22" stroke="rgba(91,217,201,0.7)" stroke-width="1.4"/>
+    <polygon points="-4,18 4,18 0,26" fill="rgba(91,217,201,0.85)"/>
+    <text x="14" y="16" fill="#5BD9C9" font-size="10" font-weight="600">Phase commands</text>
+  </g>
+  <g transform="translate(500,128)">
+    <line x1="0" y1="26" x2="0" y2="4" stroke="rgba(124,240,229,0.7)" stroke-width="1.4"/>
+    <polygon points="-4,8 4,8 0,0" fill="rgba(124,240,229,0.85)"/>
+    <text x="-130" y="16" fill="#7CF0E5" font-size="10" font-weight="600">Batch data &amp; events</text>
+  </g>
+  <!-- L2: DeltaV -->
+  <g transform="translate(60,158)">
+    <rect width="600" height="92" rx="14" fill="url(#dgSyL2)" stroke="rgba(91,217,201,0.5)" stroke-width="1.2"/>
+    <text x="20" y="24" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="1">L2 · DELTAV DCS</text>
+    <text x="20" y="40" fill="#94A3C2" font-size="10.5">Emerson's control system — the partner Syncade ships with</text>
+    <g transform="translate(20,52)">
+      <rect width="170" height="32" rx="8" fill="#101A2D" stroke="rgba(91,217,201,0.45)"/>
+      <text x="85" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Batch Executive</text>
+      <text x="85" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">runs the recipe</text>
+    </g>
+    <g transform="translate(200,52)">
+      <rect width="170" height="32" rx="8" fill="#101A2D" stroke="rgba(91,217,201,0.45)"/>
+      <text x="85" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Phase library</text>
+      <text x="85" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">Charge · Heat · Hold · CIP</text>
+    </g>
+    <g transform="translate(380,52)">
+      <rect width="200" height="32" rx="8" fill="#101A2D" stroke="rgba(91,217,201,0.45)"/>
+      <text x="100" y="14" text-anchor="middle" fill="#EAF2FF" font-size="10" font-weight="600">Controllers · I/O</text>
+      <text x="100" y="26" text-anchor="middle" fill="#94A3C2" font-size="9">talks to the actual equipment</text>
+    </g>
+  </g>
+</svg>`
+    }]
   },
   {
     id: "pasx",
@@ -2171,7 +2436,40 @@ const MODULES = [
       "PAS-X + Syncade on the same site = very unusual; ask why."
     ],
     oneLiner: "PAS-X is Körber's pharma MES — the default choice for top-tier biologics plants.",
-    hours: 28
+    hours: 28,
+    diagrams: [{
+      eyebrow: "PAS-X module map",
+      title: "MBR/EBR at the core, surrounded by the rest of the suite",
+      caption: "PAS-X is built around the Master Batch Record. Around it sit the modules clients turn on as they roll out: weigh-and-dispense first, then equipment booking, then analytics (Savvy), then LIMS — all integrated to SAP at the boundary.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PAS-X module map">
+  <defs>
+    <radialGradient id="dgPxCore" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(159,212,255,0.55)"/><stop offset="60%" stop-color="rgba(159,212,255,0.18)"/><stop offset="100%" stop-color="rgba(159,212,255,0)"/></radialGradient>
+  </defs>
+  <!-- Outer ring guide -->
+  <circle cx="360" cy="140" r="115" fill="none" stroke="rgba(159,212,255,0.10)" stroke-dasharray="2 5"/>
+  <!-- Spokes -->
+  <g stroke="rgba(159,212,255,0.22)" stroke-width="1">
+    <line x1="360" y1="140" x2="360" y2="40"/>
+    <line x1="360" y1="140" x2="455" y2="78"/>
+    <line x1="360" y1="140" x2="475" y2="180"/>
+    <line x1="360" y1="140" x2="360" y2="240"/>
+    <line x1="360" y1="140" x2="245" y2="180"/>
+    <line x1="360" y1="140" x2="265" y2="78"/>
+  </g>
+  <!-- Core -->
+  <ellipse cx="360" cy="140" rx="68" ry="44" fill="url(#dgPxCore)"/>
+  <rect x="304" y="116" width="112" height="50" rx="12" fill="#0E1828" stroke="#9FD4FF" stroke-width="1.4"/>
+  <text x="360" y="138" text-anchor="middle" fill="#9FD4FF" font-size="13" font-weight="700">MBR / EBR</text>
+  <text x="360" y="154" text-anchor="middle" fill="#94A3C2" font-size="10">recipe + execution</text>
+  <!-- 6 surrounding modules (clockwise from top) -->
+  <g transform="translate(295,18)"><rect width="130" height="42" rx="10" fill="#0E1828" stroke="rgba(124,240,229,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#7CF0E5" font-size="10.5" font-weight="700" letter-spacing="0.6">REVIEW BY EXCEPTION</text><text x="65" y="34" text-anchor="middle" fill="#94A3C2" font-size="9.5">PAS-X flagship</text></g>
+  <g transform="translate(440,58)"><rect width="130" height="42" rx="10" fill="#0E1828" stroke="rgba(91,217,201,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="0.6">WEIGH &amp; DISPENSE</text><text x="65" y="34" text-anchor="middle" fill="#94A3C2" font-size="9.5">material handling</text></g>
+  <g transform="translate(450,160)"><rect width="160" height="42" rx="10" fill="#0E1828" stroke="rgba(167,139,250,0.45)"/><text x="80" y="20" text-anchor="middle" fill="#A78BFA" font-size="10.5" font-weight="700" letter-spacing="0.6">EQUIPMENT BOOKING</text><text x="80" y="34" text-anchor="middle" fill="#94A3C2" font-size="9.5">resource scheduling</text></g>
+  <g transform="translate(295,242)"><rect width="130" height="42" rx="10" fill="#0E1828" stroke="rgba(108,140,255,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#6C8CFF" font-size="10.5" font-weight="700" letter-spacing="0.6">PAS-X SAVVY</text><text x="65" y="34" text-anchor="middle" fill="#94A3C2" font-size="9.5">process analytics</text></g>
+  <g transform="translate(110,160)"><rect width="160" height="42" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="80" y="20" text-anchor="middle" fill="#9FD4FF" font-size="10.5" font-weight="700" letter-spacing="0.6">PAS-X LIMS</text><text x="80" y="34" text-anchor="middle" fill="#94A3C2" font-size="9.5">lab data integration</text></g>
+  <g transform="translate(140,58)"><rect width="130" height="42" rx="10" fill="#0E1828" stroke="rgba(245,176,65,0.45)"/><text x="65" y="20" text-anchor="middle" fill="#F5B041" font-size="10.5" font-weight="700" letter-spacing="0.6">SAP CONNECTORS</text><text x="65" y="34" text-anchor="middle" fill="#94A3C2" font-size="9.5">PP · QM · MM</text></g>
+</svg>`
+    }]
   },
   {
     id: "plc",
@@ -2205,7 +2503,56 @@ const MODULES = [
       "Safety PLC code reused from unrelated projects without re-assessment."
     ],
     oneLiner: "PLCs run the fast, discrete stuff — Rockwell and Siemens dominate.",
-    hours: 18
+    hours: 18,
+    diagrams: [{
+      eyebrow: "When to reach for which",
+      title: "PLC vs DCS — same job, different shape",
+      caption: "PLCs are great for fast machine-level tasks: a packaging line, a CIP skid, a filler. DCS shines plant-wide where many loops have to coordinate. Most pharma sites run both — DCS for the central process, PLCs around the edges and on bought-in equipment.",
+      svg: `<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PLC vs DCS comparison">
+  <defs>
+    <linearGradient id="dgPlcL" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(245,176,65,0.20)"/><stop offset="100%" stop-color="rgba(245,176,65,0.04)"/></linearGradient>
+    <linearGradient id="dgPlcR" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(108,140,255,0.20)"/><stop offset="100%" stop-color="rgba(108,140,255,0.04)"/></linearGradient>
+  </defs>
+  <!-- LEFT: PLC -->
+  <g transform="translate(40,30)">
+    <rect width="310" height="220" rx="14" fill="url(#dgPlcL)" stroke="rgba(245,176,65,0.45)"/>
+    <text x="20" y="26" fill="#F5B041" font-size="11" font-weight="700" letter-spacing="1.5">PLC</text>
+    <text x="20" y="42" fill="#94A3C2" font-size="10">Programmable Logic Controller</text>
+    <!-- Best for -->
+    <text x="20" y="68" fill="#EAF2FF" font-size="11" font-weight="600">Best for</text>
+    <g transform="translate(20,76)" fill="#EAF2FF" font-size="11">
+      <text y="14">→ machine / skid control</text>
+      <text y="32">→ fast, discrete logic</text>
+      <text y="50">→ packaging · filling lines</text>
+      <text y="68">→ CIP · SIP skids</text>
+    </g>
+    <!-- Vendors -->
+    <g transform="translate(20,170)">
+      <rect width="270" height="38" rx="8" fill="#101A2D" stroke="rgba(245,176,65,0.35)"/>
+      <text x="135" y="16" text-anchor="middle" fill="#94A3C2" font-size="9.5" font-weight="600" letter-spacing="0.8">DOMINANT VENDORS</text>
+      <text x="135" y="32" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="600">Rockwell · Siemens · Schneider</text>
+    </g>
+  </g>
+  <!-- RIGHT: DCS -->
+  <g transform="translate(370,30)">
+    <rect width="310" height="220" rx="14" fill="url(#dgPlcR)" stroke="rgba(108,140,255,0.45)"/>
+    <text x="20" y="26" fill="#6C8CFF" font-size="11" font-weight="700" letter-spacing="1.5">DCS</text>
+    <text x="20" y="42" fill="#94A3C2" font-size="10">Distributed Control System</text>
+    <text x="20" y="68" fill="#EAF2FF" font-size="11" font-weight="600">Best for</text>
+    <g transform="translate(20,76)" fill="#EAF2FF" font-size="11">
+      <text y="14">→ plant-wide process control</text>
+      <text y="32">→ continuous + batch loops</text>
+      <text y="50">→ reactors · bioreactors</text>
+      <text y="68">→ integrated HMI · historian</text>
+    </g>
+    <g transform="translate(20,170)">
+      <rect width="270" height="38" rx="8" fill="#101A2D" stroke="rgba(108,140,255,0.35)"/>
+      <text x="135" y="16" text-anchor="middle" fill="#94A3C2" font-size="9.5" font-weight="600" letter-spacing="0.8">DOMINANT VENDORS</text>
+      <text x="135" y="32" text-anchor="middle" fill="#EAF2FF" font-size="11" font-weight="600">DeltaV · PCS 7 · PlantPAx</text>
+    </g>
+  </g>
+</svg>`
+    }]
   },
   {
     id: "historian",
@@ -2240,7 +2587,68 @@ const MODULES = [
       "Duplicate historians per site — consolidation opportunity (and headache)."
     ],
     oneLiner: "PI is the data backbone — every analytics project is PI-adjacent.",
-    hours: 16
+    hours: 16,
+    diagrams: [{
+      eyebrow: "From sensor to insight",
+      title: "Three layers turn raw signals into business answers",
+      caption: "Raw tags arrive from the control system. The Asset Framework gives them context (this tag belongs to Reactor 101 and represents temperature). Vision and downstream tools then use those structured tags to build dashboards, run analytics, and feed AI/ML.",
+      svg: `<svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PI tag to AF model to vision dashboard pipeline">
+  <defs>
+    <linearGradient id="dgHis1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(124,240,229,0.22)"/><stop offset="100%" stop-color="rgba(124,240,229,0.04)"/></linearGradient>
+    <linearGradient id="dgHis2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(91,217,201,0.22)"/><stop offset="100%" stop-color="rgba(91,217,201,0.04)"/></linearGradient>
+    <linearGradient id="dgHis3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(159,212,255,0.22)"/><stop offset="100%" stop-color="rgba(159,212,255,0.04)"/></linearGradient>
+  </defs>
+  <!-- Stage 1: Tags -->
+  <g transform="translate(40,40)">
+    <rect width="180" height="160" rx="14" fill="url(#dgHis1)" stroke="rgba(124,240,229,0.45)"/>
+    <text x="20" y="24" fill="#7CF0E5" font-size="11" font-weight="700" letter-spacing="1">RAW TAGS</text>
+    <text x="20" y="40" fill="#94A3C2" font-size="10">time-series stream</text>
+    <g transform="translate(20,52)" font-family="'Inter', system-ui, monospace" font-size="9.5">
+      <text y="14" fill="#EAF2FF">R101.TIC01.PV</text>
+      <text y="30" fill="#EAF2FF">R101.PIC01.PV</text>
+      <text y="46" fill="#EAF2FF">R101.LIC01.PV</text>
+      <text y="62" fill="#EAF2FF">R101.AGIT.SPEED</text>
+      <text y="78" fill="#94A3C2" font-style="italic">… thousands more</text>
+    </g>
+    <text x="20" y="146" fill="#7CF0E5" font-size="9.5" font-weight="600">PI Data Archive</text>
+  </g>
+  <!-- Arrow 1 -->
+  <g><line x1="225" y1="120" x2="265" y2="120" stroke="rgba(159,212,255,0.6)" stroke-width="1.4"/><polygon points="259,116 269,120 259,124" fill="rgba(159,212,255,0.85)"/><text x="245" y="108" text-anchor="middle" fill="#94A3C2" font-size="9">add context</text></g>
+  <!-- Stage 2: AF -->
+  <g transform="translate(270,40)">
+    <rect width="180" height="160" rx="14" fill="url(#dgHis2)" stroke="rgba(91,217,201,0.45)"/>
+    <text x="20" y="24" fill="#5BD9C9" font-size="11" font-weight="700" letter-spacing="1">ASSET FRAMEWORK</text>
+    <text x="20" y="40" fill="#94A3C2" font-size="10">organised model</text>
+    <g transform="translate(20,52)" font-size="10">
+      <text y="14" fill="#EAF2FF" font-weight="600">↳ Reactor 101</text>
+      <text y="30" fill="#EAF2FF">  ↳ Temperature</text>
+      <text y="44" fill="#EAF2FF">  ↳ Pressure</text>
+      <text y="58" fill="#EAF2FF">  ↳ Level</text>
+      <text y="74" fill="#EAF2FF" font-weight="600">↳ Reactor 102</text>
+      <text y="90" fill="#94A3C2" font-style="italic">…</text>
+    </g>
+    <text x="20" y="146" fill="#5BD9C9" font-size="9.5" font-weight="600">PI AF · OSIsoft model</text>
+  </g>
+  <!-- Arrow 2 -->
+  <g><line x1="455" y1="120" x2="495" y2="120" stroke="rgba(159,212,255,0.6)" stroke-width="1.4"/><polygon points="489,116 499,120 489,124" fill="rgba(159,212,255,0.85)"/><text x="475" y="108" text-anchor="middle" fill="#94A3C2" font-size="9">visualise</text></g>
+  <!-- Stage 3: Vision / consumers -->
+  <g transform="translate(500,40)">
+    <rect width="180" height="160" rx="14" fill="url(#dgHis3)" stroke="rgba(159,212,255,0.45)"/>
+    <text x="20" y="24" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="1">CONSUMERS</text>
+    <text x="20" y="40" fill="#94A3C2" font-size="10">dashboards · analytics · AI</text>
+    <g transform="translate(20,54)" font-size="10">
+      <rect y="0" width="140" height="22" rx="6" fill="#101A2D" stroke="rgba(159,212,255,0.4)"/>
+      <text x="70" y="14" text-anchor="middle" fill="#EAF2FF">PI Vision dashboards</text>
+      <rect y="28" width="140" height="22" rx="6" fill="#101A2D" stroke="rgba(159,212,255,0.4)"/>
+      <text x="70" y="42" text-anchor="middle" fill="#EAF2FF">Seeq · TrendMiner</text>
+      <rect y="56" width="140" height="22" rx="6" fill="#101A2D" stroke="rgba(159,212,255,0.4)"/>
+      <text x="70" y="70" text-anchor="middle" fill="#EAF2FF">Power BI · Databricks</text>
+    </g>
+  </g>
+  <!-- Footer note -->
+  <text x="360" y="225" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">Without an AF model, raw tags become unreadable in two years.</text>
+</svg>`
+    }]
   },
   {
     id: "isa88",
@@ -2491,7 +2899,59 @@ const MODULES = [
       "'We serialize manually' — legacy sites still exist; massive project if they modernise."
     ],
     oneLiner: "Serialization gives every unit a unique ID — DSCSA and FMD make it compulsory.",
-    hours: 12
+    hours: 12,
+    diagrams: [{
+      eyebrow: "Track-and-trace aggregation",
+      title: "Each level is the parent of the level below",
+      caption: "Every saleable unit gets a unique identifier. Units are bundled into cartons, cartons into cases, cases into pallets — and each parent records its children so a recall can pull a single bottle from a pallet anywhere in the world.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Serialization aggregation hierarchy">
+  <defs>
+    <linearGradient id="dgSer1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(124,240,229,0.30)"/><stop offset="100%" stop-color="rgba(124,240,229,0.06)"/></linearGradient>
+    <linearGradient id="dgSer2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(91,217,201,0.26)"/><stop offset="100%" stop-color="rgba(91,217,201,0.06)"/></linearGradient>
+    <linearGradient id="dgSer3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(159,212,255,0.22)"/><stop offset="100%" stop-color="rgba(159,212,255,0.06)"/></linearGradient>
+    <linearGradient id="dgSer4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(108,140,255,0.20)"/><stop offset="100%" stop-color="rgba(108,140,255,0.06)"/></linearGradient>
+  </defs>
+  <!-- Pallet (top, widest) -->
+  <g transform="translate(120,30)">
+    <rect width="480" height="40" rx="10" fill="url(#dgSer4)" stroke="rgba(108,140,255,0.5)"/>
+    <text x="20" y="18" fill="#6C8CFF" font-size="11" font-weight="700" letter-spacing="1.2">PALLET</text>
+    <text x="20" y="32" fill="#94A3C2" font-size="10">aggregate of cases · ships in containers</text>
+    <text x="460" y="26" text-anchor="end" fill="#94A3C2" font-size="10" font-style="italic">SSCC code</text>
+  </g>
+  <!-- Down arrow + label -->
+  <g><line x1="360" y1="74" x2="360" y2="92" stroke="rgba(159,212,255,0.5)" stroke-width="1.2"/><polygon points="356,88 364,88 360,96" fill="rgba(159,212,255,0.7)"/></g>
+  <!-- Cases -->
+  <g transform="translate(140,98)">
+    <rect width="200" height="40" rx="10" fill="url(#dgSer3)" stroke="rgba(159,212,255,0.5)"/>
+    <text x="20" y="18" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="1.2">CASE</text>
+    <text x="20" y="32" fill="#94A3C2" font-size="10">aggregate of cartons</text>
+  </g>
+  <g transform="translate(380,98)">
+    <rect width="200" height="40" rx="10" fill="url(#dgSer3)" stroke="rgba(159,212,255,0.5)"/>
+    <text x="20" y="18" fill="#9FD4FF" font-size="11" font-weight="700" letter-spacing="1.2">CASE</text>
+    <text x="20" y="32" fill="#94A3C2" font-size="10">aggregate of cartons</text>
+  </g>
+  <!-- Down arrows -->
+  <g><line x1="240" y1="142" x2="240" y2="160" stroke="rgba(159,212,255,0.4)" stroke-width="1"/><polygon points="236,156 244,156 240,164" fill="rgba(159,212,255,0.6)"/></g>
+  <g><line x1="480" y1="142" x2="480" y2="160" stroke="rgba(159,212,255,0.4)" stroke-width="1"/><polygon points="476,156 484,156 480,164" fill="rgba(159,212,255,0.6)"/></g>
+  <!-- Cartons (4 cartons) -->
+  <g transform="translate(150,166)"><rect width="84" height="36" rx="8" fill="url(#dgSer2)" stroke="rgba(91,217,201,0.5)"/><text x="42" y="16" text-anchor="middle" fill="#5BD9C9" font-size="10" font-weight="700" letter-spacing="0.8">CARTON</text><text x="42" y="28" text-anchor="middle" fill="#94A3C2" font-size="9">10–50 units</text></g>
+  <g transform="translate(244,166)"><rect width="84" height="36" rx="8" fill="url(#dgSer2)" stroke="rgba(91,217,201,0.5)"/><text x="42" y="16" text-anchor="middle" fill="#5BD9C9" font-size="10" font-weight="700" letter-spacing="0.8">CARTON</text></g>
+  <g transform="translate(390,166)"><rect width="84" height="36" rx="8" fill="url(#dgSer2)" stroke="rgba(91,217,201,0.5)"/><text x="42" y="16" text-anchor="middle" fill="#5BD9C9" font-size="10" font-weight="700" letter-spacing="0.8">CARTON</text></g>
+  <g transform="translate(484,166)"><rect width="84" height="36" rx="8" fill="url(#dgSer2)" stroke="rgba(91,217,201,0.5)"/><text x="42" y="16" text-anchor="middle" fill="#5BD9C9" font-size="10" font-weight="700" letter-spacing="0.8">CARTON</text></g>
+  <!-- Down arrows to units -->
+  <g stroke="rgba(159,212,255,0.3)" stroke-width="1"><line x1="192" y1="206" x2="192" y2="220"/><line x1="286" y1="206" x2="286" y2="220"/><line x1="432" y1="206" x2="432" y2="220"/><line x1="526" y1="206" x2="526" y2="220"/></g>
+  <!-- Units (small, 4 stacks of 3) -->
+  <g transform="translate(165,224)"><rect width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="18" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="36" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/></g>
+  <g transform="translate(259,224)"><rect width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="18" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="36" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/></g>
+  <g transform="translate(405,224)"><rect width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="18" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="36" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/></g>
+  <g transform="translate(499,224)"><rect width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="18" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/><rect x="36" width="14" height="20" rx="3" fill="url(#dgSer1)" stroke="rgba(124,240,229,0.6)"/></g>
+  <text x="120" y="240" text-anchor="end" fill="#7CF0E5" font-size="10" font-weight="700" letter-spacing="0.8">UNITS</text>
+  <text x="120" y="252" text-anchor="end" fill="#94A3C2" font-size="9">SGTIN</text>
+  <!-- Regulator note -->
+  <text x="360" y="270" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">DSCSA (US) and FMD (EU) require traceability from this unit upward to every parent.</text>
+</svg>`
+    }]
   }
 ];
 
