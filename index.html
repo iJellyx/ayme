@@ -136,6 +136,40 @@ button { font-family: inherit; }
   cursor: pointer; color: var(--text); font-size: 12px;
 }
 
+/* Mobile menu (hidden on desktop) */
+.mobile-menu-btn {
+  display: none;
+  position: fixed; top: 12px; left: 12px;
+  z-index: 1001;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 22px;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(11,16,32,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.sidebar-close {
+  display: none;
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px;
+  background: none; border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-size: 18px; cursor: pointer;
+  align-items: center; justify-content: center;
+}
+
 /* Main */
 .main { padding: 26px 30px 60px; max-width: 1200px; width: 100%; }
 .topbar { display:flex; align-items:center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;}
@@ -1009,6 +1043,145 @@ body[data-preview="on"] .topbar::after {
 .gate-foot-legal { margin-top: 16px; text-align: center; font-size: 12px; color: var(--muted); }
 .gate-foot-legal a { color: var(--muted); text-decoration: none; margin: 0 6px; cursor: pointer; }
 .gate-foot-legal a:hover { color: var(--primary-2); text-decoration: underline; }
+
+/* ============================================================
+   Mobile-first responsive pass — sidebar drawer + touch targets
+   + overlap fixes. Desktop layout stays unchanged.
+   ============================================================ */
+@media (max-width: 900px) {
+  /* App shell becomes single-column with overlay sidebar */
+  .app { grid-template-columns: 1fr; }
+  .mobile-menu-btn { display: inline-flex; }
+  .sidebar-close { display: inline-flex; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 280px; max-width: 85vw;
+    height: 100vh; height: 100dvh;
+    z-index: 1002;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 56px 16px 20px;
+    border-right: 1px solid var(--border);
+    box-shadow: 4px 0 28px rgba(0,0,0,0.35);
+  }
+  body[data-sidebar="open"] .sidebar { transform: translateX(0); }
+  body[data-sidebar="open"] .sidebar-backdrop {
+    display: block;
+    opacity: 1; pointer-events: auto;
+  }
+
+  /* Sidebar footer fluid (not absolute) so it doesn't clip on short screens */
+  .sidebar-footer { position: static; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  /* Bigger nav items for thumb tapping */
+  .nav-item { padding: 14px 14px; font-size: 15px; }
+
+  /* Main column: more breathing room from edges, headroom for hamburger */
+  .main { padding: 64px 16px 80px; max-width: 100%; }
+  h1 { font-size: 24px; }
+  h2 { font-size: 19px; }
+
+  /* Topbar stacks vertically; XP bar full width; stats wrap */
+  .topbar { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 16px; }
+  .xp-wrap { min-width: 0; width: 100%; }
+  .stats { gap: 8px; }
+  .stat { padding: 8px 12px; font-size: 12px; flex: 1 1 auto; min-width: 0; justify-content: center; }
+  .stat b { font-size: 13px; }
+
+  /* Generic grid collapse on phones */
+  .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  /* Touch targets ≥44px on phones */
+  .btn, .gate-btn, .theme-toggle { min-height: 44px; }
+  .btn.small { min-height: 36px; }
+
+  /* Inputs: 16px font prevents iOS zoom-on-focus */
+  input, textarea, select { font-size: 16px !important; }
+
+  /* Cards tighter padding on small screens */
+  .card { padding: 14px; }
+
+  /* Module / dashboard headers */
+  h1 { font-size: 22px; line-height: 1.2; }
+  .subtitle { font-size: 14px; }
+
+  /* Linear walkthrough: stepper and nav fit phone width */
+  .linear-stepper { padding: 8px 8px; gap: 4px; }
+  .linear-step { padding: 4px 6px; gap: 6px; }
+  .linear-step .ls-num { width: 22px; height: 22px; font-size: 11px; }
+  .linear-step .ls-label { display: none; }
+  .linear-step.active .ls-label { display: inline; font-size: 12px; }
+  .linear-nav { padding: 12px 16px; margin-left: -16px; margin-right: -16px; }
+  .linear-nav .btn { min-height: 44px; }
+  .linear-next-ctx { display: none; }
+  .btn.large { font-size: 14px; padding: 12px 16px; }
+
+  /* Flashcards: full width, larger tap targets */
+  .flashcard { font-size: 17px; }
+  .flashcard .term { font-size: 19px; }
+  .flashcard .def { font-size: 14px; line-height: 1.5; }
+
+  /* Quiz buttons stack neatly, full width */
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-options button { width: 100%; min-height: 48px; text-align: left; padding: 12px 14px; white-space: normal; }
+
+  /* Tabs for the legacy tabbed module view: scroll horizontally if needed */
+  .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; gap: 4px; padding-bottom: 4px; }
+  .tabs::-webkit-scrollbar { height: 0; }
+  .tab { white-space: nowrap; flex: 0 0 auto; padding: 10px 14px; font-size: 13px; }
+
+  /* Path detail: tighter journey */
+  .journey-step { gap: 10px; padding: 4px 0; }
+  .js-marker { flex: 0 0 32px; width: 32px; height: 32px; font-size: 13px; }
+  .js-content { padding: 12px 14px; }
+  .js-title { font-size: 14px; }
+  .js-tagline { font-size: 12.5px; }
+  .js-connector { margin-left: 15px; }
+
+  /* Resume cards on dashboard */
+  .dash-resume-item { padding: 10px 12px; gap: 10px; }
+  .dash-resume-item .dri-icon { font-size: 22px; }
+  .dash-resume-item button { min-height: 36px; padding: 6px 10px; }
+
+  /* Path cards full width */
+  .path-grid { grid-template-columns: 1fr; gap: 12px; }
+  .path-card { padding: 16px; }
+
+  /* Tooltips: don't run off screen */
+  .tip::after { max-width: calc(100vw - 40px); font-size: 12.5px; }
+
+  /* Gate (auth/landing) — phone-friendly */
+  .gate-card { padding: 22px 18px; max-height: 100vh; max-height: 100dvh; border-radius: 16px; }
+  .gate-card.gate-landing { padding: 22px 18px; }
+  .gate-actions { flex-direction: column; }
+  .gate-btn { min-height: 48px; font-size: 15px; }
+
+  /* Module completion celebration: full-screen on phones */
+  .celebration-card { padding: 24px 18px; max-height: 100vh; max-height: 100dvh; border-radius: 16px; }
+  .celebration-actions { flex-direction: column; }
+  .celebration-actions .btn { min-height: 48px; }
+
+  /* Welcome overlay */
+  .welcome-card { padding: 22px 18px; }
+
+  /* Tooltips become inline-tap on touch devices via :focus already; ensure no sticky hover */
+
+  /* Sidebar footer items wrap nicely */
+  #accountBox { flex-wrap: wrap; }
+}
+
+/* Disable hover transforms on touch devices (avoids "stuck-hover" state) */
+@media (hover: none) {
+  .path-card:hover { transform: none; box-shadow: none; }
+  .dash-resume-item:hover { transform: none; }
+  .module-card:hover { transform: none; }
+  .journey-step:hover .js-content { transform: none; }
+}
 </style>
 <script
   async crossorigin="anonymous"
@@ -1030,7 +1203,10 @@ body[data-preview="on"] .topbar::after {
   </div>
 </div>
 <div class="app">
-  <aside class="sidebar">
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">☰</button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">✕</button>
     <div class="brand">
       <div class="brand-logo">AY</div>
       <div>
@@ -2985,7 +3161,25 @@ function navigate(view, params) {
   fn(v, params || {});
   try { explainize(v); } catch(e) { console.warn("explainize failed", e); }
   window.scrollTo({top:0, behavior:"smooth"});
+  // Auto-close mobile sidebar on navigate
+  closeMobileSidebar();
 }
+
+/* Mobile sidebar drawer */
+function openMobileSidebar() { document.body.setAttribute('data-sidebar', 'open'); }
+function closeMobileSidebar() { document.body.removeAttribute('data-sidebar'); }
+(function wireMobileMenu() {
+  const btn = document.getElementById('mobileMenuBtn');
+  const close = document.getElementById('sidebarClose');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (btn) btn.addEventListener('click', openMobileSidebar);
+  if (close) close.addEventListener('click', closeMobileSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeMobileSidebar);
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.getAttribute('data-sidebar') === 'open') closeMobileSidebar();
+  });
+})();
 
 document.getElementById("themeBtn").addEventListener("click", () => {
   const cur = document.body.getAttribute("data-theme");
