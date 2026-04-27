@@ -364,6 +364,55 @@ h3 { font-size: 16px; margin: 0 0 8px; }
 }
 .feedback-btn:hover { color: var(--primary-2); border-color: var(--primary); }
 
+/* Module diagrams */
+.diagram-card {
+  margin-bottom: 14px;
+  background:
+    radial-gradient(ellipse 700px 220px at 50% -30%, rgba(159,212,255,0.06), transparent 70%),
+    var(--panel);
+  border: 1px solid var(--border);
+}
+.diagram-eyebrow {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--primary-2);
+  margin-bottom: 4px;
+}
+.diagram-title {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+.diagram-wrap {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px 6px;
+  background:
+    radial-gradient(ellipse 600px 200px at 50% 50%, rgba(159,212,255,0.04), transparent 70%),
+    rgba(5,7,10,0.5);
+  border-radius: 12px;
+  border: 1px solid rgba(159,212,255,0.06);
+  overflow-x: auto;
+}
+.diagram-wrap svg { width: 100%; height: auto; max-width: 760px; display: block; }
+.diagram-caption {
+  margin: 14px auto 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  text-align: center;
+  max-width: 640px;
+}
+@media (max-width: 600px) {
+  .diagram-card { padding: 14px; }
+  .diagram-wrap { padding: 8px 4px; }
+  .diagram-title { font-size: 15px; }
+}
+
 /* Linear module walkthrough */
 .linear-topbar { justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .linear-stepper {
@@ -1678,7 +1727,31 @@ const MODULES = [
       "Plants making both drug substance and drug product often run independent automation stacks per area."
     ],
     oneLiner: "Pharma plants make either the active molecule (drug substance) or the finished dose (drug product) — and the automation differs.",
-    hours: 8
+    hours: 8,
+    diagrams: [{
+      eyebrow: "From raw input to patient",
+      title: "Pharma manufacturing in four steps",
+      caption: "The first transformation makes the active molecule (API). The second formulates it into the dose form a patient receives. Drug-substance plants and drug-product plants are usually separate facilities with different automation stacks.",
+      svg: `<svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="From raw materials to medicine">
+  <defs>
+    <radialGradient id="dg1Glow" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(159,212,255,0.28)"/><stop offset="100%" stop-color="rgba(159,212,255,0)"/></radialGradient>
+    <radialGradient id="dg1GlowKey" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(124,240,229,0.32)"/><stop offset="100%" stop-color="rgba(124,240,229,0)"/></radialGradient>
+  </defs>
+  <line x1="100" y1="100" x2="620" y2="100" stroke="rgba(159,212,255,0.16)" stroke-width="1" stroke-dasharray="2 5"/>
+  <!-- Raw -->
+  <g transform="translate(40,55)"><ellipse cx="60" cy="45" rx="68" ry="42" fill="url(#dg1Glow)"/><rect width="120" height="74" rx="14" x="0" y="8" fill="#0E1828" stroke="rgba(159,212,255,0.4)"/><text x="60" y="38" text-anchor="middle" fill="#EAF2FF" font-size="12.5" font-weight="500">Raw materials</text><text x="60" y="58" text-anchor="middle" fill="#94A3C2" font-size="10.5">chemicals · bio-feeds</text></g>
+  <!-- Arrow 1 --><path d="M170 100 L 215 100" stroke="rgba(159,212,255,0.55)" stroke-width="1.2" fill="none"/><polygon points="208,96 218,100 208,104" fill="rgba(159,212,255,0.7)"/>
+  <!-- API (key node) -->
+  <g transform="translate(220,55)"><ellipse cx="60" cy="45" rx="74" ry="46" fill="url(#dg1GlowKey)"/><rect width="120" height="74" rx="14" x="0" y="8" fill="#0E1828" stroke="rgba(124,240,229,0.55)" stroke-width="1.2"/><text x="60" y="34" text-anchor="middle" fill="#EAF2FF" font-size="12.5" font-weight="600">API</text><text x="60" y="50" text-anchor="middle" fill="#7CF0E5" font-size="10.5">drug substance</text><text x="60" y="65" text-anchor="middle" fill="#94A3C2" font-size="10">made first · powder/solution</text></g>
+  <!-- Arrow 2 --><path d="M350 100 L 395 100" stroke="rgba(159,212,255,0.55)" stroke-width="1.2" fill="none"/><polygon points="388,96 398,100 388,104" fill="rgba(159,212,255,0.7)"/>
+  <!-- Drug product (key node) -->
+  <g transform="translate(400,55)"><ellipse cx="60" cy="45" rx="74" ry="46" fill="url(#dg1GlowKey)"/><rect width="120" height="74" rx="14" x="0" y="8" fill="#0E1828" stroke="rgba(124,240,229,0.55)" stroke-width="1.2"/><text x="60" y="34" text-anchor="middle" fill="#EAF2FF" font-size="12.5" font-weight="600">Drug product</text><text x="60" y="50" text-anchor="middle" fill="#7CF0E5" font-size="10.5">finished dose</text><text x="60" y="65" text-anchor="middle" fill="#94A3C2" font-size="10">tablet · vial · syringe</text></g>
+  <!-- Arrow 3 --><path d="M530 100 L 575 100" stroke="rgba(159,212,255,0.55)" stroke-width="1.2" fill="none"/><polygon points="568,96 578,100 568,104" fill="rgba(159,212,255,0.7)"/>
+  <!-- Patient -->
+  <g transform="translate(580,55)"><ellipse cx="60" cy="45" rx="68" ry="42" fill="url(#dg1Glow)"/><rect width="120" height="74" rx="14" x="0" y="8" fill="#0E1828" stroke="rgba(159,212,255,0.4)"/><text x="60" y="38" text-anchor="middle" fill="#EAF2FF" font-size="12.5" font-weight="500">Patient</text><text x="60" y="58" text-anchor="middle" fill="#94A3C2" font-size="10.5">the receiving end</text></g>
+  <!-- Caption strip --><text x="280" y="180" text-anchor="middle" fill="#5BD9C9" font-size="10.5" font-weight="600" letter-spacing="1.5">DRUG SUBSTANCE PLANT</text><text x="460" y="180" text-anchor="middle" fill="#5BD9C9" font-size="10.5" font-weight="600" letter-spacing="1.5">DRUG PRODUCT PLANT</text>
+</svg>`
+    }]
   },
   {
     id: "cast",
@@ -1894,7 +1967,39 @@ const MODULES = [
       "Over-testing: Cat 3 systems being tested like Cat 5 custom code."
     ],
     oneLiner: "CSV is how regulated sites prove their software is trustworthy — GAMP 5 is the bible.",
-    hours: 28
+    hours: 28,
+    diagrams: [{
+      eyebrow: "GAMP 5 V-Model",
+      title: "Every spec on the left has a test on the right",
+      caption: "User Requirements drive the highest-level test (PQ). Functional Spec drives Operational Qualification. Design Spec drives Installation Qualification. The traceability matrix is what proves each requirement was tested.",
+      svg: `<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GAMP 5 V-Model">
+  <defs>
+    <radialGradient id="dg2Glow" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(159,212,255,0.22)"/><stop offset="100%" stop-color="rgba(159,212,255,0)"/></radialGradient>
+    <radialGradient id="dg2Build" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(245,176,65,0.28)"/><stop offset="100%" stop-color="rgba(245,176,65,0)"/></radialGradient>
+  </defs>
+  <!-- V shape lines -->
+  <line x1="120" y1="60" x2="360" y2="220" stroke="rgba(159,212,255,0.25)" stroke-width="1.2" stroke-dasharray="3 5"/>
+  <line x1="600" y1="60" x2="360" y2="220" stroke="rgba(159,212,255,0.25)" stroke-width="1.2" stroke-dasharray="3 5"/>
+  <!-- Trace lines (left ↔ right) -->
+  <line x1="170" y1="80" x2="550" y2="80" stroke="rgba(124,240,229,0.18)" stroke-width="1" stroke-dasharray="1 4"/>
+  <line x1="220" y1="130" x2="500" y2="130" stroke="rgba(124,240,229,0.16)" stroke-width="1" stroke-dasharray="1 4"/>
+  <line x1="270" y1="180" x2="450" y2="180" stroke="rgba(124,240,229,0.14)" stroke-width="1" stroke-dasharray="1 4"/>
+  <!-- Left arm: specs -->
+  <g transform="translate(120,60)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">URS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">User Requirements</text></g>
+  <g transform="translate(170,110)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">FS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Functional Spec</text></g>
+  <g transform="translate(220,160)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">DS</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Design Spec</text></g>
+  <!-- Build (bottom of V) -->
+  <g transform="translate(310,210)"><ellipse cx="50" cy="20" rx="60" ry="24" fill="url(#dg2Build)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(245,176,65,0.55)" stroke-width="1.2"/><text x="50" y="18" text-anchor="middle" fill="#F5B041" font-size="11.5" font-weight="600">BUILD</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">configure / code</text></g>
+  <!-- Right arm: tests -->
+  <g transform="translate(400,160)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">IQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Installation Qual</text></g>
+  <g transform="translate(450,110)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">OQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Operational Qual</text></g>
+  <g transform="translate(500,60)"><ellipse cx="50" cy="20" rx="58" ry="22" fill="url(#dg2Glow)"/><rect x="0" y="0" width="100" height="40" rx="10" fill="#0E1828" stroke="rgba(159,212,255,0.45)"/><text x="50" y="18" text-anchor="middle" fill="#EAF2FF" font-size="11.5" font-weight="600">PQ</text><text x="50" y="32" text-anchor="middle" fill="#94A3C2" font-size="9.5">Performance Qual</text></g>
+  <!-- Side labels -->
+  <text x="60" y="86" text-anchor="start" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.5">SPECIFY</text>
+  <text x="660" y="86" text-anchor="end" fill="#5BD9C9" font-size="10.5" font-weight="700" letter-spacing="1.5">VERIFY</text>
+  <text x="360" y="270" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">Traceability matrix proves every requirement on the left is tested on the right.</text>
+</svg>`
+    }]
   },
   {
     id: "itot",
@@ -2134,7 +2239,38 @@ const MODULES = [
       "Direct L4↔L2 connections bypass validation controls."
     ],
     oneLiner: "ISA-95 is the Purdue Model — five levels from the valve to the boardroom.",
-    hours: 12
+    hours: 12,
+    diagrams: [{
+      eyebrow: "Purdue Model",
+      title: "From the valve to the boardroom — five levels",
+      caption: "The reference architecture every pharma plant uses. Lower levels react in milliseconds; higher levels plan in days. The DMZ at L3.5 is where IT meets OT — historians, jump servers, and the integration plumbing live there.",
+      svg: `<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Purdue Model levels 0 to 4">
+  <defs>
+    <linearGradient id="dg3L4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(108,140,255,0.28)"/><stop offset="100%" stop-color="rgba(108,140,255,0.08)"/></linearGradient>
+    <linearGradient id="dg3L3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(159,212,255,0.26)"/><stop offset="100%" stop-color="rgba(159,212,255,0.06)"/></linearGradient>
+    <linearGradient id="dg3L2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(91,217,201,0.26)"/><stop offset="100%" stop-color="rgba(91,217,201,0.06)"/></linearGradient>
+    <linearGradient id="dg3L1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(124,240,229,0.26)"/><stop offset="100%" stop-color="rgba(124,240,229,0.06)"/></linearGradient>
+    <linearGradient id="dg3L0" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(245,176,65,0.22)"/><stop offset="100%" stop-color="rgba(245,176,65,0.05)"/></linearGradient>
+  </defs>
+  <!-- L4 Enterprise -->
+  <g transform="translate(60,20)"><rect width="600" height="42" rx="10" fill="url(#dg3L4)" stroke="rgba(108,140,255,0.5)"/><text x="20" y="20" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L4</text><text x="20" y="34" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">ENTERPRISE</text><text x="270" y="22" fill="#EAF2FF" font-size="13" font-weight="500">Business systems</text><text x="270" y="36" fill="#94A3C2" font-size="11">SAP · Oracle · planning · finance</text><text x="585" y="28" text-anchor="end" fill="#6C8CFF" font-size="10" font-style="italic">days–weeks</text></g>
+  <!-- L3.5 DMZ -->
+  <g transform="translate(60,72)"><rect width="600" height="28" rx="8" fill="rgba(245,176,65,0.10)" stroke="rgba(245,176,65,0.35)" stroke-dasharray="4 3"/><text x="20" y="18" fill="#F5B041" font-size="10.5" font-weight="700" letter-spacing="1">L3.5 — DMZ</text><text x="270" y="18" fill="#94A3C2" font-size="11">Historians · jump servers · reverse proxies</text><text x="585" y="18" text-anchor="end" fill="#F5B041" font-size="10" font-style="italic">where IT meets OT</text></g>
+  <!-- L3 MES -->
+  <g transform="translate(60,110)"><rect width="600" height="42" rx="10" fill="url(#dg3L3)" stroke="rgba(159,212,255,0.5)"/><text x="20" y="20" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L3</text><text x="20" y="34" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">MES / OPS</text><text x="270" y="22" fill="#EAF2FF" font-size="13" font-weight="500">Manufacturing operations</text><text x="270" y="36" fill="#94A3C2" font-size="11">PAS-X · Syncade · EBR · scheduling</text><text x="585" y="28" text-anchor="end" fill="#9FD4FF" font-size="10" font-style="italic">hours</text></g>
+  <!-- L2 Control -->
+  <g transform="translate(60,162)"><rect width="600" height="42" rx="10" fill="url(#dg3L2)" stroke="rgba(91,217,201,0.5)"/><text x="20" y="20" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L2</text><text x="20" y="34" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">CONTROL</text><text x="270" y="22" fill="#EAF2FF" font-size="13" font-weight="500">Real-time control</text><text x="270" y="36" fill="#94A3C2" font-size="11">DCS (DeltaV / PCS 7) · PLCs · SCADA</text><text x="585" y="28" text-anchor="end" fill="#5BD9C9" font-size="10" font-style="italic">seconds</text></g>
+  <!-- L1 Sensing -->
+  <g transform="translate(60,214)"><rect width="600" height="42" rx="10" fill="url(#dg3L1)" stroke="rgba(124,240,229,0.5)"/><text x="20" y="20" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L1</text><text x="20" y="34" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">SENSING</text><text x="270" y="22" fill="#EAF2FF" font-size="13" font-weight="500">Sensors &amp; actuation</text><text x="270" y="36" fill="#94A3C2" font-size="11">Transmitters · valves · motors</text><text x="585" y="28" text-anchor="end" fill="#7CF0E5" font-size="10" font-style="italic">milliseconds</text></g>
+  <!-- L0 Physical -->
+  <g transform="translate(60,266)"><rect width="600" height="42" rx="10" fill="url(#dg3L0)" stroke="rgba(245,176,65,0.5)"/><text x="20" y="20" fill="#EAF2FF" font-size="11" font-weight="700" letter-spacing="0.8">L0</text><text x="20" y="34" fill="#94A3C2" font-size="9.5" letter-spacing="0.6">PHYSICAL</text><text x="270" y="22" fill="#EAF2FF" font-size="13" font-weight="500">The physical process</text><text x="270" y="36" fill="#94A3C2" font-size="11">Reactor · valve · pump · tank</text><text x="585" y="28" text-anchor="end" fill="#F5B041" font-size="10" font-style="italic">real-time</text></g>
+  <!-- Vertical timescale arrow -->
+  <line x1="38" y1="40" x2="38" y2="290" stroke="rgba(159,212,255,0.25)" stroke-width="1"/>
+  <polygon points="34,290 42,290 38,298" fill="rgba(159,212,255,0.5)"/>
+  <text x="14" y="170" fill="#5BD9C9" font-size="10" font-weight="700" letter-spacing="1.5" transform="rotate(-90 14 170)">FASTER ↓</text>
+  <!-- Footnote --><text x="360" y="340" text-anchor="middle" fill="#94A3C2" font-size="10" font-style="italic">Lower levels: physics, fast. Higher levels: business, slow. Always know which level a question lives at.</text>
+</svg>`
+    }]
   },
   {
     id: "dataintegrity",
@@ -4079,8 +4215,17 @@ function renderBrief(body, m) {
   const feedbackHref = "mailto:feedback@aymetraining.com" +
     "?subject=" + encodeURIComponent(`AYME correction — ${m.name}`) +
     "&body=" + encodeURIComponent(`Hi,\n\nI noticed something in the ${m.name} module that may be incorrect or out of date:\n\n[describe what you saw and what it should be — link to a source if you have one]\n\nThanks!`);
+  const diagramsBlock = (m.diagrams && m.diagrams.length) ? m.diagrams.map(d => `
+    <div class="card diagram-card">
+      <div class="diagram-eyebrow">${d.eyebrow || 'Concept at a glance'}</div>
+      <h3 class="diagram-title">${d.title}</h3>
+      <div class="diagram-wrap">${d.svg}</div>
+      ${d.caption ? `<p class="diagram-caption">${d.caption}</p>` : ''}
+    </div>
+  `).join('') : '';
   body.innerHTML = `
     ${reviewBlock}
+    ${diagramsBlock}
     <div class="grid cols-2">
       <div class="card">
         <h3>What it is</h3>
